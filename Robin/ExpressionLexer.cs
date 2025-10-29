@@ -103,12 +103,44 @@ public ref struct ExpressionLexer
         else
         {
             int start = _position;
-            while (_position < _source.Length &&
-                   (char.IsLetterOrDigit(_source[_position]) || _source[_position] == '_' || _source[_position] == '.' || _source[_position] == '[' || _source[_position] == ']'))
+            if (_source[_position] == '"')
             {
+                    _position++;
+                start++;
+                while (_position < _source.Length && _source[_position] != '"')
+                {
+                    _position++;
+                }
+                token = new ExpressionToken(ExpressionType.Constant, start, _position - start);
                 _position++;
             }
-            token = new ExpressionToken(ExpressionType.Identifier, start, _position - start);
+            else if (_source[_position] == '\'')
+            {
+                    _position++;
+                start++;
+                while (_position < _source.Length && _source[_position] != '\'')
+                {
+                    _position++;
+                }
+                token = new ExpressionToken(ExpressionType.Constant, start, _position - start);
+                _position++;
+            }
+            else
+            {
+                bool isOnlyDigits = char.IsDigit(_source[_position]) || _source[_position] == '.';
+                while (_position < _source.Length &&
+                       (char.IsLetterOrDigit(_source[_position]) || _source[_position] == '_' || _source[_position] == '.' || _source[_position] == '[' || _source[_position] == ']'))
+                {
+                    isOnlyDigits = isOnlyDigits && char.IsDigit(_source[_position]) || _source[_position] == '.';
+                    _position++;
+                }
+                if (isOnlyDigits)
+                {
+                    token = new ExpressionToken(ExpressionType.Constant, start, _position - start);
+                    return true;
+                }
+                token = new ExpressionToken(ExpressionType.Identifier, start, _position - start);
+            }
             return true;
         }
     }

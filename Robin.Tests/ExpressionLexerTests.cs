@@ -1,5 +1,6 @@
 namespace Robin.tests;
 
+
 public class ExpressionLexerTests
 {
     [Theory]
@@ -26,6 +27,46 @@ public class ExpressionLexerTests
         ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
         Assert.NotEmpty(tokens);
         ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Identifier);
+        Assert.Equal(dat.Trim(), secOpen.GetValue(source));
+    }
+
+    [Theory]
+    [InlineData("'12'")]
+    [InlineData("'12 '")]
+    [InlineData("' 12'")]
+    [InlineData("' 12 '")]
+    public void StringConstantSingleQuote(string dat)
+    {
+        ReadOnlySpan<char> source = dat.AsSpan();
+        ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
+        Assert.NotEmpty(tokens);
+        ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Constant);
+        Assert.Equal(dat.Trim('\''), secOpen.GetValue(source));
+    }
+    [Theory]
+    [InlineData("\"12\"")]
+    [InlineData("\"12 \"")]
+    [InlineData("\" 12\"")]
+    [InlineData("\" 12 \"")]
+    public void StringConstantDoubleQuote(string dat)
+    {
+        ReadOnlySpan<char> source = dat.AsSpan();
+        ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
+        Assert.NotEmpty(tokens);
+        ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Constant);
+        Assert.Equal(dat.Trim('"'), secOpen.GetValue(source));
+    }
+    [Theory]
+    [InlineData("12")]
+    [InlineData("12 ")]
+    [InlineData(" 12")]
+    [InlineData(" 12 ")]
+    public void NumberConstant(string dat)
+    {
+        ReadOnlySpan<char> source = dat.AsSpan();
+        ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
+        Assert.NotEmpty(tokens);
+        ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Constant);
         Assert.Equal(dat.Trim(), secOpen.GetValue(source));
     }
 
