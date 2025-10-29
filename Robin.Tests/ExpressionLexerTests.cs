@@ -79,7 +79,6 @@ public class ExpressionLexerTests
     [InlineData("(left & right)")]
     [InlineData("(left || right)")]
     [InlineData("(left | right)")]
-    [InlineData("(left | right)")]
     public void IdentifierOperator(string dat)
     {
         ReadOnlySpan<char> source = dat.AsSpan();
