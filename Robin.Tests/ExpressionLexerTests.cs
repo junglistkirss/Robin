@@ -17,13 +17,16 @@ public class ExpressionLexerTests
     [InlineData("__test__")]
     [InlineData("__test")]
     [InlineData("test__")]
+    [InlineData("test__[0]")]
+    [InlineData("test__[test]")]
+    [InlineData("test__[test__]")]
     public void SimpleIdentifier(string dat)
     {
         ReadOnlySpan<char> source = dat.AsSpan();
         ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
         Assert.NotEmpty(tokens);
         ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Identifier);
-        Assert.Equal("test", secOpen.GetValue(source).Span);
+        Assert.Equal(dat.Trim(), secOpen.GetValue(source).Span);
     }
 
     [Theory]
