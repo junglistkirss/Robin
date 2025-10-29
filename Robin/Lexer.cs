@@ -164,7 +164,8 @@ public ref struct Lexer
     }
     public readonly ReadOnlyMemory<char> GetValue(Token token)
     {
-        return _source.Slice(token.Start, token.Length).ToString().AsMemory();
+        ReadOnlySpan<char> x = _source.Slice(token.Start, token.Length);
+        return  new ReadOnlyMemory<char>(x.ToArray());
     }
     // Convenience method to tokenize entire input
 

@@ -1,9 +1,11 @@
+using Xunit.Sdk;
+
 namespace Robin.tests;
 
 public class LexerTests
 {
     [Fact]
-    public void TestName()
+    public void TestTokenTypes()
     {
         string template = @"Hello {{ name }}!
 {{#items}}
@@ -49,5 +51,58 @@ public class LexerTests
 
         Token part = Assert.Single(tokens, x => x.Type == TokenType.Partial);
         Assert.Equal("footer", part.GetValue(source).Span);
+    }
+
+    [Theory]
+    [InlineData("test1 | test2")]
+    [InlineData("test1 || test2")]
+    [InlineData("test1 & test2")]
+    [InlineData("test1 && test2")]
+    public void VariableTest(string dat)
+    {
+        string template = "{{" + dat + "}}";
+        ReadOnlySpan<char> source = template.AsSpan();
+        Token[] tokens = Tokenizer.Tokenize(source);
+        Assert.NotEmpty(tokens);
+        Token secOpen = Assert.Single(tokens, x => x.Type == TokenType.Variable);
+        Assert.Equal(dat, secOpen.GetValue(source).Span);
+    }
+
+    [Theory]
+    [InlineData("test1 | test2")]
+    [InlineData("test1 || test2")]
+    [InlineData("test1 & test2")]
+    [InlineData("test1 && test2")]
+    public void UnescapedVariableTest(string dat)
+    {
+        string template = "{{{" + dat + "}}}";
+        ReadOnlySpan<char> source = template.AsSpan();
+        Token[] tokens = Tokenizer.Tokenize(source);
+        Assert.NotEmpty(tokens);
+        Token secOpen = Assert.Single(tokens, x => x.Type == TokenType.UnescapedVariable);
+        Assert.Equal(dat, secOpen.GetValue(source).Span);
+    }
+    [Fact]
+    public void TestSectionHelperTokenTypes()
+    {
+        string template = "{{#if test}}plouf{{/if}}";
+        ReadOnlySpan<char> source = template.AsSpan();
+        Token[] tokens = Tokenizer.Tokenize(source);
+        Assert.NotEmpty(tokens);
+        Token secOpen = Assert.Single(tokens, x => x.Type == TokenType.SectionOpen);
+        Assert.Equal("if test", secOpen.GetValue(source).Span);
+    }
+
+    [Fact]
+    public void TestSectionHelperTokenTypes2()
+    {
+        string template = "{{#if test}}OK{{^else}}{{/if}}";
+        ReadOnlySpan<char> source = template.AsSpan();
+        Token[] tokens = Tokenizer.Tokenize(source);
+        Assert.NotEmpty(tokens);
+        Token secIf = Assert.Single(tokens, x => x.Type == TokenType.SectionOpen);
+        Assert.Equal("if test", secIf.GetValue(source).Span);
+        Token secElse = Assert.Single(tokens, x => x.Type == TokenType.InvertedSection);
+        Assert.Equal("else", secElse.GetValue(source).Span);
     }
 }
