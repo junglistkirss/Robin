@@ -43,20 +43,19 @@ public class ExpressionParserTests
         Assert.Equal("two", ident2.Name);
     }
 
-    //[Fact]
-    //public void OperatorManyArgs()
-    //{
-    //    ReadOnlySpan<char> source = "one + two".AsSpan();
-    //    ExpressionLexer lexer = new ExpressionLexer(source);
-    //    ImmutableArray<IExpressionNode> nodes = lexer.Parse();
-    //    IExpressionNode node = Assert.Single(nodes);
-    //    BinaryOperatorNode func = Assert.IsType<BinaryOperatorNode>(node);
-    //    Assert.Equal("+", func.Operator);
-    //    IdentifierNode ident1 = Assert.IsType<IdentifierNode>(func.Left);
-    //    Assert.Equal("one", ident1.Name);
-    //    IdentifierNode ident2 = Assert.IsType<IdentifierNode>(func.Right);
-    //    Assert.Equal("two", ident2.Name);
-    //}
+    [Fact]
+    public void OperatorManyArgs()
+    {
+        ReadOnlySpan<char> source = "one + two".AsSpan();
+        ExpressionLexer lexer = new ExpressionLexer(source);
+        IExpressionNode?node = lexer.Parse();
+        BinaryOperationNode func = Assert.IsType<BinaryOperationNode>(node);
+        Assert.Equal("+", func.Operator);
+        IdentifierNode ident1 = Assert.IsType<IdentifierNode>(func.Left);
+        Assert.Equal("one", ident1.Name);
+        IdentifierNode ident2 = Assert.IsType<IdentifierNode>(func.Right);
+        Assert.Equal("two", ident2.Name);
+    }
 
     [Fact]
     public void FunctionManyArgs__Malformed()

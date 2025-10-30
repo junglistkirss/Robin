@@ -39,7 +39,7 @@ public static class ExpressionParser
                 throw new Exception("Opérande attendu après opérateur");
 
             IExpressionNode right = ParseTerm(ref lexer, rightToken.Value);
-            left = new BinaryOperatorNode(left, op, right);
+            left = new BinaryOperationNode(left, op, right);
         }
 
         return left;
@@ -65,7 +65,7 @@ public static class ExpressionParser
                 throw new Exception("Opérande attendu après opérateur");
 
             IExpressionNode right = ParsePower(ref lexer, rightToken.Value);
-            left = new BinaryOperatorNode(left, op, right);
+            left = new BinaryOperationNode(left, op, right);
         }
 
         return left;
@@ -89,7 +89,7 @@ public static class ExpressionParser
                         throw new Exception("Opérande attendu après opérateur");
 
                     IExpressionNode right = ParsePower(ref lexer, rightToken.Value);
-                    return new BinaryOperatorNode(left, op, right);
+                    return new BinaryOperationNode(left, op, right);
                 }
             }
         }
@@ -108,7 +108,7 @@ public static class ExpressionParser
                 if (!lexer.TryGetNextToken(out ExpressionToken? operandToken))
                     throw new Exception("Opérande attendu après opérateur unaire");
 
-                return new UnaryOperatorNode(op, ParseUnary(ref lexer, operandToken.Value));
+                return new UnaryOperationNode(op, ParseUnary(ref lexer, operandToken.Value));
             }
         }
 

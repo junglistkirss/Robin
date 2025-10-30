@@ -20,7 +20,7 @@ public readonly struct NumberNode(double constant) : IExpressionNode
         throw new NotImplementedException();
     }
 }
-public readonly struct UnaryOperatorNode(string @operator, IExpressionNode operand) : IExpressionNode
+public readonly struct UnaryOperationNode(string @operator, IExpressionNode operand) : IExpressionNode
 {
     public string Operator { get; } = @operator;
     public IExpressionNode Operand { get; } = operand;
