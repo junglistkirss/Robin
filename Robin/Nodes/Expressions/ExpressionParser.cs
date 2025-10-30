@@ -1,6 +1,7 @@
+using Robin.Expressions;
 using System.Globalization;
 
-namespace Robin.Expressions;
+namespace Robin.Nodes.Expressions;
 
 public static class ExpressionParser
 {

@@ -1,9 +1,4 @@
-namespace Robin.Expressions;
-
-public interface IExpressionNode
-{
-    TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args);
-};
+namespace Robin.Nodes.Expressions;
 
 public interface IExpressionNodeVisitor<TOut, TArgs>
 {

@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Robin.Expressions;
+namespace Robin.Nodes.Expressions;
 
 public ref struct ExpressionLexer
 {

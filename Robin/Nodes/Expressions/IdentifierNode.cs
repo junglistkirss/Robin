@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
 using System.Text;
 
-namespace Robin.Expressions;
+namespace Robin.Nodes.Expressions;
 
 public interface IPathSegment;
 public readonly struct ChainPath(ImmutableArray<IPathSegment> segments)
