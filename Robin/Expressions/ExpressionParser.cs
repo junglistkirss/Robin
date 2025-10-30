@@ -1,4 +1,3 @@
-using Robin.Nodes;
 using System.Globalization;
 
 namespace Robin.Expressions;
@@ -93,7 +92,7 @@ public static class ExpressionParser
 
                     IExpressionNode right = ParsePower(ref lexer, rightToken.Value);
                     return new BinaryOperationNode(left, op, right);
-                }                
+                }
             }
         }
 

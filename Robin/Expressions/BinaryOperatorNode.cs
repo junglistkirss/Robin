@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Robin.Expressions;
 
 public readonly struct BinaryOperationNode(IExpressionNode left, string @operator, IExpressionNode right) : IExpressionNode

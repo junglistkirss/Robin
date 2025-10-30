@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace Robin.Nodes;
 
 public readonly struct TextNode(string text) : INode
