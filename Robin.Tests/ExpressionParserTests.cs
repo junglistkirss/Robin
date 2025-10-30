@@ -1,4 +1,5 @@
 using Robin.Nodes;
+using System.Globalization;
 
 namespace Robin.tests;
 
@@ -62,10 +63,10 @@ public class ExpressionParserTests
     }
 
     [Theory]
-    [InlineData("+", 321)]
-    [InlineData("-", 123)]
-    [InlineData("-", 0.5)]
-    public void UnaryConstantExpression(string op, double member)
+    [InlineData("+", "321")]
+    [InlineData("-", "123")]
+    [InlineData("-", "0.5")]
+    public void UnaryConstantExpression(string op, string member)
     {
         ReadOnlySpan<char> source = $"{op}{member}".AsSpan();
         ExpressionLexer lexer = new(source);
@@ -73,7 +74,7 @@ public class ExpressionParserTests
         UnaryOperationNode unary = Assert.IsType<UnaryOperationNode>(node);
         Assert.Equal(op, unary.Operator);
         NumberNode operand = Assert.IsType<NumberNode>(unary.Operand);
-        Assert.Equal(member, operand.Constant);
+        Assert.Equal(double.Parse(member, CultureInfo.InvariantCulture), operand.Constant);
     }
 
 

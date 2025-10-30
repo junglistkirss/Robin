@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace Robin.Nodes;
 
 public static class ExpressionParser
@@ -145,7 +147,7 @@ public static class ExpressionParser
         if (currentToken.Type == ExpressionType.Number)
         {
             string value = lexer.GetValue(currentToken);
-            double number = double.Parse(value);
+            double number = double.Parse(value, CultureInfo.InvariantCulture);
             return new NumberNode(number);
         }
 
