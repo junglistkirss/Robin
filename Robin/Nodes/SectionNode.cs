@@ -3,9 +3,9 @@ using System.Text;
 
 namespace Robin.Nodes;
 
-public readonly struct SectionNode(string name, ImmutableArray<INode> children, bool inverted = false) : INode
+public readonly struct SectionNode(IExpressionNode expression, ImmutableArray<INode> children, bool inverted = false) : INode
 {
-    public string Name { get; } = name;
+    public IExpressionNode Expression { get; } = expression;
     public ImmutableArray<INode> Children { get; } = children;
     public bool Inverted { get; } = inverted;
 }
