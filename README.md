@@ -1,2 +1,2 @@
 # Robin
-Mustache like lexer
+Mustache like templating engine
