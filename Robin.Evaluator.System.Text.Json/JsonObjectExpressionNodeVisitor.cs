@@ -33,8 +33,8 @@ internal sealed class JsonObjectExpressionNodeVisitor : IExpressionNodeVisitor<o
                     ctx = res.Value;
             }
             else
-            {                
-                result = new JsonEvaluationResult(false, result.Value);
+            {
+                result = result with { Found = false };
             }
             i++;
         }

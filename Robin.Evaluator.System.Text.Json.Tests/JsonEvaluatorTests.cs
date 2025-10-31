@@ -8,7 +8,7 @@ namespace Robin.Evaluator.System.Text.Json.tests;
 
 public class JsonEvaluatorTests
 {
-    [Fact(Skip = "?")]
+    [Fact]
     public void ResolveThis()
     {
         JsonObject json = [];
@@ -17,7 +17,8 @@ public class JsonEvaluatorTests
         IExpressionNode expression = new IdentifierExpressionNode(path);
         bool resolved = JsonEvaluator.Instance.TryResolve(expression, json, out object? found);
         Assert.True(resolved);
-        Assert.Same(json, found);
+        JsonObject foundjson = Assert.IsType<JsonObject>(found);
+        Assert.Same(json, foundjson);
     }
 
     [Fact]
@@ -29,6 +30,7 @@ public class JsonEvaluatorTests
         Assert.True(resolved);
         Assert.Equal(0.5, found);
     }
+   
     [Fact]
     public void ResolveLiteralConstant()
     {
@@ -68,13 +70,13 @@ public class JsonEvaluatorTests
         Assert.Equal("inner test", found?.ToString());
     }
 
-    [Fact(Skip = "overflow")]
+    [Fact]
     public void ResolveParent()
     {
         JsonObject json = [];
         IExpressionNode that = new IdentifierExpressionNode(AccessPathParser.Parse("~"));
         bool resolved = JsonEvaluator.Instance.TryResolve(that, json, out object? found);
-        Assert.False(resolved);
+        Assert.True(resolved);
         Assert.Null(found);
     }
 }
