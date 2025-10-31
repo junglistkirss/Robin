@@ -1,4 +1,4 @@
-namespace Robin;
+namespace Robin.Nodes;
 
 public enum TokenType
 {

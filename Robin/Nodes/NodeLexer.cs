@@ -1,37 +1,52 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Robin;
+namespace Robin.Nodes;
 
-public ref struct Lexer
+public ref struct NodeLexer
 {
-    private ReadOnlySpan<char> _source;
+    private readonly ReadOnlySpan<char> _source;
     private int _position;
     private const string OpenDelimiter = "{{";
     private const string CloseDelimiter = "}}";
 
-    public Lexer(ReadOnlySpan<char> source)
+    public NodeLexer(ReadOnlySpan<char> source)
     {
         _source = source;
         _position = 0;
     }
-
+    public void AdvanceTo(int position)
+    {
+        _position = position;
+    }
+    public readonly bool TryPeekNextToken([NotNullWhen(true)] out Token? token, out int endPosition)
+    {
+        int savedPosition = _position;
+        bool result = TryGetNextTokenInternal(out token, ref savedPosition);
+        endPosition = savedPosition;
+        return result;
+    }
     public bool TryGetNextToken([NotNullWhen(true)] out Token? token)
     {
-        if (_position >= _source.Length)
+        return TryGetNextTokenInternal(out token, ref _position);
+
+    }
+    private readonly bool TryGetNextTokenInternal([NotNullWhen(true)] out Token? token, ref int pos)
+    {
+        if (pos >= _source.Length)
         {
             token = null;
             return false;
         }
 
         // Look for opening delimiter
-        int delimiterPos = IndexOf(_source.Slice(_position), OpenDelimiter);
+        int delimiterPos = IndexOf(_source[pos..], OpenDelimiter);
 
         // If no delimiter found, rest is text
         if (delimiterPos == -1)
         {
-            int start = _position;
-            int length = _source.Length - _position;
-            _position = _source.Length;
+            int start = pos;
+            int length = _source.Length - pos;
+            pos = _source.Length;
             token = new Token(TokenType.Text, start, length);
             return true;
         }
@@ -39,70 +54,70 @@ public ref struct Lexer
         // If there's text before the delimiter, return it first
         if (delimiterPos > 0)
         {
-            int start = _position;
-            _position += delimiterPos;
+            int start = pos;
+            pos += delimiterPos;
             token = new Token(TokenType.Text, start, delimiterPos);
             return true;
         }
 
         // Parse the mustache tag
-        return TryParseMustacheTag(out token);
+        return TryParseMustacheTag(out token, ref pos);
     }
 
-    private bool TryParseMustacheTag([NotNullWhen(true)] out Token? token)
+    private readonly bool TryParseMustacheTag([NotNullWhen(true)] out Token? token, ref int pos)
     {
-        int tagStart = _position;
-        _position += OpenDelimiter.Length;
+        int tagStart = pos;
+        pos += OpenDelimiter.Length;
 
-        if (_position >= _source.Length)
+        if (pos >= _source.Length)
         {
             token = null;
             return false;
         }
 
         // Check for triple braces {{{var}}}
-        bool isTripleBrace = _source[_position] == '{';
+        bool isTripleBrace = _source[pos] == '{';
         if (isTripleBrace)
         {
-            _position++;
+            pos++;
         }
 
         // Determine tag type by first character
-        char firstChar = _position < _source.Length ? _source[_position] : '\0';
+        char firstChar = pos < _source.Length ? _source[pos] : '\0';
         TokenType tokenType = TokenType.Variable;
-        int contentStart = _position;
+        int contentStart = pos;
 
         switch (firstChar)
         {
             case '&': // Unescaped variable {{&var}}
                 tokenType = TokenType.UnescapedVariable;
-                _position++;
-                contentStart = _position;
+                pos++;
+                contentStart = pos;
                 break;
             case '#': // Section open {{#section}}
                 tokenType = TokenType.SectionOpen;
-                _position++;
-                contentStart = _position;
+                pos++;
+                contentStart = pos;
                 break;
             case '/': // Section close {{/section}}
                 tokenType = TokenType.SectionClose;
-                _position++;
-                contentStart = _position;
+                pos++;
+                contentStart = pos;
                 break;
             case '^': // Inverted section {{^section}}
                 tokenType = TokenType.InvertedSection;
-                _position++;
-                contentStart = _position;
+                pos++;
+                contentStart = pos;
                 break;
             case '!': // Comment {{! comment}}
                 tokenType = TokenType.Comment;
-                _position++;
-                contentStart = _position;
+                pos++;
+                contentStart = pos;
                 break;
             case '>': // Partial {{> partial}}
                 tokenType = TokenType.Partial;
-                _position++;
-                contentStart = _position;
+                pos++;
+                contentStart = pos;
                 break;
             default:
                 if (isTripleBrace)
@@ -114,19 +129,19 @@ public ref struct Lexer
 
         // Find closing delimiter
         string closingDelim = isTripleBrace ? "}}}" : CloseDelimiter;
-        int closePos = IndexOf(_source.Slice(_position), closingDelim);
+        int closePos = IndexOf(_source[pos..], closingDelim);
 
         if (closePos == -1)
         {
             // Malformed tag - treat as text
-            _position = tagStart;
+            pos = tagStart;
             token = new Token(TokenType.Text, tagStart, 2);
-            _position += 2;
+            pos += 2;
             return true;
         }
 
         // Skip whitespace around content
-        int contentEnd = _position + closePos;
+        int contentEnd = pos + closePos;
         while (contentStart < contentEnd && char.IsWhiteSpace(_source[contentStart]))
         {
             contentStart++;
@@ -136,7 +151,7 @@ public ref struct Lexer
             contentEnd--;
         }
 
-        _position += closePos + closingDelim.Length;
+        pos += closePos + closingDelim.Length;
 
         token = new Token(tokenType, contentStart, contentEnd - contentStart);
         return true;
@@ -162,10 +177,10 @@ public ref struct Lexer
         }
         return -1;
     }
-    public readonly ReadOnlyMemory<char> GetValue(Token token)
+    public readonly string GetValue(Token token)
     {
         ReadOnlySpan<char> x = _source.Slice(token.Start, token.Length);
-        return  new ReadOnlyMemory<char>(x.ToArray());
+        return x.ToString();
     }
     // Convenience method to tokenize entire input
 

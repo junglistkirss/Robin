@@ -1,4 +1,4 @@
-namespace Robin;
+namespace Robin.Expressions;
 
 public readonly struct ExpressionToken(ExpressionType type, int start, int length)
 {
@@ -6,9 +6,9 @@ public readonly struct ExpressionToken(ExpressionType type, int start, int lengt
     public int Start => start;
     public int Length => length;
 
-    public ReadOnlyMemory<char> GetValue(ReadOnlySpan<char> source)
+    public ReadOnlySpan<char> GetValue(ReadOnlySpan<char> source)
     {
-        return source.Slice(Start, Length).ToString().AsMemory();
+        return source.Slice(Start, Length);
     }
 
     public override string ToString()

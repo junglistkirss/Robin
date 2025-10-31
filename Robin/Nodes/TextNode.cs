@@ -1,11 +1,12 @@
-using System.Text;
-
 namespace Robin.Nodes;
 
-public readonly struct TextNode(ReadOnlyMemory<char> text) : INode
+public readonly struct TextNode(string text) : INode
 {
-    public ReadOnlyMemory<char> Text { get; } = text;
+    public string Text { get; } = text;
 
-    public void Render(Context context, StringBuilder output) => output.Append(Text);
+    public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
+    {
+        return visitor.VisitText(this, args);
+    }
 }
 

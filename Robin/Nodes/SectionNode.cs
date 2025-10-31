@@ -1,27 +1,17 @@
+using Robin.Expressions;
 using System.Collections.Immutable;
-using System.Text;
 
 namespace Robin.Nodes;
 
-public readonly struct SectionNode(ReadOnlyMemory<char> name, ImmutableArray<INode> children, bool inverted = false) : INode
+public readonly struct SectionNode(IExpressionNode expression, ImmutableArray<INode> children, bool inverted = false) : INode
 {
-    public ReadOnlyMemory<char> Name { get; } = name;
+    public IExpressionNode Expression { get; } = expression;
     public ImmutableArray<INode> Children { get; } = children;
     public bool Inverted { get; } = inverted;
 
-    public void Render(Context context, StringBuilder output)
+    public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
     {
-        if (context.TryResolve(Name.ToString(), out var value))
-        {
-            bool isTruthy = value != null && (!Inverted);
-            if (Inverted) isTruthy = value == null || value.Equals(false);
-            if (isTruthy)
-                foreach (INode child in Children) child.Render(context, output);
-        }
-        else if (Inverted)
-        {
-            foreach (INode child in Children) child.Render(context, output);
-        }
+        return visitor.VisitSection(this, args);
     }
 }
 

@@ -1,7 +1,9 @@
-namespace Robin;
+namespace Robin.Expressions;
 
 public enum ExpressionType
 {
+    Literal,
+    Number,
     Identifier,
     Operator,
     LeftParenthesis,  // (

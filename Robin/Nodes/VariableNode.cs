@@ -1,19 +1,15 @@
-using System.Text;
+using Robin.Expressions;
 
 namespace Robin.Nodes;
 
-public readonly struct VariableNode(ReadOnlyMemory<char> name, bool unescaped) : INode
+public readonly struct VariableNode(IExpressionNode expression, bool unescaped) : INode
 {
-    public ReadOnlyMemory<char> Name { get; } = name;
+    public IExpressionNode Expression { get; } = expression;
     public bool IsUnescaped { get; } = unescaped;
 
-    public void Render(Context context, StringBuilder output)
+    public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
     {
-        if (context.TryResolve(Name.ToString(), out var value))
-        {
-            var str = value?.ToString() ?? string.Empty;
-            output.Append(IsUnescaped ? str : System.Net.WebUtility.HtmlEncode(str));
-        }
+        return visitor.VisitVariable(this, args);
     }
 }
 
