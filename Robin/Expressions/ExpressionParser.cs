@@ -1,6 +1,5 @@
 using Robin.Variables;
 using System.Globalization;
-using System.IO;
 
 namespace Robin.Expressions;
 

@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace Robin.Nodes;
 
-public readonly struct PartialNode(string name , ImmutableArray<INode> children) : INode
+public readonly struct PartialNode(string name, ImmutableArray<INode> children) : INode
 {
     public string Name { get; } = name;
     public ImmutableArray<INode> Children { get; } = children;
