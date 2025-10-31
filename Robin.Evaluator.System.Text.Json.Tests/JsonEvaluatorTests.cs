@@ -8,11 +8,13 @@ namespace Robin.Evaluator.System.Text.Json.tests;
 
 public class JsonEvaluatorTests
 {
-    [Fact(Skip = "overflow")]
+    [Fact(Skip = "?")]
     public void ResolveThis()
     {
         JsonObject json = [];
-        IExpressionNode expression = new IdentifierExpressionNode(AccessPathParser.Parse("."));
+        AccesorPath path = AccessPathParser.Parse(".");
+        Assert.IsType<ThisAccessor>( Assert.Single(path.Segments));
+        IExpressionNode expression = new IdentifierExpressionNode(path);
         bool resolved = JsonEvaluator.Instance.TryResolve(expression, json, out object? found);
         Assert.True(resolved);
         Assert.Same(json, found);

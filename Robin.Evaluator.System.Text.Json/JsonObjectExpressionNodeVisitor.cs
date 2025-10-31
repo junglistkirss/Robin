@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using Robin.Contracts.Expressions;
+using Robin.Contracts.Variables;
 
 namespace Robin.Evaluator.System.Text.Json;
 
@@ -23,7 +24,7 @@ internal sealed class JsonObjectExpressionNodeVisitor : IExpressionNodeVisitor<o
         object? ctx = args;
         while (result.Found && i < node.Path.Segments.Length)
         {
-            var item = node.Path.Segments[i];
+            IAccessor item = node.Path.Segments[i];
             if (ctx is JsonNode n)
             {
                 JsonEvaluationResult res = item.Accept(JsonObjectAccesorVisitor.Instance, n);
@@ -32,7 +33,9 @@ internal sealed class JsonObjectExpressionNodeVisitor : IExpressionNodeVisitor<o
                     ctx = res.Value;
             }
             else
-                result = new JsonEvaluationResult(false, null);
+            {                
+                result = new JsonEvaluationResult(false, result.Value);
+            }
             i++;
         }
         return result.Value;
