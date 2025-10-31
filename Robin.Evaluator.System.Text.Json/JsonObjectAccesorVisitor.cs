@@ -20,9 +20,11 @@ internal sealed class JsonObjectAccesorVisitor : IAccessorVisitor<JsonEvaluation
 
     public JsonEvaluationResult VisitKey(KeyAccessor accessor, JsonNode args)
     {
-        if (args is JsonArray json)
+        if (args is JsonObject json)
         {
-            return new(true, json[accessor.Key]);
+            object? resolvedKey = accessor.Key.Evaluate(args);
+            if (resolvedKey is not null && json.TryGetPropertyValue(resolvedKey.ToString()!, out JsonNode? keyNode))
+                return new(true, keyNode);
         }
         return new(false, null);
     }
@@ -36,6 +38,8 @@ internal sealed class JsonObjectAccesorVisitor : IAccessorVisitor<JsonEvaluation
 
     public JsonEvaluationResult VisitParent(ParentAccessor accessor, JsonNode args)
     {
+        if (args.Parent is not null)
+            return new(true, args.Parent);
         return new(false, null);
     }
 

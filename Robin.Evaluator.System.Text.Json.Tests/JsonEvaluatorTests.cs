@@ -54,6 +54,20 @@ public class JsonEvaluatorTests
         Assert.Equal("test", found?.ToString());
     }
 
+
+    [Fact]
+    public void ResolveIndex()
+    {
+        JsonObject json = new()
+        {
+            ["prop"] = new JsonArray {"test", "test2"}
+        };
+        IExpressionNode expression = new IdentifierExpressionNode(AccessPathParser.Parse("prop[1]"));
+        bool resolved = JsonEvaluator.Instance.TryResolve(expression, json, out object? found);
+        Assert.True(resolved);
+        Assert.Equal("test2", found?.ToString());
+    }
+    
     [Fact]
     public void ResolveMemberPath()
     {
@@ -68,6 +82,22 @@ public class JsonEvaluatorTests
         bool resolved = JsonEvaluator.Instance.TryResolve(expression, json, out object? found);
         Assert.True(resolved);
         Assert.Equal("inner test", found?.ToString());
+    }
+[Fact]
+    public void ResolveKeyMemberPath()
+    {
+        JsonObject json = new()
+        {
+            ["prop"] = new JsonObject()
+            {
+                ["inner"] = "inner prop test",
+                ["key"] = "inner",
+            }
+        };
+        IExpressionNode expression = new IdentifierExpressionNode(AccessPathParser.Parse("prop[key]"));
+        bool resolved = JsonEvaluator.Instance.TryResolve(expression, json, out object? found);
+        Assert.True(resolved);
+        Assert.Equal("inner prop test", found?.ToString());
     }
 
     [Fact]

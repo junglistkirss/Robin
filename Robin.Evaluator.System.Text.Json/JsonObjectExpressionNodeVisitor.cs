@@ -4,6 +4,33 @@ using Robin.Contracts.Variables;
 
 namespace Robin.Evaluator.System.Text.Json;
 
+internal static class AccesorPathEvaluator
+{
+    internal static object? Evaluate(this AccesorPath path, JsonNode node)
+    {
+        JsonEvaluationResult result = new(true, null);
+        int i = 0;
+        object? ctx = node;
+        while (result.Found && i < path.Segments.Length)
+        {
+            IAccessor item = path.Segments[i];
+            if (ctx is JsonNode n)
+            {
+                JsonEvaluationResult res = item.Accept(JsonObjectAccesorVisitor.Instance, n);
+                result = res;
+                if (res.Found)
+                    ctx = res.Value;
+            }
+            else
+            {
+                result = result with { Found = false };
+            }
+            i++;
+        }
+        return result.Value;
+    }
+}
+
 internal sealed class JsonObjectExpressionNodeVisitor : IExpressionNodeVisitor<object?, JsonNode>
 {
     internal static readonly JsonObjectExpressionNodeVisitor Instance = new();
@@ -19,26 +46,7 @@ internal sealed class JsonObjectExpressionNodeVisitor : IExpressionNodeVisitor<o
 
     public object? VisitIdenitifer(IdentifierExpressionNode node, JsonNode args)
     {
-        JsonEvaluationResult result = new(true, null);
-        int i = 0;
-        object? ctx = args;
-        while (result.Found && i < node.Path.Segments.Length)
-        {
-            IAccessor item = node.Path.Segments[i];
-            if (ctx is JsonNode n)
-            {
-                JsonEvaluationResult res = item.Accept(JsonObjectAccesorVisitor.Instance, n);
-                result = res;
-                if (res.Found)
-                    ctx = res.Value;
-            }
-            else
-            {
-                result = result with { Found = false };
-            }
-            i++;
-        }
-        return result.Value;
+        return node.Path.Evaluate(args);
     }
 
     public object? VisitLiteral(LiteralExpressionNode node, JsonNode _)
