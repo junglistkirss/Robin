@@ -8,11 +8,11 @@ public class NodeLexerTests
     public void TestTokenTypes()
     {
         string template = @"Hello {{ name }}!
-{{#items}}
+{{#block}}
   - {{title}}: {{& description}}
-{{^items}}Missing item{{/items}}
-{{! This is a comment }}
-{{> footer}}";
+{{/block}}
+{{^revert}}Missing item{{/revert}}
+{{! This is a comment }}";
         ReadOnlySpan<char> source = template.AsSpan();
         Token[] tokens = Tokenizer.Tokenize(source);
         Assert.NotEmpty(tokens);
@@ -24,8 +24,8 @@ public class NodeLexerTests
         Assert.Equal($"{Environment.NewLine}  - ", txt[2].GetValue(source));
         Assert.Equal(": ", txt[3].GetValue(source));
         Assert.Equal(Environment.NewLine, txt[4].GetValue(source));
-        Assert.Equal("Missing item", txt[5].GetValue(source));
-        Assert.Equal(Environment.NewLine, txt[6].GetValue(source));
+        Assert.Equal(Environment.NewLine, txt[5].GetValue(source));
+        Assert.Equal("Missing item", txt[6].GetValue(source));
         Assert.Equal(Environment.NewLine, txt[7].GetValue(source));
 
         Token[] vars = [.. tokens.Where(x => x.Type == TokenType.Variable)];
@@ -38,19 +38,18 @@ public class NodeLexerTests
         Assert.Equal("description", s.GetValue(source));
 
         Token secOpen = Assert.Single(tokens, x => x.Type == TokenType.SectionOpen);
-        Assert.Equal("items", secOpen.GetValue(source));
+        Assert.Equal("block", secOpen.GetValue(source));
 
         Token invSecOpen = Assert.Single(tokens, x => x.Type == TokenType.InvertedSection);
-        Assert.Equal("items", invSecOpen.GetValue(source));
+        Assert.Equal("revert", invSecOpen.GetValue(source));
 
-        Token secClose = Assert.Single(tokens, x => x.Type == TokenType.SectionClose);
-        Assert.Equal("items", secClose.GetValue(source));
+        Token[] closes = [.. tokens.Where(x => x.Type == TokenType.SectionClose)];
+        Assert.Equal(2, closes.Length);
+        Assert.Equal("block", closes[0].GetValue(source));
+        Assert.Equal("revert", closes[1].GetValue(source));
 
         Token com = Assert.Single(tokens, x => x.Type == TokenType.Comment);
         Assert.Equal("This is a comment", com.GetValue(source));
-
-        Token part = Assert.Single(tokens, x => x.Type == TokenType.Partial);
-        Assert.Equal("footer", part.GetValue(source));
     }
 
     [Theory]

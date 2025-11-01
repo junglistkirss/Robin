@@ -15,17 +15,16 @@ public class NodeRender : INodeVisitor<RenderResult, RenderContext>
     public RenderResult VisitText(TextNode node, RenderContext context)
     {
         context.Builder.Append(node.Text);
-        return new RenderResult(true, null);
+        return RenderResult.Complete;
     }
     public RenderResult VisitComment(CommentNode node, RenderContext context)
     {
-        return new RenderResult(true, null);
+        return RenderResult.Complete;
     }
 
-    public RenderResult VisitPartial(PartialNode node, RenderContext context)
+    public RenderResult VisitPartial(PartialDefineNode node, RenderContext context)
     {
-        throw new NotImplementedException();
-
+        return RenderResult.Complete;
     }
 
     public RenderResult VisitVariable(VariableNode node, RenderContext context)
@@ -36,9 +35,9 @@ public class NodeRender : INodeVisitor<RenderResult, RenderContext>
                 context.Builder.Append(value?.ToString());
             else
                 context.Builder.Append(WebUtility.HtmlEncode(value?.ToString()));
-            return new RenderResult(true, null);
+            return RenderResult.Complete;
         }
-        return new RenderResult(false, null);
+        return RenderResult.Complete;
     }
 
     public RenderResult VisitSection(SectionNode node, RenderContext context)
@@ -48,41 +47,59 @@ public class NodeRender : INodeVisitor<RenderResult, RenderContext>
 
         if ((!node.Inverted && thruly) || (node.Inverted && !thruly))
         {
-            if (context.Evaluator.IsCollection(subData, out IEnumerable? collection))
+            return RenderTree(context, subData, node.Children);
+        }
+        return RenderResult.Complete;
+    }
+
+    public RenderResult VisitPartialCall(PartialCallNode node, RenderContext context)
+    {
+        object? subData = context.Evaluator.TryResolve(node.Expression, context.Data, out object? value) ? value : null;
+        bool thruly = context.Evaluator.IsTrue(subData);
+        if (context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate) && thruly)
+        {
+            return  RenderTree(context, subData, partialTemplate);
+
+        }
+        return RenderResult.Complete;
+    }
+
+    private  RenderResult  RenderTree(RenderContext context, object? subData, ImmutableArray<INode> partialTemplate)
+    {
+        if (context.Evaluator.IsCollection(subData, out IEnumerable? collection))
+        {
+            foreach (object? item in collection)
             {
-                foreach (object? item in collection)
+                RenderContext itemCtx = context with
                 {
-                    RenderContext itemCtx = context with
+                    Data = context.Data?.Child(item) ?? new DataContext(item, null),
+                };
+                ImmutableArray<INode>.Enumerator enumerator = partialTemplate.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    RenderResult result = enumerator.Current.Accept(this, itemCtx);
+                    if (!result.IsComplete)
                     {
-                        Data = context.Data?.Child(item) ?? new DataContext(item, null),
-                    };
-                    ImmutableArray<INode>.Enumerator enumerator = node.Children.GetEnumerator();
-                    while (enumerator.MoveNext())
-                    {
-                        RenderResult result = enumerator.Current.Accept(this, itemCtx);
-                        if (!result.IsComplete)
-                        {
-                            return result;
-                        }
+                        return result;
                     }
                 }
             }
-            else
-            {
-                RenderContext innerCtx = context with
-                {
-                    Data = context.Data?.Child(subData) ?? new DataContext(subData, null),
-                };
-                ImmutableArray<INode>.Enumerator enumerator = node.Children.GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    RenderResult result = enumerator.Current.Accept(this, innerCtx);
-                    if (!result.IsComplete)
-                        return result;
-                }
-            }
-
         }
-        return new RenderResult(true, null);
+        else
+        {
+            RenderContext innerCtx = context with
+            {
+                Data = context.Data?.Child(subData) ?? new DataContext(subData, null),
+            };
+            ImmutableArray<INode>.Enumerator enumerator = partialTemplate.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                RenderResult result = enumerator.Current.Accept(this, innerCtx);
+                if (!result.IsComplete)
+                    return result;
+            }
+        }
+
+        return RenderResult.Complete;
     }
 }

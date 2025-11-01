@@ -9,5 +9,6 @@ public enum TokenType
     InvertedSection,    // {{^section}}
     SectionClose,       // {{/section}}
     Comment,            // {{! comment}}
-    Partial             // {{> partial}}
+    PartialDefine,      // {{< partial}}
+    PartialCall,        // {{> partial}}
 }

@@ -4,12 +4,13 @@ using Robin.Nodes;
 using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
+using Robin.Contracts.Variables;
 
 namespace Robin.Nodes;
 
 public static class NodeParser
 {
-
+    private readonly static IdentifierExpressionNode That = new IdentifierExpressionNode(new AccesorPath([ThisAccessor.Instance]));
     public static bool TryParse(this ref NodeLexer lexer, [NotNullWhen(true)] out ImmutableArray<INode>? nodes)
     {
         try
@@ -35,10 +36,10 @@ public static class NodeParser
                     nodes.Add(new TextNode(lexer.GetValue(token.Value)));
                     break;
                 case TokenType.Variable:
-                    nodes.Add(ParseExpression(lexer.GetValue(token.Value), false));
+                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), false));
                     break;
                 case TokenType.UnescapedVariable:
-                    nodes.Add(ParseExpression(lexer.GetValue(token.Value), true));
+                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), true));
                     break;
                 case TokenType.SectionOpen:
                     nodes.Add(ParseSection(ref lexer, token.Value, false));
@@ -49,8 +50,11 @@ public static class NodeParser
                 case TokenType.Comment:
                     nodes.Add(new CommentNode(lexer.GetValue(token.Value)));
                     break;
-                case TokenType.Partial:
+                case TokenType.PartialDefine:
                     nodes.Add(ParsePartial(ref lexer, token.Value));
+                    break;
+                case TokenType.PartialCall:
+                    nodes.Add(ParsePartialCall(lexer.GetValue(token.Value), token.Value));
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported token type {token.Value.Type}");
@@ -59,7 +63,7 @@ public static class NodeParser
         return [.. nodes];
     }
 
-    private static VariableNode ParseExpression(string variableExpression, bool isEscaped)
+    private static VariableNode ParseVariable(string variableExpression, bool isEscaped)
     {
         ExpressionLexer exprLexer = new(variableExpression.AsSpan());
         IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
@@ -67,7 +71,22 @@ public static class NodeParser
         return new VariableNode(node, isEscaped);
     }
 
-    private static PartialNode ParsePartial(ref NodeLexer lexer, Token startToken)
+    private static PartialCallNode ParsePartialCall(string variableExpression, Token startToken)
+    {
+        int firstSpace = variableExpression.IndexOf(' ');
+        if (firstSpace == -1)
+        {
+            return new PartialCallNode(variableExpression, That);
+        }
+        else
+        {
+            string name = variableExpression[..firstSpace];
+            ExpressionLexer exprLexer = new(variableExpression[(firstSpace + 1)..].AsSpan());
+            IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
+            return new PartialCallNode(name, node);
+        }
+    }
+    private static PartialDefineNode ParsePartial(ref NodeLexer lexer, Token startToken)
     {
         string name = lexer.GetValue(startToken);
         List<INode> nodes = [];
@@ -82,10 +101,10 @@ public static class NodeParser
                     nodes.Add(new TextNode(lexer.GetValue(token.Value)));
                     break;
                 case TokenType.Variable:
-                    nodes.Add(ParseExpression(lexer.GetValue(token.Value), false));
+                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), false));
                     break;
                 case TokenType.UnescapedVariable:
-                    nodes.Add(ParseExpression(lexer.GetValue(token.Value), true));
+                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), true));
                     break;
                 case TokenType.SectionOpen:
                     nodes.Add(ParseSection(ref lexer, token.Value, false));
@@ -96,14 +115,17 @@ public static class NodeParser
                 case TokenType.Comment:
                     nodes.Add(new CommentNode(lexer.GetValue(token.Value)));
                     break;
-                case TokenType.Partial:
+                case TokenType.PartialCall:
+                    nodes.Add(ParsePartialCall(lexer.GetValue(token.Value), token.Value));
+                    break;
+                case TokenType.PartialDefine:
                     nodes.Add(ParsePartial(ref lexer, token.Value));
                     break;
                 default:
                     throw new InvalidOperationException($"Unsupported token type {token.Value.Type} in section");
             }
         }
-        PartialNode partial = new(name, [.. nodes]);
+        PartialDefineNode partial = new(name, [.. nodes]);
 
         return partial;
 
@@ -126,10 +148,10 @@ public static class NodeParser
                     nodes.Add(new TextNode(lexer.GetValue(token.Value)));
                     break;
                 case TokenType.Variable:
-                    nodes.Add(ParseExpression(lexer.GetValue(token.Value), false));
+                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), false));
                     break;
                 case TokenType.UnescapedVariable:
-                    nodes.Add(ParseExpression(lexer.GetValue(token.Value), true));
+                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), true));
                     break;
                 case TokenType.SectionOpen:
                     nodes.Add(ParseSection(ref lexer, token.Value, false));

@@ -114,8 +114,13 @@ public ref struct NodeLexer
                 pos++;
                 contentStart = pos;
                 break;
+            case '<': // Partial {{> partial}}
+                tokenType = TokenType.PartialDefine;
+                pos++;
+                contentStart = pos;
+                break;
             case '>': // Partial {{> partial}}
-                tokenType = TokenType.Partial;
+                tokenType = TokenType.PartialCall;
                 pos++;
                 contentStart = pos;
                 break;
