@@ -24,7 +24,7 @@ public static class Renderer
                 {
                     throw result.Exception;
                 }
-                break;
+                //break;
             }
         }
         return ctx.Builder.ToString();

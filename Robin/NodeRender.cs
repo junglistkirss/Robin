@@ -61,7 +61,9 @@ public class NodeRender : INodeVisitor<RenderResult, RenderContext>
                     {
                         RenderResult result = enumerator.Current.Accept(this, itemCtx);
                         if (!result.IsComplete)
+                        {
                             return result;
+                        }
                     }
                 }
             }
@@ -79,7 +81,7 @@ public class NodeRender : INodeVisitor<RenderResult, RenderContext>
                         return result;
                 }
             }
-            
+
         }
         return new RenderResult(true, null);
     }
