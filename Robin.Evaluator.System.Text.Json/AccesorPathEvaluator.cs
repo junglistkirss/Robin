@@ -19,12 +19,24 @@ internal static class AccesorPathEvaluator
                 result = res;
                 if (res.Found)
                     ctx = res.Value;
-                else if(n.Parent is not null) {
-                    // Try to resolve from parent context
-                    JsonEvaluationResult parentRes = item.Accept(JsonObjectAccesorVisitor.Instance, n.Parent);
-                    result = parentRes;
-                    if (parentRes.Found)
-                        ctx = parentRes.Value;
+                else
+                {
+                    JsonNode? parentnode = n.Parent;
+                    JsonEvaluationResult parentRes = new(true, null);
+                    while (parentnode is not null && !result.Found)
+                    {
+                        // Try to resolve from parent context
+                        parentRes = item.Accept(JsonObjectAccesorVisitor.Instance, parentnode);                        
+                        if (parentRes.Found)
+                        {
+                            result = parentRes;
+                            ctx = parentRes.Value;
+                        }
+                        else
+                        {
+                            parentnode = parentnode.Parent;
+                        }
+                    }
                 }
             }
             else

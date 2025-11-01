@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using Robin.Contracts.Context;
 using Robin.Contracts.Expressions;
@@ -7,6 +9,26 @@ namespace Robin.Evaluator.System.Text.Json;
 public sealed class JsonEvaluator : IEvaluator
 {
     public static readonly JsonEvaluator Instance = new();
+
+    public bool IsCollection(object? value, [NotNullWhen(true)] out IEnumerable? collection)
+    {
+        if (value is JsonNode node)
+        {
+            if (node.GetValueKind() == global::System.Text.Json.JsonValueKind.Array)
+            {
+                collection = node.AsArray()!;
+                return true;
+            }
+        }
+        else if (value is IEnumerable objects)
+        {
+            collection = objects;
+            return true;
+
+        }
+        collection = null;
+        return false;
+    }
 
     public bool IsTrue(object? value)
     {

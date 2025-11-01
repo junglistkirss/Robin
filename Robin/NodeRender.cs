@@ -1,5 +1,6 @@
 using Robin.Contracts.Context;
 using Robin.Contracts.Nodes;
+using System.Collections;
 using System.Collections.Immutable;
 using System.Net;
 
@@ -45,17 +46,38 @@ public class NodeRender : INodeVisitor<RenderResult, RenderContext>
 
         if ((!node.Inverted && thruly) || (node.Inverted && !thruly))
         {
-            RenderContext innerCtx = context with
+            if (context.Evaluator.IsCollection(subData, out IEnumerable? collection))
             {
-                Data = subData
-            };
-            ImmutableArray<INode>.Enumerator enumerator = node.Children.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                RenderResult result = enumerator.Current.Accept(this, innerCtx);
-                if (!result.IsComplete)
-                    return result;
+                foreach (object? item in collection)
+                {
+                    RenderContext itemCtx = context with
+                    {
+                        Data = item
+                    };
+                    ImmutableArray<INode>.Enumerator enumerator = node.Children.GetEnumerator();
+                    while (enumerator.MoveNext())
+                    {
+                        RenderResult result = enumerator.Current.Accept(this, itemCtx);
+                        if (!result.IsComplete)
+                            return result;
+                    }
+                }
             }
+            else
+            {
+                RenderContext innerCtx = context with
+                {
+                    Data = subData
+                };
+                ImmutableArray<INode>.Enumerator enumerator = node.Children.GetEnumerator();
+                while (enumerator.MoveNext())
+                {
+                    RenderResult result = enumerator.Current.Accept(this, innerCtx);
+                    if (!result.IsComplete)
+                        return result;
+                }
+            }
+            
         }
         return new RenderResult(true, null);
     }

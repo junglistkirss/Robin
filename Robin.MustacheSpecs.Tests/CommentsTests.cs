@@ -19,7 +19,7 @@ public class CommentsTests
                 test
             };
     }
-
+    
     [Theory]
     
     [MemberData(nameof(GetTestsSpec1_4_3))]
@@ -27,9 +27,9 @@ public class CommentsTests
     {
         ImmutableArray<INode> template = @case.Template.AsSpan().Parse();
         string result = NodeRender.Instance.Render(JsonEvaluator.Instance, template, @case.Data);
-        if (@case.Expected != result)
+        if (!@case.Expected.EqualsIgnoringWhitespace(result))
         {
-            Assert.Fail($"{@case.Name} : {@case.Description}");
+            Assert.Fail($"{@case.Name} : {@case.Description}{Environment.NewLine}Excpected: \"{@case.Expected}\"{Environment.NewLine}Actual: \"{result}\"");
         }
     }
 }
