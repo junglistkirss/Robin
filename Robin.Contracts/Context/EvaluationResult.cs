@@ -1,3 +1,10 @@
 namespace Robin.Contracts.Context;
 
-public record EvaluationResult(bool Found, object? Value);
+public enum ResoltionState
+{
+    Found,
+    NotFound,
+    Partial,
+}
+
+public record EvaluationResult(ResoltionState Status, object? Value);

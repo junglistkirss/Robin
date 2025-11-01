@@ -73,11 +73,11 @@ public sealed class JsonEvaluator : IEvaluator
 
         EvaluationResult result = expression.Accept(NodeInstance, data);
 
-        if (!result.Found && data.Previsous is not null)
-            result = expression.Accept(NodeInstance, data.Previsous);
+        if (result.Status == ResoltionState.NotFound && data.Previous is not null)
+            result = expression.Accept(NodeInstance, data.Previous);
 
         value = result.Value;
-        return result.Found;
+        return result.Status == ResoltionState.Found;
     }
 }
 

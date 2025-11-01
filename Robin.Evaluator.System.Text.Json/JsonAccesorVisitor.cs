@@ -12,63 +12,55 @@ internal sealed class JsonAccesorVisitor : IAccessorVisitor<EvaluationResult, Da
     {
         if (args.Data is JsonArray json)
         {
-            return new(true, json[accessor.Index]);
+            return new(ResoltionState.Found, json[accessor.Index]);
         }
-        return new(false, null);
+        return new(ResoltionState.NotFound, null);
     }
 
     public EvaluationResult VisitKey(KeyAccessor accessor, DataContext args)
     {
         EvaluationResult resolvedKey = accessor.Key.Accept(this, args);
-        if (!resolvedKey.Found && args.Previsous is not null)
-            resolvedKey = accessor.Key.Accept(this, args.Previsous);
-        if (resolvedKey.Found)
+
+        if (resolvedKey.Status == ResoltionState.NotFound && args.Previous is not null)
+            resolvedKey = accessor.Key.Accept(this, args.Previous);
+        
+        if (resolvedKey.Status == ResoltionState.Found)
         {
             string key = resolvedKey.Value?.ToString() ?? string.Empty;
 
             if (args.Data is JsonObject json && json.TryGetPropertyValue(key, out JsonNode? keyNode))
             {
-                return new(true, keyNode);
+                return new(ResoltionState.Found, keyNode);
             }
-            else
+            else if(args.Previous?.Data is JsonObject prevJson && prevJson.TryGetPropertyValue(key, out JsonNode? prevKeyNode))
             {
-                DataContext? prev = args.Previsous;
-                EvaluationResult resolved = new(false, null);
-                while (!resolved.Found && prev is not null)
-                {
-                    if (prev.Data is JsonObject jsonPrev && jsonPrev.TryGetPropertyValue(key, out JsonNode? keyNodePrev))
-                    {
-                        resolved = new(true, keyNodePrev);
-                    }
-                    else
-                    {
-                        prev = prev.Previsous;
-                    }
-                }
+                return new(ResoltionState.Found, prevKeyNode);
             }
         }
-        return new(false, null);
+        return new(ResoltionState.NotFound, null);
     }
 
     public EvaluationResult VisitMember(MemberAccessor accessor, DataContext args)
     {
         if (args.Data is JsonObject json && json.TryGetPropertyValue(accessor.MemberName, out JsonNode? node))
-            return new(true, node);
-        if (args.Previsous?.Data is JsonObject jsonPrev && jsonPrev.TryGetPropertyValue(accessor.MemberName, out JsonNode? nodePrev))
-            return new(true, nodePrev);
-        return new(false, null);
+            return new(ResoltionState.Found, node);
+
+        if (args.Previous?.Data is JsonObject jsonPrev && jsonPrev.TryGetPropertyValue(accessor.MemberName, out JsonNode? nodePrev))
+            return new(ResoltionState.Found, nodePrev);
+
+        return new(ResoltionState.NotFound, null);
     }
 
     public EvaluationResult VisitParent(ParentAccessor accessor, DataContext args)
     {
-        if (args.Previsous?.Data is not null)
-            return new(true, args.Previsous.Data);
-        return new(false, null);
+        if (args.Previous?.Data is not null)
+            return new(ResoltionState.Found, args.Previous.Data);
+        return new(ResoltionState.NotFound, null);
     }
 
     public EvaluationResult VisitThis(ThisAccessor accessor, DataContext args)
     {
-        return new(true, args.Data);
+        return new(ResoltionState.Found, args.Data);
     }
 }
 

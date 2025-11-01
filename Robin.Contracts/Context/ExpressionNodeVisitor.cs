@@ -55,9 +55,9 @@ public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, Dat
     public EvaluationResult VisitIdenitifer(IdentifierExpressionNode node, DataContext args)
     {
         EvaluationResult result = node.Path.Accept(accessorVisitor, args);
-        if(!result.Found && args.Previsous is not null)
+        if(result.Status == ResoltionState.NotFound && args.Previous is not null)
         {
-            EvaluationResult prevResult = node.Path.Accept(accessorVisitor, args.Previsous);
+            EvaluationResult prevResult = node.Path.Accept(accessorVisitor, args.Previous);
             result = prevResult;
         }
         return result;
@@ -65,12 +65,12 @@ public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, Dat
 
     public EvaluationResult VisitLiteral(LiteralExpressionNode node, DataContext _)
     {
-        return new EvaluationResult(true, node.Constant);
+        return new EvaluationResult(ResoltionState.Found, node.Constant);
     }
 
     public EvaluationResult VisitNumber(NumberExpressionNode node, DataContext _)
     {
-        return new EvaluationResult(true, node.Constant);
+        return new EvaluationResult(ResoltionState.Found, node.Constant);
     }
 
     public EvaluationResult VisitUnaryOperation(UnaryOperationExpressionNode node, DataContext args)

@@ -22,27 +22,30 @@ public readonly struct AccesorPath(ImmutableArray<IAccessor> segments)
 
     public EvaluationResult Accept(IAccessorVisitor<EvaluationResult, DataContext> visitor, DataContext args, bool usePreviousFallback = true)
     {
-        EvaluationResult result = new(true, null);
-        int i = 0;
+        EvaluationResult result = new(ResoltionState.NotFound, null);
         DataContext ctx = args;
-        while (result.Found && i < Segments.Length)
+        ImmutableArray<IAccessor>.Enumerator enumerator = Segments.GetEnumerator();
+        if (enumerator.MoveNext())
         {
-            IAccessor item = Segments[i];
-            EvaluationResult res = item.Accept(visitor, ctx);
-            if (res.Found)
+            result = enumerator.Current.Accept(visitor, ctx);
+            while (result.Status == ResoltionState.Found && enumerator.MoveNext())
             {
-                result = res;
-                ctx = ctx.Child(res.Value);
+                ctx = ctx.Child(result.Value);
+                IAccessor item = enumerator.Current;
+                EvaluationResult res = item.Accept(visitor, ctx);
+                if (res.Status == ResoltionState.Found)
+                {
+                    result = res;
+                }
+                else
+                {
+                    result = result with { Status = ResoltionState.Partial };
+                }
             }
-            else
-            {
-                result = result with { Found = false };
-            }
-            i++;
         }
-        if(usePreviousFallback && !result.Found && args.Previsous is not null)
+        if (usePreviousFallback && result.Status == ResoltionState.NotFound && args.Previous is not null)
         {
-            return Accept(visitor, args.Previsous, usePreviousFallback);
+            return Accept(visitor, args.Previous, usePreviousFallback);
         }
         return result;
     }
