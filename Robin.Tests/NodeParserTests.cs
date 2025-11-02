@@ -1,5 +1,5 @@
-using Robin.Expressions;
-using Robin.Nodes;
+using Robin.Contracts.Expressions;
+using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
 
 namespace Robin.tests;
@@ -109,10 +109,10 @@ public class NodeParserTests
     [Fact]
     public void EmptyPartial()
     {
-        ReadOnlySpan<char> source = "{{>partial}}{{/partial}}".AsSpan();
+        ReadOnlySpan<char> source = "{{<partial}}{{/partial}}".AsSpan();
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
-        PartialNode partial = Assert.IsType<PartialNode>(node);
+        PartialDefineNode partial = Assert.IsType<PartialDefineNode>(node);
         Assert.Equal("partial", partial.Name);
         Assert.Empty(partial.Children);
     }
@@ -120,14 +120,39 @@ public class NodeParserTests
     [Fact]
     public void NotEmptyPartial()
     {
-        ReadOnlySpan<char> source = "{{>block}}content{{/block}}".AsSpan();
+        ReadOnlySpan<char> source = "{{<block}}content{{/block}}".AsSpan();
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
-        PartialNode partial = Assert.IsType<PartialNode>(node);
+        PartialDefineNode partial = Assert.IsType<PartialDefineNode>(node);
         Assert.Equal("block", partial.Name);
         INode content = Assert.Single(partial.Children);
         TextNode contentText = Assert.IsType<TextNode>(content);
         Assert.Equal("content", contentText.Text);
     }
 
+    [Fact]
+    public void CallPartialThis()
+    {
+        ReadOnlySpan<char> source = "{{>partial}}".AsSpan();
+        ImmutableArray<INode> nodes = source.Parse();
+        INode node = Assert.Single(nodes);
+        PartialCallNode partial = Assert.IsType<PartialCallNode>(node);
+        Assert.Equal("partial", partial.PartialName);
+        Assert.NotNull(partial.Expression);
+        IdentifierExpressionNode block = Assert.IsType<IdentifierExpressionNode>(partial.Expression);
+        Assert.Equal(".", block.Path);
+    }
+
+    [Fact]
+    public void CallPartialVariable()
+    {
+        ReadOnlySpan<char> source = "{{> partial test.prop }}".AsSpan();
+        ImmutableArray<INode> nodes = source.Parse();
+        INode node = Assert.Single(nodes);
+        PartialCallNode partial = Assert.IsType<PartialCallNode>(node);
+        Assert.Equal("partial", partial.PartialName);
+        Assert.NotNull(partial.Expression);
+        IdentifierExpressionNode block = Assert.IsType<IdentifierExpressionNode>(partial.Expression);
+        Assert.Equal("test.prop", block.Path);
+    }
 }

@@ -1,4 +1,5 @@
-using Robin.Variables;
+using Robin.Contracts.Expressions;
+using Robin.Contracts.Variables;
 using System.Globalization;
 
 namespace Robin.Expressions;
@@ -33,105 +34,7 @@ public static class ExpressionParser
         return result;
     }
 
-    // Niveau 1 : Addition et Soustraction
     private static IExpressionNode ParseExpression(ref ExpressionLexer lexer, ExpressionToken currentToken)
-    {
-        IExpressionNode left = ParseTerm(ref lexer, currentToken);
-
-        while (lexer.TryPeekNextToken(out ExpressionToken? nextToken, out int endPosition))
-        {
-            if (nextToken.Value.Type != ExpressionType.Operator)
-                break;
-
-            string op = lexer.GetValue(nextToken.Value);
-            if (op != "+" && op != "-")
-                break;
-
-            lexer.AdvanceTo(endPosition);
-
-            if (!lexer.TryGetNextToken(out ExpressionToken? rightToken))
-                throw new Exception("Opérande attendu après opérateur");
-
-            IExpressionNode right = ParseTerm(ref lexer, rightToken.Value);
-            left = new BinaryOperationExpressionNode(left, op, right);
-        }
-
-        return left;
-    }
-
-    // Niveau 2 : Multiplication et Division
-    private static IExpressionNode ParseTerm(ref ExpressionLexer lexer, ExpressionToken currentToken)
-    {
-        IExpressionNode left = ParsePower(ref lexer, currentToken);
-
-        while (lexer.TryPeekNextToken(out ExpressionToken? nextToken, out int endPosition))
-        {
-            if (nextToken.Value.Type != ExpressionType.Operator)
-                break;
-
-            string op = lexer.GetValue(nextToken.Value);
-            if (op != "*" && op != "/")
-                break;
-
-            lexer.AdvanceTo(endPosition);
-
-            if (!lexer.TryGetNextToken(out ExpressionToken? rightToken))
-                throw new Exception("Opérande attendu après opérateur");
-
-            IExpressionNode right = ParsePower(ref lexer, rightToken.Value);
-            left = new BinaryOperationExpressionNode(left, op, right);
-        }
-
-        return left;
-    }
-
-    // Niveau 3 : Puissance (associativité à droite)
-    private static IExpressionNode ParsePower(ref ExpressionLexer lexer, ExpressionToken currentToken)
-    {
-        IExpressionNode left = ParseUnary(ref lexer, currentToken);
-
-        if (lexer.TryPeekNextToken(out ExpressionToken? nextToken, out int endPosition))
-        {
-            if (nextToken.Value.Type == ExpressionType.Operator)
-            {
-                string op = lexer.GetValue(nextToken.Value);
-                if (op == "^" || op == "%")
-                {
-                    lexer.AdvanceTo(endPosition);
-
-                    if (!lexer.TryGetNextToken(out ExpressionToken? rightToken))
-                        throw new Exception("Opérande attendu après opérateur");
-
-                    IExpressionNode right = ParsePower(ref lexer, rightToken.Value);
-                    return new BinaryOperationExpressionNode(left, op, right);
-                }
-            }
-        }
-
-        return left;
-    }
-
-    // Niveau 4 : Opérateurs unaires
-    private static IExpressionNode ParseUnary(ref ExpressionLexer lexer, ExpressionToken currentToken)
-    {
-        if (currentToken.Type == ExpressionType.Operator)
-        {
-            string op = lexer.GetValue(currentToken);
-            if (op == "+" || op == "-")
-            {
-                if (!lexer.TryGetNextToken(out ExpressionToken? operandToken))
-                    throw new Exception("Opérande attendu après opérateur unaire");
-
-                return new UnaryOperationExpressionNode(op, ParseUnary(ref lexer, operandToken.Value));
-            }
-        }
-
-        return ParsePrimary(ref lexer, currentToken);
-    }
-
-    // Niveau 5 : Éléments primaires
-    // Niveau 5 : Éléments primaires
-    private static IExpressionNode ParsePrimary(ref ExpressionLexer lexer, ExpressionToken currentToken)
     {
         // Parenthèses
         if (currentToken.Type == ExpressionType.LeftParenthesis)
@@ -233,7 +136,7 @@ public static class ExpressionParser
             }
 
             // Sinon, c'est une variable
-            AccesorPath chainPath = name.Parse();
+            VariablePath chainPath = name.Parse();
             return new IdentifierExpressionNode(chainPath);
         }
 

@@ -1,31 +1,32 @@
 using Robin.Nodes;
 
 namespace Robin.tests;
+
 public class NodeLexerTests
 {
     [Fact]
     public void TestTokenTypes()
     {
         string template = @"Hello {{ name }}!
-{{#items}}
+{{#block}}
   - {{title}}: {{& description}}
-{{^items}}Missing item{{/items}}
-{{! This is a comment }}
-{{> footer}}";
+{{/block}}
+{{^revert}}Missing item{{/revert}}
+{{! This is a comment }}";
         ReadOnlySpan<char> source = template.AsSpan();
         Token[] tokens = Tokenizer.Tokenize(source);
         Assert.NotEmpty(tokens);
 
+        Token[] br = [.. tokens.Where(x => x.Type == TokenType.LineBreak)];
+        Assert.Equal(5, br.Length);
+
         Token[] txt = [.. tokens.Where(x => x.Type == TokenType.Text)];
-        Assert.Equal(8, txt.Length);
+        Assert.Equal(5, txt.Length);
         Assert.Equal("Hello ", txt[0].GetValue(source));
-        Assert.Equal($"!{Environment.NewLine}", txt[1].GetValue(source));
-        Assert.Equal($"{Environment.NewLine}  - ", txt[2].GetValue(source));
+        Assert.Equal($"!", txt[1].GetValue(source));
+        Assert.Equal($"  - ", txt[2].GetValue(source));
         Assert.Equal(": ", txt[3].GetValue(source));
-        Assert.Equal(Environment.NewLine, txt[4].GetValue(source));
-        Assert.Equal("Missing item", txt[5].GetValue(source));
-        Assert.Equal(Environment.NewLine, txt[6].GetValue(source));
-        Assert.Equal(Environment.NewLine, txt[7].GetValue(source));
+        Assert.Equal("Missing item", txt[4].GetValue(source));
 
         Token[] vars = [.. tokens.Where(x => x.Type == TokenType.Variable)];
         Assert.Equal(2, vars.Length);
@@ -37,19 +38,18 @@ public class NodeLexerTests
         Assert.Equal("description", s.GetValue(source));
 
         Token secOpen = Assert.Single(tokens, x => x.Type == TokenType.SectionOpen);
-        Assert.Equal("items", secOpen.GetValue(source));
+        Assert.Equal("block", secOpen.GetValue(source));
 
         Token invSecOpen = Assert.Single(tokens, x => x.Type == TokenType.InvertedSection);
-        Assert.Equal("items", invSecOpen.GetValue(source));
+        Assert.Equal("revert", invSecOpen.GetValue(source));
 
-        Token secClose = Assert.Single(tokens, x => x.Type == TokenType.SectionClose);
-        Assert.Equal("items", secClose.GetValue(source));
+        Token[] closes = [.. tokens.Where(x => x.Type == TokenType.SectionClose)];
+        Assert.Equal(2, closes.Length);
+        Assert.Equal("block", closes[0].GetValue(source));
+        Assert.Equal("revert", closes[1].GetValue(source));
 
         Token com = Assert.Single(tokens, x => x.Type == TokenType.Comment);
         Assert.Equal("This is a comment", com.GetValue(source));
-
-        Token part = Assert.Single(tokens, x => x.Type == TokenType.Partial);
-        Assert.Equal("footer", part.GetValue(source));
     }
 
     [Theory]

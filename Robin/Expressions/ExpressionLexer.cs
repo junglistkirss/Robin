@@ -48,95 +48,27 @@ public ref struct ExpressionLexer
 
         char current = _source[pos];
 
-        if (current == '(')
+        if (current is '(')
         {
             token = new ExpressionToken(ExpressionType.LeftParenthesis, pos, 1);
             pos++;
             return true;
         }
-        else if (current == ')')
+        else if (current is ')')
         {
             token = new ExpressionToken(ExpressionType.RightParenthesis, pos, 1);
             pos++;
             return true;
         }
-        else if (current == '+' || current == '-' || current == '/' || current == '*' || current == '%' || current == '^')
-        {
-            token = new ExpressionToken(ExpressionType.Operator, pos, 1);
-            pos++;
-            return true;
-        }
-        else if (current == '>' || current == '<')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] == '=')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 1);
-            return true;
-        }
-        else if (current == '=')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] == '=')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                throw new InvalidOperationException($"Invalid assign '=', assignation are not supported");
-            return true;
-        }
-        else if (current == '&')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] == '&')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 1);
-            return true;
-        }
-        else if (current == '|')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] == '|')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 1);
-            return true;
-        }
         else
         {
             int start = pos;
-            if (_source[pos] == '"')
+            if (_source[pos] is '"' or '\'' or '`')
             {
+                char quote = _source[pos];
                 pos++;
                 start++;
-                while (pos < _source.Length && _source[pos] != '"')
-                {
-                    pos++;
-                }
-                token = new ExpressionToken(ExpressionType.Literal, start, pos - start);
-                pos++;
-            }
-            else if (_source[pos] == '\'')
-            {
-                pos++;
-                start++;
-                while (pos < _source.Length && _source[pos] != '\'')
+                while (pos < _source.Length && _source[pos] != quote)
                 {
                     pos++;
                 }
@@ -146,9 +78,9 @@ public ref struct ExpressionLexer
             else
             {
                 bool isOnlyDigits = char.IsDigit(_source[pos]);
-                while (pos < _source.Length && (char.IsLetterOrDigit(_source[pos]) || _source[pos] == '_' || _source[pos] == '.' || _source[pos] == '[' || _source[pos] == ']' || _source[pos] == '.' || _source[pos] == '~'))
+                while (pos < _source.Length && (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.' or '~'))
                 {
-                    isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]) || _source[pos] == '.');
+                    isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]) || _source[pos] is '.');
                     pos++;
                 }
                 if (isOnlyDigits)
