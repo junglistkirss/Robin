@@ -121,22 +121,12 @@ public ref struct ExpressionLexer
         else
         {
             int start = pos;
-            if (_source[pos] is '"')
+            if (_source[pos] is '"' or '\'' or '`')
             {
+                char quote = _source[pos];
                 pos++;
                 start++;
-                while (pos < _source.Length && _source[pos] is not '"')
-                {
-                    pos++;
-                }
-                token = new ExpressionToken(ExpressionType.Literal, start, pos - start);
-                pos++;
-            }
-            else if (_source[pos] is '\'')
-            {
-                pos++;
-                start++;
-                while (pos < _source.Length && _source[pos] is not '\'')
+                while (pos < _source.Length && _source[pos] != quote)
                 {
                     pos++;
                 }
@@ -148,7 +138,7 @@ public ref struct ExpressionLexer
                 bool isOnlyDigits = char.IsDigit(_source[pos]);
                 while (pos < _source.Length && (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.' or '~'))
                 {
-                    isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]) || _source[pos] == '.');
+                    isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]) || _source[pos] is '.');
                     pos++;
                 }
                 if (isOnlyDigits)

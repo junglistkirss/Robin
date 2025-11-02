@@ -53,6 +53,20 @@ public class ExpressionLexerTests
     }
 
     [Theory]
+    [InlineData("`12`")]
+    [InlineData("`12 `")]
+    [InlineData("` 12`")]
+    [InlineData("` 12 `")]
+    public void StringConstantAccentQuote(string dat)
+    {
+        ReadOnlySpan<char> source = dat.AsSpan();
+        ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
+        Assert.NotEmpty(tokens);
+        ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Literal);
+        Assert.Equal(dat.Trim('`'), secOpen.GetValue(source));
+    }
+
+    [Theory]
     [InlineData("'12'")]
     [InlineData("'12 '")]
     [InlineData("' 12'")]
@@ -65,6 +79,7 @@ public class ExpressionLexerTests
         ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Literal);
         Assert.Equal(dat.Trim('\''), secOpen.GetValue(source));
     }
+
     [Theory]
     [InlineData("\"12\"")]
     [InlineData("\"12 \"")]
