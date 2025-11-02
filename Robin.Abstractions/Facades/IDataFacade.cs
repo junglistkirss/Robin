@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Robin.Abstractions;
+namespace Robin.Abstractions.Facades;
 
 public interface IDataFacade
 {

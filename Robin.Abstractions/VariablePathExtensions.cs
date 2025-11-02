@@ -1,3 +1,4 @@
+using Robin.Abstractions.Facades;
 using Robin.Contracts.Variables;
 using System.Collections.Immutable;
 
@@ -7,7 +8,7 @@ public static class VariablePathExtensions
 {
     public static EvaluationResult Evaluate(this VariablePath path, IAccessorVisitor<EvaluationResult, DataContext> visitor, DataContext args, bool useParentFallback = true)
     {
-        EvaluationResult result = new(ResoltionState.NotFound, Facades.Null);
+        EvaluationResult result = new(ResoltionState.NotFound, DataFacade.Null);
         DataContext ctx = args;
         ImmutableArray<IAccessor>.Enumerator enumerator = path.Segments.GetEnumerator();
         if (enumerator.MoveNext())

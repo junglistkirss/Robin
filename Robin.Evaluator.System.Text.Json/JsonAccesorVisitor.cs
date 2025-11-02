@@ -1,4 +1,5 @@
 using Robin.Abstractions;
+using Robin.Abstractions.Facades;
 using Robin.Contracts.Variables;
 using System.Text.Json.Nodes;
 
@@ -14,7 +15,7 @@ internal sealed class JsonAccesorVisitor : IAccessorVisitor<EvaluationResult, Da
         {
             return new(ResoltionState.Found, json[accessor.Index].AsJsonFacade());
         }
-        return new(ResoltionState.NotFound, Facades.Null);
+        return new(ResoltionState.NotFound, DataFacade.Null);
     }
 
     public EvaluationResult VisitKey(KeyAccessor accessor, DataContext context)
@@ -37,7 +38,7 @@ internal sealed class JsonAccesorVisitor : IAccessorVisitor<EvaluationResult, Da
                 return new(ResoltionState.Found, prevKeyNode.AsJsonFacade());
             }
         }
-        return new(ResoltionState.NotFound, Facades.Null);
+        return new(ResoltionState.NotFound, DataFacade.Null);
     }
 
     public EvaluationResult VisitMember(MemberAccessor accessor, DataContext context)
@@ -48,7 +49,7 @@ internal sealed class JsonAccesorVisitor : IAccessorVisitor<EvaluationResult, Da
         if (context.Parent?.Data is JsonObject jsonPrev && jsonPrev.TryGetPropertyValue(accessor.MemberName, out JsonNode? nodePrev))
             return new(ResoltionState.Found, nodePrev.AsJsonFacade());
 
-        return new(ResoltionState.NotFound, Facades.Null);
+        return new(ResoltionState.NotFound, DataFacade.Null);
     }
 
     public EvaluationResult VisitParent(ParentAccessor accessor, DataContext context)

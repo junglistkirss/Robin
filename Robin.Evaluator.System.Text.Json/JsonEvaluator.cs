@@ -1,4 +1,5 @@
 using Robin.Abstractions;
+using Robin.Abstractions.Facades;
 using Robin.Contracts.Expressions;
 
 namespace Robin.Evaluator.System.Text.Json;
@@ -11,7 +12,7 @@ public sealed class JsonEvaluator : IEvaluator
     public IDataFacade Resolve(IExpressionNode expression, DataContext? data)
     {
         if (data is null)
-            return Facades.Null;
+            return DataFacade.Null;
 
         EvaluationResult result = expression.Accept(NodeInstance, data);
 
@@ -21,7 +22,7 @@ public sealed class JsonEvaluator : IEvaluator
         if (result.Status == ResoltionState.Found)
             return result.Value;
 
-        return Facades.Null;
+        return DataFacade.Null;
     }
 }
 
