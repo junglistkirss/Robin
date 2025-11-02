@@ -60,64 +60,6 @@ public ref struct ExpressionLexer
             pos++;
             return true;
         }
-        else if (current is '+' or '-' or '/' or '*' or '%' or '^')
-        {
-            token = new ExpressionToken(ExpressionType.Operator, pos, 1);
-            pos++;
-            return true;
-        }
-        else if (current is '>' or '<')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] is '=')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 1);
-            return true;
-        }
-        else if (current is '=')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] is '=')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                throw new InvalidOperationException($"Invalid assign '=', assignation are not supported");
-            return true;
-        }
-        else if (current is '&')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] is '&')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 1);
-            return true;
-        }
-        else if (current is '|')
-        {
-            int operatorStart = pos;
-            pos++;
-            if (_source[pos] is '|')
-            {
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 2);
-                pos++;
-            }
-            else
-                token = new ExpressionToken(ExpressionType.Operator, operatorStart, 1);
-            return true;
-        }
         else
         {
             int start = pos;
