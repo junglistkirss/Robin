@@ -1,4 +1,5 @@
 using Robin.Abstractions.Facades;
+using Robin.Abstractions.Helpers;
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
 
@@ -8,7 +9,25 @@ public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, Dat
 {
     public EvaluationResult VisitFunctionCall(FunctionCallNode node, DataContext args)
     {
-        throw new NotImplementedException();
+        if(Helper.TryGetFunction(node.FunctionName, out Helper.Function? function) && function is not null)
+        {
+            object?[] evaluatedArgs = new object?[node.Arguments.Length];
+            for (int i = 0; i < node.Arguments.Length; i++)
+            {
+                EvaluationResult evalResult = node.Arguments[i].Accept(this, args);
+                if (evalResult.Status == ResoltionState.Found)
+                {
+                    evaluatedArgs[i] = evalResult.Value.RawValue;
+                }
+                else
+                {
+                    evaluatedArgs[i] = null;
+                }
+            }
+            object? functionResult = function(evaluatedArgs);
+            return new EvaluationResult(ResoltionState.Found, functionResult.AsFacade());
+        })
+        return new EvaluationResult(ResoltionState.NotFound, DataFacade.Null);
     }
 
     public EvaluationResult VisitIdenitifer(IdentifierExpressionNode node, DataContext args)
