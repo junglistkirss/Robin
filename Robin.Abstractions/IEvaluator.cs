@@ -3,12 +3,11 @@ using Robin.Contracts.Expressions;
 
 namespace Robin.Abstractions;
 
+public delegate object? Helper(params object?[]);
 
 public interface IEvaluator
 {
     IDataFacade Resolve(IExpressionNode expression, DataContext? data);
-    //bool IsCollection(object? value, [NotNullWhen(true)] out IEnumerable? collection);
-    //bool IsTrue(object? value);
 }
 
 
