@@ -78,9 +78,9 @@ public ref struct ExpressionLexer
             else
             {
                 bool isOnlyDigits = char.IsDigit(_source[pos]);
-                while (pos < _source.Length && (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.' or '~'))
+                while (pos < _source.Length && (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.'))
                 {
-                    isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]) || _source[pos] is '.');
+                    isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]));
                     pos++;
                 }
                 if (isOnlyDigits)

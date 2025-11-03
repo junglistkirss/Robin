@@ -1,20 +1,38 @@
+using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
+using Robin.Evaluator.System.Text.Json;
+using System;
 using System.Text.Json.Nodes;
 
 namespace Robin.Evaluator.System.Text.Json.tests;
 
 
+public class ServiceEvaluatorJsonTests
+{
+    public IServiceProvider ServiceProvider { get; private set; } = default!;
+
+    public ServiceEvaluatorJsonTests()
+    {
+        DataFacade.RegisterFacadeFactory<JsonNode>(JsonFacades.FromJsonNode);
+        DataFacade.RegisterFacadeFactory<JsonArray>(JsonFacades.FromJsonNode);
+        DataFacade.RegisterFacadeFactory<JsonObject>(JsonFacades.FromJsonNode);
+        ServiceCollection services = [];
+        services.AddServiceEvaluator();
+        ServiceProvider = services.BuildServiceProvider(new ServiceProviderOptions
+        {
+            ValidateOnBuild = true,
+            ValidateScopes = true,
+        });
+    }
+
+
+}
+
 public class JsonEvaluatorTests
 {
-    //public JsonEvaluatorTests()
-    //{
-    //    Facades.RegisterFacadeFactory<JsonNode>(JsonFacades.FromJsonNode);
-    //    Facades.RegisterFacadeFactory<JsonArray>(JsonFacades.FromJsonNode);
-    //    Facades.RegisterFacadeFactory<JsonObject>(JsonFacades.FromJsonNode);
-    //}
 
     [Fact]
     public void ResolveThis()
@@ -35,12 +53,12 @@ public class JsonEvaluatorTests
     public void ResolveNumberConstant()
     {
         JsonObject json = [];
-        IExpressionNode expression = new NumberExpressionNode(0.5);
+        IExpressionNode expression = new NumberExpressionNode(42);
         DataContext context = new(json, null);
         IDataFacade found = JsonEvaluator.Instance.Resolve(expression, context);
         Assert.NotNull(found);
         Assert.True(found.IsTrue());
-        Assert.Equal(0.5, found!.RawValue);
+        Assert.Equal(42, found!.RawValue);
     }
 
     [Fact]
@@ -102,59 +120,5 @@ public class JsonEvaluatorTests
         Assert.NotNull(found);
         Assert.True(found.IsTrue());
         Assert.Equal("inner test", found.RawValue?.ToString());
-    }
-    [Fact]
-    public void ResolveKeyMemberPath()
-    {
-        JsonObject json = new()
-        {
-            ["key"] = "inner",
-            ["prop"] = new JsonObject()
-            {
-                ["inner"] = "inner prop test",
-            }
-        };
-        IExpressionNode expression = new IdentifierExpressionNode(AccessPathParser.Parse("prop[key]"));
-        DataContext context = new(json, null);
-        IDataFacade found = JsonEvaluator.Instance.Resolve(expression, context);
-        Assert.NotNull(found);
-        Assert.True(found.IsTrue());
-        Assert.Equal("inner prop test", found.RawValue?.ToString());
-    }
-
-    [Fact]
-    public void ResolveKeyMemberPathParentStack()
-    {
-        JsonObject json = new()
-        {
-            ["key"] = "inner",
-            ["prop"] = new JsonObject()
-            {
-                ["prop"] = new JsonObject()
-                {
-                    ["inner"] = "inner prop test",
-                }
-            }
-        };
-        IExpressionNode expression = new IdentifierExpressionNode(AccessPathParser.Parse("prop.prop[key]"));
-        DataContext context = new(json, null);
-        IDataFacade found = JsonEvaluator.Instance.Resolve(expression, context);
-        Assert.NotNull(found);
-        Assert.True(found.IsTrue());
-        Assert.Equal("inner prop test", found.RawValue?.ToString()!);
-    }
-
-
-    [Fact]
-    public void ResolveParent()
-    {
-        JsonObject jsonParent = [];
-        JsonObject json = [];
-        IExpressionNode that = new IdentifierExpressionNode(AccessPathParser.Parse("~"));
-        DataContext context = new(json, new(jsonParent, null));
-        IDataFacade found = JsonEvaluator.Instance.Resolve(that, context);
-        Assert.NotNull(found);
-        Assert.True(found.IsTrue());
-        Assert.Same(jsonParent, found.RawValue);
     }
 }

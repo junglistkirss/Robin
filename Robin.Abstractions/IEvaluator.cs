@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Facades;
@@ -13,84 +14,69 @@ public interface IEvaluator
 }
 public interface ITypedAccessor
 {
-    EvaluationResult GetProperty(object? source, string name);
+    bool TryGetProperty(object? source, string name, [MaybeNullWhen(false)] out object? value);
 }
 public interface ITypedAccessor<T> : ITypedAccessor
 {
-    EvaluationResult ITypedAccessor.GetProperty(object? source, string name)
+    bool ITypedAccessor.TryGetProperty(object? source, string name, [MaybeNullWhen(false)] out object? value)
     {
         if (source is T typed)
-            return GetProperty(typed, name);
-        return new EvaluationResult(ResoltionState.NotFound, DataFacade.Null);
+            return TryGetProperty(typed, name, out value);
+        value = null;
+        return false;
     }
-    EvaluationResult GetProperty(T? source, string name);
+    bool TryGetProperty(T? source, string name, [MaybeNullWhen(false)] out object? value);
 }
-/*
-internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : IAccessorVisitor<EvaluationResult, DataContext>
+
+public delegate bool TryGetMemberValue<T>(T? source, string member, [MaybeNullWhen(false)] out object? value);
+
+internal sealed class TypedAccessor<T>(TryGetMemberValue<T> tryGetMemberValue) : ITypedAccessor<T>
 {
-    public EvaluationResult VisitIndex(IndexAccessor accessor, DataContext context)
+    public bool TryGetProperty(T? source, string name, [MaybeNullWhen(false)] out object? value)
     {
-        if (context.Data is IEnumerable<KeyAccessor> enumerable)
+        return tryGetMemberValue(source, name, out value);
+    }
+}
+
+internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : IAccessorVisitor<EvaluationResult, object?>
+{
+    private bool TryGetAccessor(object? data, [NotNullWhen(true)] out ITypedAccessor? accessor)
+    {
+        if (data is null)
+        {
+            accessor = null;
+            return false;
+        }
+        Type type = typeof(ITypedAccessor<>).MakeGenericType(data.GetType());
+        accessor = (ITypedAccessor?)serviceProvider.GetService(type);
+        return accessor is not null;
+    }
+
+    public EvaluationResult VisitIndex(IndexAccessor accessor, object? args)
+    {
+        if (args is IList enumerable)
         {
             return new(ResoltionState.Found, enumerable[accessor.Index].AsFacade());
         }
         return new(ResoltionState.NotFound, DataFacade.Null);
     }
 
-    public EvaluationResult VisitKey(KeyAccessor accessor, DataContext context)
+    public EvaluationResult VisitMember(MemberAccessor accessor, object? args)
     {
-        EvaluationResult resolvedKey = accessor.Key.Evaluate(this, context);
+        if (args is not null && TryGetAccessor(args, out ITypedAccessor? typedAccessor) && typedAccessor.TryGetProperty(args, accessor.MemberName, out object? value))
 
-        if (resolvedKey.Status == ResoltionState.NotFound && context.Parent is not null)
-            resolvedKey = accessor.Key.Evaluate(this, context.Parent);
+            return new EvaluationResult(ResoltionState.Found, value.AsFacade());
 
-        if (resolvedKey.Status == ResoltionState.Found)
-        {
-            string key = resolvedKey.Value.RawValue?.ToString() ?? string.Empty;
-
-            if (context.Data is not null)
-            {
-                return new(ResoltionState.Found, keyNode.AsJsonFacade());
-            }
-            else if (context.Parent?.Data is not null && prevJson.TryGetPropertyValue(key, out JsonNode? prevKeyNode))
-            {
-                return new(ResoltionState.Found, prevKeyNode.AsJsonFacade());
-            }
-        }
-        return new(ResoltionState.NotFound, DataFacade.Null);
-    }
-
-    public EvaluationResult VisitMember(MemberAccessor accessor, DataContext context)
-    {
-        if (context.Data is not null)
-        {
-            Type type = typeof(ITypedAccessor<>).MakeGenericType(context.Data.GetType());
-            ITypedAccessor typeAccessor = (ITypedAccessor)serviceProvider.GetRequiredService(type);
-            return typeAccessor.GetProperty(context.Data, accessor.MemberName);
-        }
-        
-        // if (context.Parent?.Data is JsonObject jsonPrev && jsonPrev.TryGetPropertyValue(accessor.MemberName, out JsonNode? nodePrev))
-        //     return new(ResoltionState.Found, nodePrev.AsJsonFacade());
 
         return new(ResoltionState.NotFound, DataFacade.Null);
     }
 
-    public EvaluationResult VisitParent(ParentAccessor accessor, DataContext context)
+    public EvaluationResult VisitThis(ThisAccessor accessor, object? args)
     {
-        DataContext parent = context;
-        while (parent.Parent is not null)
-        {
-            parent = parent.Parent;
-        }
-        return new(ResoltionState.Found, parent.Data.AsFacade());
+        return new(ResoltionState.Found, args.AsFacade());
     }
-
-    public EvaluationResult VisitThis(ThisAccessor accessor, DataContext context)
-    {
-        return new(ResoltionState.Found, context.Data.AsFacade());
-    }
-}*/
-/*internal sealed class ServiceEvaluator(ServiceAccesorVisitor accesorVisitor) : IEvaluator
+}
+public sealed class ServiceEvaluator(IAccessorVisitor<EvaluationResult, object?> accesorVisitor) : IEvaluator
 {
     public IDataFacade Resolve(IExpressionNode expression, DataContext? data)
     {
@@ -108,5 +94,15 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
 
         return DataFacade.Null;
     }
-}*/
+}
 
+public static class EvaluatorExtensions
+{
+    public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)
+    {
+        services.AddSingleton<ServiceEvaluator>();
+        services.AddSingleton<IEvaluator, ServiceEvaluator>();
+        services.AddSingleton<IAccessorVisitor<EvaluationResult, object?>, ServiceAccesorVisitor>();
+        return services;
+    }
+}

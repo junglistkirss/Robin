@@ -5,7 +5,7 @@ using Robin.Contracts.Variables;
 
 namespace Robin.Abstractions;
 
-public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, DataContext> accessorVisitor) : IExpressionNodeVisitor<EvaluationResult, DataContext>
+public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, object?> accessorVisitor) : IExpressionNodeVisitor<EvaluationResult, DataContext>
 {
     public EvaluationResult VisitFunctionCall(FunctionCallNode node, DataContext args)
     {
@@ -33,11 +33,6 @@ public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, Dat
     public EvaluationResult VisitIdenitifer(IdentifierExpressionNode node, DataContext args)
     {
         EvaluationResult result = node.Path.Evaluate(accessorVisitor, args);
-        if (result.Status == ResoltionState.NotFound && args.Parent is not null)
-        {
-            EvaluationResult prevResult = node.Path.Evaluate(accessorVisitor, args.Parent);
-            result = prevResult;
-        }
         return result;
     }
 
@@ -46,7 +41,7 @@ public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, Dat
         return new EvaluationResult(ResoltionState.Found, node.Constant.AsFacade());
     }
 
-    public EvaluationResult VisitNumber(NumberExpressionNode node, DataContext _)
+    public EvaluationResult VisitIndex(NumberExpressionNode node, DataContext _)
     {
         return new EvaluationResult(ResoltionState.Found, node.Constant.AsFacade());
     }

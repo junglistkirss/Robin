@@ -34,12 +34,6 @@ public static class AccessPathParser
                     segments.Add(ThisAccessor.Instance);
                 i++; // skip '.'
             }
-            else if (path[i] == '~')
-            {
-                if (i == 0)
-                    segments.Add(ParentAccessor.Instance);
-                i++; // skip '.'
-            }
             else if (path[i] == '[')
             {
                 i++; // skip '['
@@ -76,9 +70,7 @@ public static class AccessPathParser
                 }
                 else
                 {
-                    // Parse as chain path key
-                    VariablePath chainPath = Parse(content);
-                    segments.Add(new KeyAccessor(chainPath));
+                    throw new FormatException($"Invalid index accessor: {content}");
                 }
 
                 i++; // skip ']'

@@ -21,9 +21,6 @@ public class ExpressionParserTests
     [InlineData("one.two")]
     [InlineData("one[0].two")]
     [InlineData("one[0][1].two")]
-    [InlineData("one[test].two")]
-    [InlineData("one[test[3]].two")]
-    [InlineData("one[test.one.two[3]].two")]
     public void IdenitiferExpression(string ident)
     {
         IExpressionNode? node = ident.AsSpan().ParseExpression();
@@ -43,7 +40,6 @@ public class ExpressionParserTests
     [Theory]
     [InlineData("func", "test")]
     [InlineData("func", "test[0]")]
-    [InlineData("func", "test[a.b.c]")]
     public void FunctionExpression(string funcName, string ident)
     {
         ReadOnlySpan<char> source = $"{funcName}({ident})".AsSpan();

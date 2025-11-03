@@ -62,7 +62,7 @@ public static class ExpressionParser
         if (currentToken.Type == ExpressionType.Number)
         {
             string value = lexer.GetValue(currentToken);
-            double number = double.Parse(value, CultureInfo.InvariantCulture);
+            int number = int.Parse(value, CultureInfo.InvariantCulture);
             return new NumberExpressionNode(number);
         }
 

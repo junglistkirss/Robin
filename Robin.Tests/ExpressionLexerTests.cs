@@ -15,16 +15,6 @@ public class ExpressionLexerTests
         Assert.Equal(".", secOpen.GetValue(source));
     }
 
-    [Fact]
-    public void ParentIdentifier()
-    {
-        ReadOnlySpan<char> source = "~".AsSpan();
-        ExpressionToken[] tokens = Tokenizer.TokenizeExpression(source);
-        Assert.NotEmpty(tokens);
-        ExpressionToken secOpen = Assert.Single(tokens, x => x.Type == ExpressionType.Identifier);
-        Assert.Equal("~", secOpen.GetValue(source));
-    }
-
     [Theory]
     [InlineData("test")]
     [InlineData("test ")]
@@ -53,10 +43,10 @@ public class ExpressionLexerTests
     }
 
     [Theory]
-    [InlineData("`12`")]
-    [InlineData("`12 `")]
-    [InlineData("` 12`")]
-    [InlineData("` 12 `")]
+    [InlineData("`42`")]
+    [InlineData("`42 `")]
+    [InlineData("` 42`")]
+    [InlineData("` 42 `")]
     public void StringConstantAccentQuote(string dat)
     {
         ReadOnlySpan<char> source = dat.AsSpan();
@@ -67,10 +57,10 @@ public class ExpressionLexerTests
     }
 
     [Theory]
-    [InlineData("'12'")]
-    [InlineData("'12 '")]
-    [InlineData("' 12'")]
-    [InlineData("' 12 '")]
+    [InlineData("'42'")]
+    [InlineData("'42 '")]
+    [InlineData("' 42'")]
+    [InlineData("' 42 '")]
     public void StringConstantSingleQuote(string dat)
     {
         ReadOnlySpan<char> source = dat.AsSpan();
@@ -95,11 +85,10 @@ public class ExpressionLexerTests
     }
 
     [Theory]
-    [InlineData("12")]
-    [InlineData("12 ")]
-    [InlineData(" 12")]
-    [InlineData(" 12 ")]
-    [InlineData(" 12.1 ")]
+    [InlineData("42")]
+    [InlineData("42 ")]
+    [InlineData(" 42")]
+    [InlineData(" 42 ")]
     public void NumberConstant(string dat)
     {
         ReadOnlySpan<char> source = dat.AsSpan();
