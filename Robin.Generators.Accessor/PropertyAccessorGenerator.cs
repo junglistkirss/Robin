@@ -61,7 +61,7 @@ namespace Robin.Generators.Accessor
 
                 sb.AppendLineIndented(1 , $"{visibility} static class {accessorName}");
                 sb.AppendLineIndented(1, "{");
-                sb.AppendLineIndented(2, $"public static object GetPropertyValue(this {className} obj, string propertyName) => propertyName switch");
+                sb.AppendLineIndented(2, $"public static object GetPropertyValue(this {className} obj, string propertyName) => propertyName.ToLowerInvariant() switch");
                 sb.AppendLineIndented(2, "{");
 
                 if (properties.Count > 0)
@@ -69,7 +69,7 @@ namespace Robin.Generators.Accessor
                     foreach (IPropertySymbol prop in properties)
                     {
                         // Utilise nameof pour robustesse si le code généré se trouve dans le même namespace
-                        sb.AppendLineIndented(3, $"nameof({className}.{prop.Name}) => obj.{prop.Name},");
+                        sb.AppendLineIndented(3, $"\"{prop.Name.ToLowerInvariant()}\" => obj.{prop.Name},");
                     }
                     sb.AppendLineIndented(3, "_ => null");
                 }
