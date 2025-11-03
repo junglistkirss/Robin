@@ -1,3 +1,5 @@
+using Robin.Abstractions.Context;
+using Robin.Abstractions.Extensions;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Nodes;
 using System.Collections;
@@ -69,10 +71,11 @@ public class NodeRender : INodeVisitor<NoValue, RenderContext>
 
     private NoValue RenderTree(RenderContext context, IDataFacade facade, ImmutableArray<INode> partialTemplate)
     {
-        if (facade.IsCollection(out IEnumerable? collection))
+        if (facade.IsCollection(out IEnumerator? collection))
         {
-            foreach (object? item in collection)
+            while (collection.MoveNext())
             {
+                object? item = collection.Current;
                 RenderContext itemCtx = context with
                 {
                     Data = context.Data?.Child(item) ?? new DataContext(item, null),

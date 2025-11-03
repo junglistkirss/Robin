@@ -16,7 +16,7 @@ internal sealed class JsonAccesorVisitor : IVariableSegmentVisitor<EvaluationRes
         return new(ResoltionState.NotFound, DataFacade.Null);
     }
 
-    public EvaluationResult VisitMember(MemberISegment segment, object? args)
+    public EvaluationResult VisitMember(MemberSegment segment, object? args)
     {
         if (args is JsonObject json && json.TryGetMemberValue(segment.MemberName, out object? node))
             return new(ResoltionState.Found, node.AsJsonFacade());

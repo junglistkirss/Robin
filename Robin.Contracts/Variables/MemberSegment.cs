@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Variables;
 
-public readonly struct MemberISegment(string memberName) : IVariableSegment
+public readonly struct MemberSegment(string memberName) : IVariableSegment
 {
     public string MemberName => memberName;
 

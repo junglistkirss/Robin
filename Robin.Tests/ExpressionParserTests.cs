@@ -37,6 +37,28 @@ public class ExpressionParserTests
         Assert.Empty(func.Arguments);
     }
 
+    [Fact]
+    public void LirteralExpression()
+    {
+        IExpressionNode? node = "'func()'".AsSpan().ParseExpression();
+        LiteralExpressionNode func = Assert.IsType<LiteralExpressionNode>(node);
+        Assert.Equal("func()", func.Constant);
+    }
+
+    [Fact]
+    public void NumberExpression()
+    {
+        IExpressionNode? node = "42".AsSpan().ParseExpression();
+        NumberExpressionNode func = Assert.IsType<NumberExpressionNode>(node);
+        Assert.Equal(42, func.Constant);
+    }
+    [Fact]
+    public void IdentifierExpressionParenthesis()
+    {
+        IExpressionNode? node = "(test)".AsSpan().ParseExpression();
+        IdentifierExpressionNode func = Assert.IsType<IdentifierExpressionNode>(node);
+        Assert.Equal("test", func.Path);
+    }
     [Theory]
     [InlineData("func", "test")]
     [InlineData("func", "test[0]")]
@@ -51,6 +73,8 @@ public class ExpressionParserTests
         IdentifierExpressionNode identifier = Assert.IsType<IdentifierExpressionNode>(arg);
         Assert.Equal(ident, identifier.Path);
     }
+
+
 
     [Fact]
     public void FunctionNestedExpression()

@@ -3,15 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions.Facades;
 
-internal sealed class UndefinedDataFacade : IDataFacade
+internal sealed class ObjectDataFacade(object? value) : IDataFacade
 {
-    public object? RawValue => null;
+    public object? RawValue => value;
 
-    public bool IsCollection() => false;
-    public bool IsTrue() => false;
-    public bool IsCollection([NotNullWhen(true)] out IEnumerable? collection)
+    public bool IsCollection() => value is IEnumerable;
+    public bool IsTrue() => value is not null;
+    public bool IsCollection([NotNullWhen(true)] out IEnumerator? collection)
     {
-        collection = null;
-        return false;
+        collection = value as IEnumerator;
+        return collection is not null;
     }
 }

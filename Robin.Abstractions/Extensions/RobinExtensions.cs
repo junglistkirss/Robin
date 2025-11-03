@@ -1,9 +1,10 @@
+using Robin.Abstractions.Context;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Nodes;
 using Robin.Contracts.Variables;
 using System.Collections.Immutable;
 
-namespace Robin.Abstractions;
+namespace Robin.Abstractions.Extensions;
 
 public static class RobinExtensions
 {

@@ -87,7 +87,7 @@ public static class VariableParser
                 if (string.IsNullOrEmpty(memberName))
                     throw new FormatException("Empty member name");
 
-                segments.Add(new MemberISegment(memberName));
+                segments.Add(new MemberSegment(memberName));
             }
         }
 

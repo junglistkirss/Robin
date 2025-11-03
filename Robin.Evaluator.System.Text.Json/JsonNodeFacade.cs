@@ -10,13 +10,13 @@ internal sealed class JsonNodeFacade(JsonNode node) : IDataFacade
 {
     public object? RawValue => node;
 
-    public bool IsCollection([NotNullWhen(true)] out IEnumerable? collection)
+    public bool IsCollection([NotNullWhen(true)] out IEnumerator? collection)
     {
         switch (node.GetValueKind())
         {
             case JsonValueKind.Array:
                 JsonArray jArray = node.AsArray()!;
-                collection = jArray;
+                collection = jArray.GetEnumerator();
                 return jArray.Count > 0;
             default:
                 break;

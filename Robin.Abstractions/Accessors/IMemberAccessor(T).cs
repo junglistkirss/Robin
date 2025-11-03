@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Robin.Abstractions;
+namespace Robin.Abstractions.Accessors;
 
 public interface IMemberAccessor<T> : IMemberAccessor
 {

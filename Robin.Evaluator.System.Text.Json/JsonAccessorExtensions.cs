@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using Robin.Abstractions;
+using Robin.Abstractions.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 

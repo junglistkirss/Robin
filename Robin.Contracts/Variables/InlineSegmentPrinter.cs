@@ -10,7 +10,7 @@ internal class InlineSegmentPrinter : IVariableSegmentVisitor<StringBuilder, Str
         return args.Append('[').Append(segment.Index).Append(']');
     }
 
-    public StringBuilder VisitMember(MemberISegment segment, StringBuilder args)
+    public StringBuilder VisitMember(MemberSegment segment, StringBuilder args)
     {
         if (args.Length > 0)
             args.Append('.');

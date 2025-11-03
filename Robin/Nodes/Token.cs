@@ -1,5 +1,9 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace Robin.Nodes;
 
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public readonly struct Token(TokenType type, int start, int length)
 {
     public TokenType Type => type;
@@ -12,6 +16,12 @@ public readonly struct Token(TokenType type, int start, int length)
     }
 
     public override string ToString()
+    {
+        return $"{Type} [{Start}..{Start + Length})";
+    }
+
+    [ExcludeFromCodeCoverage]
+    private string GetDebuggerDisplay()
     {
         return $"{Type} [{Start}..{Start + Length})";
     }

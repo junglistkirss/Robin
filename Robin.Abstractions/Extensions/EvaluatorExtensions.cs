@@ -1,8 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using Robin.Abstractions.Accessors;
 using Robin.Contracts.Variables;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Robin.Abstractions;
+namespace Robin.Abstractions.Extensions;
 
 public static class EvaluatorExtensions
 {
@@ -22,7 +23,7 @@ public static class EvaluatorExtensions
         DelegatedMemberAccessor<T> instance = new(tryGet);
         return services
             .AddSingleton<IMemberAccessor<T>>(instance)
-            .AddKeyedSingleton<IMemberAccessor>(typeof(T), instance);
+            .AddSingleton<IMemberAccessor>(instance);
     }
 
     private sealed class DelegatedIndexAccessor<T>(TryGetIndexValue<T> tryGetIndexValue) : IIndexAccessor<T>
@@ -37,7 +38,7 @@ public static class EvaluatorExtensions
         DelegatedIndexAccessor<T> instance = new(tryGet);
         return services
             .AddSingleton<IIndexAccessor<T>>(instance)
-            .AddKeyedSingleton<IIndexAccessor>(typeof(T), instance);
+            .AddSingleton<IIndexAccessor>(instance);
     }
 
     public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)

@@ -1,6 +1,6 @@
 using System.Diagnostics.Contracts;
 
-namespace Robin.Abstractions;
+namespace Robin.Abstractions.Context;
 
 public record class DataContext(object? Data, DataContext? Parent = null)
 {
