@@ -1,95 +1,109 @@
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Robin.Generators.Accessor
 {
 
     [Generator]
-    public class PropertyAccessorGenerator : ISourceGenerator
+    public class PropertyAccessorIncrementalGenerator : IIncrementalGenerator
     {
-        public void Initialize(GeneratorInitializationContext context)
+        public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            // S'inscrit pour recevoir les déclarations de classes avec attribut
-            context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
-        }
+            // Sélectionne toutes les classes et structs
+            var classDeclarations = context.SyntaxProvider
+                .CreateSyntaxProvider(
+                    predicate: static (node, _) => node is TypeDeclarationSyntax,
+                    transform: static (ctx, _) => (TypeDeclarationSyntax)ctx.Node)
+                .Where(static m => m != null);
 
-        public void Execute(GeneratorExecutionContext context)
-        {
-            if (context.SyntaxReceiver is not SyntaxReceiver receiver)
-                return;
+            // Combine avec le Compilation pour avoir les symboles
+            var compilationAndClasses = context.CompilationProvider.Combine(classDeclarations.Collect());
 
-            // Récupère le symbole de l'attribut
-            INamedTypeSymbol attributeSymbol = context.Compilation.GetTypeByMetadataName(typeof(GenerateAccessorAttribute).FullName);
-            if (attributeSymbol == null)
-                return;
-
-            foreach (ClassDeclarationSyntax classDecl in receiver.CandidateClasses)
+            context.RegisterSourceOutput(compilationAndClasses, (spc, source) =>
             {
-                SemanticModel model = context.Compilation.GetSemanticModel(classDecl.SyntaxTree);
-                // CAST explicite en INamedTypeSymbol (représente les types nommés : classes, structs, ...)
-                if (model.GetDeclaredSymbol(classDecl) is not INamedTypeSymbol namedTypeSymbol)
-                    continue;
+                var (compilation, classes) = source;
 
-                // // Vérifie la présence de l'attribut
-                // if (!namedTypeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, attributeSymbol)))
-                //     continue;
+                INamedTypeSymbol attributeSymbol = compilation.GetTypeByMetadataName(typeof(GenerateAccessorAttribute).FullName);
+                if (attributeSymbol is null) return;
 
-                string ns = namedTypeSymbol.ContainingNamespace == null || namedTypeSymbol.ContainingNamespace.IsGlobalNamespace
-                    ? null
-                    : namedTypeSymbol.ContainingNamespace.ToDisplayString();
-
-                string className = namedTypeSymbol.Name;
-                string accessorName = $"{className}Accessor";
-                string visibility = namedTypeSymbol.DeclaredAccessibility switch
+                foreach (var classDecl in classes)
                 {
-                    Accessibility.Internal => "internal",
-                    _ => "public",
-                };
-                List<IPropertySymbol> properties = [.. namedTypeSymbol
-                    .GetMembers()
-                    .OfType<IPropertySymbol>()
-                    .Where(p => !p.IsStatic && p.DeclaredAccessibility == Accessibility.Public)];
+                    SemanticModel model = compilation.GetSemanticModel(classDecl.SyntaxTree);
+                    if (model.GetDeclaredSymbol(classDecl) is not INamedTypeSymbol namedTypeSymbol)
+                        continue;
 
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("using System;");
-                if (!string.IsNullOrEmpty(ns))
-                {
-                    sb.AppendLine($"namespace {ns}");
-                    sb.AppendLine("{");
-                }
+                    // Vérifie la présence de l'attribut
+                    if (!namedTypeSymbol.GetAttributes().Any(a => SymbolEqualityComparer.Default.Equals(a.AttributeClass, attributeSymbol)))
+                        continue;
 
-                sb.AppendLineIndented(1 , $"{visibility} static class {accessorName}");
-                sb.AppendLineIndented(1, "{");
-                sb.AppendLineIndented(2, $"public static object GetPropertyValue(this {className} obj, string propertyName) => propertyName.ToLowerInvariant() switch");
-                sb.AppendLineIndented(2, "{");
-
-                if (properties.Count > 0)
-                {
-                    foreach (IPropertySymbol prop in properties)
+                    string ns = namedTypeSymbol.ContainingNamespace.IsGlobalNamespace ? "" : namedTypeSymbol.ContainingNamespace.ToString();
+                    string shortClassName = namedTypeSymbol.Name;
+                    string longClassName = namedTypeSymbol.ToDisplayString();
+                    string accessorName = $"{shortClassName}Accessor";
+                    string visibility = namedTypeSymbol.DeclaredAccessibility switch
                     {
-                        // Utilise nameof pour robustesse si le code généré se trouve dans le même namespace
-                        sb.AppendLineIndented(3, $"\"{prop.Name.ToLowerInvariant()}\" => obj.{prop.Name},");
+                        Accessibility.Internal => "internal",
+                        _ => "public",
+                    };
+
+                    IPropertySymbol[] properties = [.. namedTypeSymbol
+                        .GetMembers()
+                        .OfType<IPropertySymbol>()
+                        .Where(p => !p.IsStatic && p.DeclaredAccessibility == Accessibility.Public)];
+
+                    StringBuilder sb = new();
+                    sb.AppendLine("using System;");
+                    sb.AppendLine("using System.Diagnostics.CodeAnalysis;");
+                    sb.AppendLine();
+
+                    if (!string.IsNullOrEmpty(ns))
+                    {
+                        sb.AppendLine($"namespace {ns}");
+                        sb.AppendLine("{");
                     }
-                    sb.AppendLineIndented(3, "_ => null");
-                }
-                else
-                {
-                    // Si aucune propriété publique trouvée, on met un cas par défaut
-                    sb.AppendLineIndented(3, "_ => throw new ArgumentException($\"Unknown property '{propertyName}'\")");
-                }
 
-                sb.AppendLineIndented(2, "};");
-                sb.AppendLineIndented(1, "}");
+                    sb.AppendLineIndented(1, "#nullable disable");
+                    sb.AppendLineIndented(1, $"{visibility} static class {accessorName}");
+                    sb.AppendLineIndented(1, "{");
+                    sb.AppendLineIndented(2, $"public static bool TryGetPropertyValue(this {longClassName} obj, string propertyName, [MaybeNullWhen(true)] out object value)");
+                    sb.AppendLineIndented(2, "{");
+                    sb.AppendLineIndented(3, "switch(propertyName.ToLowerInvariant())");
+                    sb.AppendLineIndented(3, "{");
 
-                if (!string.IsNullOrEmpty(ns))
-                {
-                    sb.AppendLine("}");
+                    if (properties.Length > 0)
+                    {
+                        foreach (var prop in properties)
+                        {
+                            sb.AppendLineIndented(4, $"case \"{prop.Name.ToLowerInvariant()}\":");
+                            sb.AppendLineIndented(5, $"value = obj.{prop.Name};");
+                            sb.AppendLineIndented(5, "return true;");
+                        }
+                        sb.AppendLineIndented(4, "default:");
+                        sb.AppendLineIndented(5, "value = null;");
+                        sb.AppendLineIndented(5, "return false;");
+                    }
+                    else
+                    {
+                        sb.AppendLineIndented(3, "default: throw new ArgumentException($\"Unknown property '{propertyName}'\");");
+                    }
+
+                    sb.AppendLineIndented(3, "}");
+                    sb.AppendLineIndented(2, "}");
+                    sb.AppendLineIndented(1, "}");
+
+                    if (!string.IsNullOrEmpty(ns))
+                    {
+                        sb.AppendLine("}");
+                    }
+
+                    string hintName = $"{accessorName}.g.cs";
+                    spc.AddSource(hintName, SourceText.From(sb.ToString(), Encoding.UTF8));
                 }
-
-                string hintName = $"{accessorName}.g.cs";
-                context.AddSource(hintName, sb.ToString());
-            }
+            });
         }
+
+
     }
 }

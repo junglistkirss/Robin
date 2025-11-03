@@ -4,16 +4,8 @@ using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
 using System.CodeDom.Compiler;
 using System.Text.Json.Nodes;
-using Robin.Generators.Accessor;
 
 namespace Robin.Evaluator.GeneratedAccessor.Tests;
-
-[GenerateAccessor]
-internal class TestModel
-{
-    public int Id { get; set; }
-    public string Name { get; set; } = default!;
-}
 
 public class GeneratedAccessorTests
 {

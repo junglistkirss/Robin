@@ -7,8 +7,7 @@ namespace Robin.Generators.Accessor
         public static StringBuilder AppendLineIndented(
             this StringBuilder sb,
             int indentLevel,
-            string text = "",
-            string indentString = "    ")
+            string text)
         {
             if (sb == null)
                 throw new ArgumentNullException(nameof(sb));
@@ -18,7 +17,7 @@ namespace Robin.Generators.Accessor
 
             // Apply indentation before appending text
             for (int i = 0; i < indentLevel; i++)
-                sb.Append(indentString);
+                sb.Append("    ");
 
             sb.AppendLine(text);
             return sb;
@@ -27,11 +26,10 @@ namespace Robin.Generators.Accessor
         public static StringBuilder AppendLinesIndented(
              this StringBuilder sb,
              int indentLevel,
-             IEnumerable<string> lines,
-             string indentString = "    ")
+             params string[] lines)
         {
             foreach (var line in lines)
-                sb.AppendLineIndented(indentLevel, line, indentString);
+                sb.AppendLineIndented(indentLevel, line);
 
             return sb;
         }

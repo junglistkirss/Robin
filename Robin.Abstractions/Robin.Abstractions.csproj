@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Robin.Contracts\Robin.Contracts.csproj" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.7" />
   </ItemGroup>
 
 </Project>
