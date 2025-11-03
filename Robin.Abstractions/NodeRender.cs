@@ -20,7 +20,7 @@ public class NodeRender : INodeVisitor<NoValue, RenderContext>
         return NoValue.Instance;
     }
 
-    public NoValue VisitPartial(PartialDefineNode node, RenderContext context)
+    public NoValue VisitPartialDefine(PartialDefineNode node, RenderContext context)
     {
         return NoValue.Instance;
     }
@@ -57,6 +57,10 @@ public class NodeRender : INodeVisitor<NoValue, RenderContext>
 
         if (value.IsTrue() && context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate))
         {
+            context = context with
+            {
+                Partials = partialTemplate.ExtractsPartials(context.Partials)
+            };
             return RenderTree(context, value, partialTemplate);
 
         }

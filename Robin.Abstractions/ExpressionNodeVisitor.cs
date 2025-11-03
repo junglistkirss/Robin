@@ -26,7 +26,7 @@ public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, Dat
             }
             object? functionResult = function(evaluatedArgs);
             return new EvaluationResult(ResoltionState.Found, functionResult.AsFacade());
-        })
+        }
         return new EvaluationResult(ResoltionState.NotFound, DataFacade.Null);
     }
 
