@@ -11,7 +11,7 @@ public sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<EvaluationResu
 {
     public EvaluationResult VisitFunctionCall(FunctionCallNode node, DataContext args)
     {
-        if (Helper.TryGetFunction(node.FunctionName, out Helper.Function? function) && function is not null)
+        if (args.Helper.TryGetFunction(node.FunctionName, out Helper.Function? function) && function is not null)
         {
             object?[] evaluatedArgs = new object?[node.Arguments.Length];
             for (int i = 0; i < node.Arguments.Length; i++)
