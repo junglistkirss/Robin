@@ -8,8 +8,6 @@ namespace Robin.Evaluator.System.Text.Json;
 
 internal sealed class JsonNodeFacade(JsonNode node) : IDataFacade
 {
-
-
     public object? RawValue => node;
 
     public bool IsCollection([NotNullWhen(true)] out IEnumerable? collection)

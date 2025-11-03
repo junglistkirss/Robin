@@ -10,7 +10,7 @@ namespace Robin.Nodes;
 
 public static class NodeParser
 {
-    private readonly static IdentifierExpressionNode That = new(new VariablePath([ThisAccessor.Instance]));
+    private readonly static IdentifierExpressionNode That = new(new VariablePath([ThisSegment.Instance]));
 
     public static bool TryParse(this ref NodeLexer lexer, [NotNullWhen(true)] out ImmutableArray<INode>? nodes)
     {

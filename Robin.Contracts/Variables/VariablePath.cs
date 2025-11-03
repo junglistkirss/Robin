@@ -3,17 +3,17 @@ using System.Text;
 
 namespace Robin.Contracts.Variables;
 
-public readonly struct VariablePath(ImmutableArray<IAccessor> segments)
+public readonly struct VariablePath(ImmutableArray<IVariableSegment> segments)
 {
     public static implicit operator string(VariablePath value) => value.ToString();
-    public ImmutableArray<IAccessor> Segments { get; } = segments;
+    public ImmutableArray<IVariableSegment> Segments { get; } = segments;
     public override string ToString()
     {
         return Segments.Aggregate(
             new StringBuilder(),
             (sb, segment) =>
             {
-                return segment.Accept(InlineAccessorPrinter.Instance, sb);
+                return segment.Accept(InlineSegmentPrinter.Instance, sb);
             },
             sb => sb.ToString()
         );

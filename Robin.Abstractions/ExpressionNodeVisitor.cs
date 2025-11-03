@@ -5,7 +5,7 @@ using Robin.Contracts.Variables;
 
 namespace Robin.Abstractions;
 
-public sealed class ExpressionNodeVisitor(IAccessorVisitor<EvaluationResult, object?> accessorVisitor) : IExpressionNodeVisitor<EvaluationResult, DataContext>
+public sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<EvaluationResult, object?> accessorVisitor) : IExpressionNodeVisitor<EvaluationResult, DataContext>
 {
     public EvaluationResult VisitFunctionCall(FunctionCallNode node, DataContext args)
     {

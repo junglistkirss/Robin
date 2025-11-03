@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Contracts.Variables;
 
-public static class AccessPathParser
+public static class VariableParser
 {
     public static bool TryParse(this string path, [NotNullWhen(true)] out VariablePath? accesorPath)
     {
@@ -23,7 +23,7 @@ public static class AccessPathParser
         if (string.IsNullOrEmpty(path))
             return new VariablePath([]);
 
-        List<IAccessor> segments = [];
+        List<IVariableSegment> segments = [];
         int i = 0;
 
         while (i < path.Length)
@@ -31,7 +31,7 @@ public static class AccessPathParser
             if (path[i] == '.')
             {
                 if (i == 0)
-                    segments.Add(ThisAccessor.Instance);
+                    segments.Add(ThisSegment.Instance);
                 i++; // skip '.'
             }
             else if (path[i] == '[')
@@ -66,7 +66,7 @@ public static class AccessPathParser
                 // Try to parse as numeric index first
                 if (int.TryParse(content, out int index))
                 {
-                    segments.Add(new IndexAccessor(index));
+                    segments.Add(new IndexSegment(index));
                 }
                 else
                 {
@@ -87,7 +87,7 @@ public static class AccessPathParser
                 if (string.IsNullOrEmpty(memberName))
                     throw new FormatException("Empty member name");
 
-                segments.Add(new MemberAccessor(memberName));
+                segments.Add(new MemberISegment(memberName));
             }
         }
 

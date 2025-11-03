@@ -11,18 +11,18 @@ public static class RobinExtensions
     {
         return nodes.Aggregate(baseCollection ?? ImmutableDictionary<string, ImmutableArray<INode>>.Empty, (current, node) => node.Accept(PartialExtractor.Instance, current));
     }
-    public static EvaluationResult Evaluate(this VariablePath path, IAccessorVisitor<EvaluationResult, object?> visitor, DataContext args, bool useParentFallback = true)
+    public static EvaluationResult Evaluate(this VariablePath path, IVariableSegmentVisitor<EvaluationResult, object?> visitor, DataContext args, bool useParentFallback = true)
     {
         EvaluationResult result = new(ResoltionState.NotFound, DataFacade.Null);
         DataContext ctx = args;
-        ImmutableArray<IAccessor>.Enumerator enumerator = path.Segments.GetEnumerator();
+        ImmutableArray<IVariableSegment>.Enumerator enumerator = path.Segments.GetEnumerator();
         if (enumerator.MoveNext())
         {
             result = enumerator.Current.Accept(visitor, ctx.Data);
             while (result.Status == ResoltionState.Found && enumerator.MoveNext())
             {
                 ctx = ctx.Child(result.Value?.RawValue);
-                IAccessor item = enumerator.Current;
+                IVariableSegment item = enumerator.Current;
                 EvaluationResult res = item.Accept(visitor, ctx.Data);
                 if (res.Status == ResoltionState.Found)
                 {
