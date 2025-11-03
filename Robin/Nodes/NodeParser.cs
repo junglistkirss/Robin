@@ -61,7 +61,7 @@ public static class NodeParser
                     nodes.Add(AggregateLineBreaks(ref lexer));
                     break;
                 default:
-                    throw new InvalidOperationException($"Unsupported token type {token.Value.Type}");
+                    throw new InvalidTokenException($"Unsupported token type {token.Value.Type}");
             }
         }
         return [.. nodes];
@@ -141,7 +141,7 @@ public static class NodeParser
                     nodes.Add(AggregateLineBreaks(ref lexer));
                     break;
                 default:
-                    throw new InvalidOperationException($"Unsupported token type {token.Value.Type} in section");
+                    throw new InvalidTokenException($"Unsupported token type {token.Value.Type} in section");
             }
         }
         PartialDefineNode partial = new(name, [.. nodes]);
@@ -185,7 +185,7 @@ public static class NodeParser
                     nodes.Add(AggregateLineBreaks(ref lexer));
                     break;
                 default:
-                    throw new InvalidOperationException($"Unsupported token type {token.Value.Type} in section");
+                    throw new InvalidTokenException($"Unsupported token type {token.Value.Type} in section");
             }
         }
         SectionNode section = new(node, [.. nodes], inverted);
