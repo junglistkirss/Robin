@@ -3,7 +3,6 @@ using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
 
 namespace Robin.tests;
-
 public class NodeParserTests
 {
 

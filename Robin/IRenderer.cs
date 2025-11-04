@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace Robin;
 
-public interface IRenderer
+public interface IRenderer<TOut>
 {
-    string Render(ImmutableArray<INode> template, object? data);
+    TOut Render(ImmutableArray<INode> template, object? data);
 }
