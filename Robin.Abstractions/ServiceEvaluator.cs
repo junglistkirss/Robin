@@ -18,12 +18,12 @@ public sealed class ServiceEvaluator(IVariableSegmentVisitor<EvaluationResult, o
 
         EvaluationResult result = expression.Accept(visitor, data);
 
-        if (result.Status == ResoltionState.NotFound && data.Parent is not null)
+        if (!result.IsResolved && data.Parent is not null)
             result = expression.Accept(visitor, data.Parent);
 
-        if (result.Status == ResoltionState.Found)
+        if (result.IsResolved)
         {
-            facade = result.Facade;
+            facade = result.AsFacade();
             return result.Value;
         }
         facade = DataFacade.Null;

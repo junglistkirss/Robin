@@ -3,6 +3,7 @@ using Robin.Abstractions.Facades;
 using Robin.Contracts.Nodes;
 using Robin.Contracts.Variables;
 using System.Collections.Immutable;
+using System.Reflection.Metadata;
 
 namespace Robin.Abstractions.Extensions;
 
@@ -12,34 +13,35 @@ public static class RobinExtensions
     {
         return nodes.Aggregate(baseCollection ?? ImmutableDictionary<string, ImmutableArray<INode>>.Empty, (current, node) => node.Accept(PartialExtractor.Instance, current));
     }
-    public static EvaluationResult Evaluate(this VariablePath path, IVariableSegmentVisitor<EvaluationResult, object?> visitor, DataContext args, bool useParentFallback = true)
+
+    public static bool Evaluate(this VariablePath path, IVariableSegmentVisitor<EvaluationResult, object?> visitor, DataContext args, out object? value, bool useParentFallback = true)
     {
-        EvaluationResult result = new(ResoltionState.NotFound, null, DataFacade.Null);
         DataContext ctx = args;
         ImmutableArray<IVariableSegment>.Enumerator enumerator = path.Segments.GetEnumerator();
         if (enumerator.MoveNext())
         {
-            result = enumerator.Current.Accept(visitor, ctx.Data);
-            while (result.Status == ResoltionState.Found && enumerator.MoveNext())
+            EvaluationResult result = enumerator.Current.Accept(visitor, ctx.Data);
+            if (!result.IsResolved)
+            {
+                value = null;
+                return false;
+            }
+            while (result.IsResolved && enumerator.MoveNext())
             {
                 ctx = ctx.Child(result.Value);
                 IVariableSegment item = enumerator.Current;
-                EvaluationResult res = item.Accept(visitor, ctx.Data);
-                if (res.Status == ResoltionState.Found)
-                {
-                    result = res;
-                }
-                else
-                {
-                    result = result with { Status = ResoltionState.Partial };
-                }
+                result = item.Accept(visitor, ctx.Data);
+            }
+            if (result.IsResolved)
+            {
+                value = result.Value;
+                return true;
             }
         }
-        if (useParentFallback && result.Status == ResoltionState.NotFound && args.Parent is not null)
-        {
-            return path.Evaluate(visitor, args.Parent, useParentFallback);
-        }
-        return result;
+        if (useParentFallback && args.Parent is not null)
+            return path.Evaluate(visitor, args.Parent, out value, useParentFallback);
+        value = null;
+        return false;
     }
 }
 

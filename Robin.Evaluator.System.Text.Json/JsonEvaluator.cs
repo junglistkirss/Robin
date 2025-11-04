@@ -14,7 +14,9 @@ public sealed class JsonEvaluator : IEvaluator
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade)
     {
-        return BaseEvaluator.Resolve(expression, data, out facade);
+        object? value = BaseEvaluator.Resolve(expression, data, out IDataFacade baseFacade);
+        facade = data.AsJsonFacade(baseFacade);
+        return value;
     }
 }
 

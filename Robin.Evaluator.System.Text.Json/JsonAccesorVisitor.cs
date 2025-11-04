@@ -11,22 +11,22 @@ internal sealed class JsonAccesorVisitor : IVariableSegmentVisitor<EvaluationRes
     public EvaluationResult VisitIndex(IndexSegment segment, object? args)
     {
         if (args is JsonArray json && json.TryGetIndexValue(segment.Index, out object? node))
-            return new(ResoltionState.Found, node, node.AsJsonFacade());
+            return new(true, node);
 
-        return new(ResoltionState.NotFound, null, DataFacade.Null);
+        return new(false, null);
     }
 
     public EvaluationResult VisitMember(MemberSegment segment, object? args)
     {
         if (args is JsonObject json && json.TryGetMemberValue(segment.MemberName, out object? node))
-            return new(ResoltionState.Found, node, node.AsJsonFacade());
+            return new(true, node);
 
-        return new(ResoltionState.NotFound, null, DataFacade.Null);
+        return new(false, null);
     }
 
     public EvaluationResult VisitThis(ThisSegment segment, object? args)
     {
-        return new(ResoltionState.Found, args, args.AsJsonFacade());
+        return new(true, args);
     }
 }
 

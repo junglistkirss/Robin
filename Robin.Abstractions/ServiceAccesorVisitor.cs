@@ -53,23 +53,23 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
     {
         if (args is not null && TryGetIndexAccessor(args, out IIndexAccessor? typedAccessor) && typedAccessor.TryGetIndex(args, segment.Index, out object? value))
 
-            return new EvaluationResult(ResoltionState.Found, value, value.AsFacade());
+            return new EvaluationResult(true, value);
 
-        return new(ResoltionState.NotFound, null, DataFacade.Null);
+        return new(false, null);
     }
 
     public EvaluationResult VisitMember(MemberSegment segment, object? args)
     {
         if (args is not null && TryGetMemberAccessor(args, out IMemberAccessor? typedAccessor) && typedAccessor.TryGetMember(args, segment.MemberName, out object? value))
 
-            return new EvaluationResult(ResoltionState.Found, value, value.AsFacade());
+            return new EvaluationResult(true, value);
 
 
-        return new(ResoltionState.NotFound, null, DataFacade.Null);
+        return new(false, null);
     }
 
     public EvaluationResult VisitThis(ThisSegment segment, object? args)
     {
-        return new(ResoltionState.Found, args, args.AsFacade());
+        return new(true, args);
     }
 }
