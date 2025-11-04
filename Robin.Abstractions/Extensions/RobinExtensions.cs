@@ -3,6 +3,7 @@ using Robin.Abstractions.Facades;
 using Robin.Contracts.Nodes;
 using Robin.Contracts.Variables;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata;
 
 namespace Robin.Abstractions.Extensions;
@@ -29,7 +30,9 @@ public static class RobinExtensions
                 result = item.Accept(visitor, ctx.Data);
                 if (!result.IsResolved)
                 {
-                    shouldFallbackOnParentContext = false;
+                    // avoid precedence
+                    value = null;
+                    return true;
                 }
             }
             if (result.IsResolved)
@@ -38,7 +41,7 @@ public static class RobinExtensions
                 return true;
             }
         }
-        if (shouldFallbackOnParentContext && args.Parent is not null)
+        if (useParentFallback && args.Parent is not null)
             return path.Evaluate(visitor, args.Parent, out value, useParentFallback);
         value = null;
         return false;
