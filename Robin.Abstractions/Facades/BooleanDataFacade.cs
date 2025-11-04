@@ -8,7 +8,7 @@ internal sealed class BooleanDataFacade : IDataFacade
     public readonly static BooleanDataFacade Instance = new();
     private BooleanDataFacade() { }
 
-    public bool IsTrue(object? obj) => true.Equals(obj);
+    public bool IsTrue(object? obj) => obj is bool b && b;
     public bool IsCollection(object? _, [NotNullWhen(true)] out IEnumerator? collection)
     {
         collection = null;
