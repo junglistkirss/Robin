@@ -87,19 +87,23 @@ public class TweetsBencnmarks
 
     }
 
-   
-    [Benchmark]
-    public string RenderSingleTweets() => renderer.Render(template, tweets.First());
- 
-    [Benchmark]
-    public string RenderManyTweets() => renderer.Render(template, tweets.Take(5).ToArray());
 
     [Benchmark]
-    public string RenderEnumerableManyTweets() => renderer.Render(template, tweets.Take(50));
-    [Benchmark]
-    public string RenderEmptyTweets() => renderer.Render(template, Array.Empty<object>());
+    public string RenderSingleTweets() => renderer.Render(template, tweets[0]);
 
-     [Benchmark]
+    [Benchmark]
+    public string RenderTake5TweetsAsArray() => renderer.Render(template, tweets.Take(5).ToArray());
+
+    [Benchmark]
+    public string RenderTake50Tweets() => renderer.Render(template, tweets.Take(50));
+
+    [Benchmark]
+    public string RenderEmptyTweets() => renderer.Render(template, Array.Empty<Tweet>());
+
+    [Benchmark]
+    public string RenderEnumerableTweets() => renderer.Render(template, Enumerable.Empty<Tweet>());
+
+    [Benchmark]
     public string RenderTakeAllTweets() => renderer.Render(template, tweets.Take(100));
 
     [Benchmark]
