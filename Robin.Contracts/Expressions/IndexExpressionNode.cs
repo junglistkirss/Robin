@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Expressions;
 
-public sealed  class IndexExpressionNode(int constant) : IExpressionNode
+public sealed class IndexExpressionNode(int constant) : IExpressionNode
 {
     public int Constant { get; } = constant;
 

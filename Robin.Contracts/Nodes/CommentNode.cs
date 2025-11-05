@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Nodes;
 
-public sealed  class CommentNode(string message) : INode
+public sealed class CommentNode(string message) : INode
 {
     public string Message { get; } = message;
 

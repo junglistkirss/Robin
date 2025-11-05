@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Variables;
 
-public sealed  class IndexSegment(int index) : IVariableSegment
+public sealed class IndexSegment(int index) : IVariableSegment
 {
     public int Index => index;
 

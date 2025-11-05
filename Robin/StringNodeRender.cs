@@ -43,7 +43,7 @@ internal sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Str
 
     public NoValue VisitSection(SectionNode node, RenderContext<StringBuilder> context)
     {
-        object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        object? value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
         bool thruly = facade.IsTrue(value);
 
         if ((!node.Inverted && thruly) || (node.Inverted && !thruly))
@@ -56,7 +56,7 @@ internal sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Str
 
     public NoValue VisitPartialCall(PartialCallNode node, RenderContext<StringBuilder> context)
     {
-        object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        object? value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
 
         if (facade.IsTrue(value) && context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate))
         {
@@ -74,7 +74,7 @@ internal sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Str
     {
         if (facade.IsCollection(value, out IEnumerable? collection))
         {
-            foreach (object? item  in collection)
+            foreach (object? item in collection)
             {
                 RenderContext<StringBuilder> itemCtx = context with
                 {

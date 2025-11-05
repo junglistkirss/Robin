@@ -4,7 +4,7 @@ using Robin.Evaluator.System.Text.Json;
 
 namespace Robin.MustacheSpecs.Tests;
 
-public abstract  class BaseMustacheTests
+public abstract class BaseMustacheTests
 {
     public IServiceProvider ServiceProvider { get; private set; } = default!;
 

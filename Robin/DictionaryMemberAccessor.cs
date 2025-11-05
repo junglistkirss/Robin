@@ -17,6 +17,6 @@ internal sealed class DictionaryMemberAccessor : IMemberAccessor
             }
             return null;
         };
-        return true;;
+        return true; ;
     }
 }

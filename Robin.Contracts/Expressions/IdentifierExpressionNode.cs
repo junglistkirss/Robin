@@ -2,7 +2,7 @@ using Robin.Contracts.Variables;
 
 namespace Robin.Contracts.Expressions;
 
-public sealed  class IdentifierExpressionNode(VariablePath path) : IExpressionNode
+public sealed class IdentifierExpressionNode(VariablePath path) : IExpressionNode
 {
     public VariablePath Path { get; } = path;
 

@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Variables;
 
-public sealed  class MemberSegment(string memberName) : IVariableSegment
+public sealed class MemberSegment(string memberName) : IVariableSegment
 {
     public string MemberName => memberName;
 

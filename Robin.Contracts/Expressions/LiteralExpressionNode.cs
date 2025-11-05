@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Expressions;
 
-public sealed  class LiteralExpressionNode(string constant) : IExpressionNode
+public sealed class LiteralExpressionNode(string constant) : IExpressionNode
 {
     public string Constant { get; } = constant;
 

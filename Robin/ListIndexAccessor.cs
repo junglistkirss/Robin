@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using System.Xml.Serialization;
 
 namespace Robin.Abstractions.Accessors;
 
 internal sealed class ListIndexAccessor : IIndexAccessor
 {
     public readonly static ListIndexAccessor Instance = new();
-    private ListIndexAccessor(){}
+    private ListIndexAccessor() { }
     public bool TryGetIndex(int index, [NotNull] out Delegate value)
     {
         value = (object? source) =>
