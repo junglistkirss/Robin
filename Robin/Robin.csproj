@@ -7,8 +7,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
- <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Robin.Abstractions\Robin.Abstractions.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.7" />
   </ItemGroup>
-  
+
 </Project>

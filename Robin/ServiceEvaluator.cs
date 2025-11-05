@@ -5,7 +5,7 @@ using Robin.Contracts.Variables;
 
 namespace Robin.Abstractions;
 
-public sealed class ServiceEvaluator(ExpressionNodeVisitor visitor) : IEvaluator
+internal sealed class ServiceEvaluator(IExpressionNodeVisitor<DataContext> visitor) : IEvaluator
 {
     public object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade)
     {

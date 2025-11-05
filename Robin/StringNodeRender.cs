@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Robin.Abstractions;
 
-public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<StringBuilder>>
+internal sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<StringBuilder>>
 {
     public readonly static StringNodeRender Instance = new();
 

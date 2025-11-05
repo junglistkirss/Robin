@@ -1,11 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Accessors;
+using Robin.Abstractions.Context;
+using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions.Extensions;
 
-public static class EvaluatorExtensions
+public static class AccessorExtensions
 {
 
     public delegate bool TryGetMemberValue(string member, [NotNull] out Delegate? value);
@@ -37,13 +39,4 @@ public static class EvaluatorExtensions
             .AddKeyedSingleton<IIndexAccessor>(typeof(T), new DelegatedIndexAccessor(tryGet));
     }
 
-    public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)
-    {
-        return services
-            .AddMemoryCache()
-            .AddSingleton<ServiceEvaluator>()
-            .AddSingleton<ExpressionNodeVisitor>()
-            .AddSingleton<IEvaluator, ServiceEvaluator>()
-            .AddSingleton<IVariableSegmentVisitor<Type>, ServiceAccesorVisitor>();
-    }
 }

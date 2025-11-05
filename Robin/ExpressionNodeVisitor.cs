@@ -12,7 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Robin.Abstractions;
 
-public static class LambdaExpressionHelper
+internal static class LambdaExpressionHelper
 {
     public static Type GetInputType(this Delegate lambda)
     {
@@ -47,7 +47,7 @@ public static class LambdaExpressionHelper
     }
 }
 
-public record LambdaInfo
+internal record LambdaInfo
 {
     public required Type InputType { get; init; }
     public required Type ReturnType { get; init; }
@@ -59,7 +59,7 @@ public record LambdaInfo
     }
 }
 
-public sealed class TryDelegateChain(Type initialType)
+internal sealed class TryDelegateChain(Type initialType)
 {
     private readonly Type initialType = initialType;
     private readonly List<LambdaInfo> _chain = [];
@@ -151,7 +151,7 @@ public sealed class TryDelegateChain(Type initialType)
     }
 }
 
-public sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> accessorVisitor, IMemoryCache cache) : IExpressionNodeVisitor<DataContext>
+internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> accessorVisitor, IMemoryCache cache) : IExpressionNodeVisitor<DataContext>
 {
 
     private record struct CacheKey(Type Type, VariablePath Path);

@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Facades;
+using Robin.Contracts.Expressions;
 using Robin.Contracts.Nodes;
 using Robin.Contracts.Variables;
 using System.Collections.Immutable;
@@ -14,7 +16,18 @@ public static class RobinExtensions
     {
         return nodes.Aggregate(baseCollection ?? ImmutableDictionary<string, ImmutableArray<INode>>.Empty, (current, node) => node.Accept(PartialExtractor.Instance, current));
     }
+    private const string BaseEvaluatorKey = "base";
 
+    public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)
+    {
+        return services
+            .AddMemoryCache()
+            .AddKeyedSingleton<IEvaluator, ServiceEvaluator>(BaseEvaluatorKey)
+            .AddSingleton<IEvaluator, ServiceEvaluator>()
+            .AddSingleton<IExpressionNodeVisitor<DataContext>, ExpressionNodeVisitor>()
+            .AddSingleton<IEvaluator, ServiceEvaluator>()
+            .AddSingleton<IVariableSegmentVisitor<Type>, ServiceAccesorVisitor>();
+    }
 }
 
 

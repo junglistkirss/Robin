@@ -6,9 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace Robin.Evaluator.System.Text.Json;
 
-public interface IJsonEvaluator : IEvaluator { }
-
-internal sealed class JsonEvaluator(ServiceEvaluator evaluator) : IEvaluator, IJsonEvaluator
+internal sealed class JsonEvaluator(IEvaluator evaluator) : IJsonEvaluator
 {
     public object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade)
     {
