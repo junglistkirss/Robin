@@ -1,5 +1,6 @@
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
+using Robin.Variables;
 using System.Globalization;
 
 namespace Robin.Expressions;
@@ -54,23 +55,23 @@ public static class ExpressionParser
         // Literal
         if (currentToken.Type == ExpressionType.Literal)
         {
-            string value = lexer.GetValue(currentToken);
-            return new LiteralExpressionNode(value);
+            //string value = lexer.GetValue(currentToken);
+            return new LiteralExpressionNode(currentToken);
         }
 
         // Number
         if (currentToken.Type == ExpressionType.Number)
         {
-            string value = lexer.GetValue(currentToken);
-            int number = int.Parse(value, CultureInfo.InvariantCulture);
-            return new NumberExpressionNode(number);
+            //string value = lexer.GetValue(currentToken);
+            //int number = int.Parse(value, CultureInfo.InvariantCulture);
+            return new NumberExpressionNode(currentToken);
         }
 
         // Identifier (variable ou fonction)
         if (currentToken.Type == ExpressionType.Identifier)
         {
-            string name = lexer.GetValue(currentToken);
-
+            //Range range = currentToken;
+            
             // Vérifier si c'est un appel de fonction (PEEK sans consommer)
             if (lexer.TryPeekNextToken(out ExpressionToken? nextToken, out int endPosition) &&
                 nextToken.Value.Type == ExpressionType.LeftParenthesis)
@@ -132,11 +133,11 @@ public static class ExpressionParser
                     throw new Exception("')' attendu");
                 }
 
-                return new FunctionCallNode(name, [.. arguments]);
+                return new FunctionCallNode(currentToken, [.. arguments]);
             }
 
             // Sinon, c'est une variable
-            VariablePath chainPath = name.Parse();
+            VariablePath chainPath = lexer.ParseVariable(currentToken);
             return new IdentifierExpressionNode(chainPath);
         }
 

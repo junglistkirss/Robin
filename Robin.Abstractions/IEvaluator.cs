@@ -6,5 +6,5 @@ namespace Robin.Abstractions;
 
 public interface IEvaluator
 {
-    object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade);
+    object? Resolve(IExpressionNode expression, SourceContext data, out IDataFacade facade);
 }

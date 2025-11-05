@@ -1,12 +1,14 @@
 using Robin.Abstractions.Accessors;
+using Robin.Abstractions.Context;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Variables;
+using Robin.Nodes;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions;
 
-internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : IVariableSegmentVisitor<EvaluationResult, object?>
+internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : IVariableSegmentVisitor<EvaluationResult, SourceContext>
 {
     private bool TryGetMemberAccessor(object? data, [NotNullWhen(true)] out IMemberAccessor? accessor)
     {
@@ -49,19 +51,20 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
         return false;
     }
 
-    public EvaluationResult VisitIndex(IndexSegment segment, object? args)
+    public EvaluationResult VisitIndex(IndexSegment segment, SourceContext args)
     {
-        if (args is not null && TryGetIndexAccessor(args, out IIndexAccessor? typedAccessor) && typedAccessor.TryGetIndex(args, segment.Index, out object? value))
+        if (args is not null && int.TryParse(args.GetValue(segment.Index), out int index) && TryGetIndexAccessor(args.Data.Current, out IIndexAccessor? typedAccessor) && typedAccessor.TryGetIndex(args.Data.Current, index, out object? value))
 
             return new EvaluationResult(true, value);
 
         return new(false, null);
     }
 
-    public EvaluationResult VisitMember(MemberSegment segment, object? args)
+    public EvaluationResult VisitMember(MemberSegment segment, SourceContext args)
     {
-        if (args is not null && TryGetMemberAccessor(args, out IMemberAccessor? typedAccessor) 
-            && typedAccessor.TryGetMember(args, segment.MemberName, out object? value))
+        string memberName = args.GetValue(segment.MemberName);
+        if (args.Data.Current is not null && TryGetMemberAccessor(args.Data.Current, out IMemberAccessor? typedAccessor) 
+            && typedAccessor.TryGetMember(args.Data.Current, memberName, out object? value))
 
             return new EvaluationResult(true, value);
 
@@ -69,8 +72,8 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
         return new(false, null);
     }
 
-    public EvaluationResult VisitThis(ThisSegment segment, object? args)
+    public EvaluationResult VisitThis(ThisSegment segment, SourceContext args)
     {
-        return new(true, args);
+        return new(true, args.Data.Current);
     }
 }

@@ -1,8 +1,8 @@
 namespace Robin.Contracts.Nodes;
 
-public readonly struct CommentNode(string message) : INode
+public readonly struct CommentNode(Extract message) : INode
 {
-    public string Message { get; } = message;
+    public Extract Range { get; } = message;
 
     public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
     {

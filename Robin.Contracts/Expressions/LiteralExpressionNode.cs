@@ -1,8 +1,8 @@
 namespace Robin.Contracts.Expressions;
 
-public readonly struct LiteralExpressionNode(string constant) : IExpressionNode
+public readonly struct LiteralExpressionNode(Extract constant) : IExpressionNode
 {
-    public string Constant { get; } = constant;
+    public Extract Constant { get; } = constant;
 
     public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)
     {

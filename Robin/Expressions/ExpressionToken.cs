@@ -1,3 +1,5 @@
+using Robin.Contracts;
+using Robin.Nodes;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -19,5 +21,13 @@ public readonly struct ExpressionToken(ExpressionType type, int start, int lengt
     private string GetDebuggerDisplay()
     {
         return $"{Type} [{Start}..{Start + Length})";
+    }
+    public static implicit operator Range (ExpressionToken token)
+    {
+        return token.Start..(token.Start + token.Length);
+    }
+    public static implicit operator Extract(ExpressionToken token)
+    {
+        return new(token.Start, (token.Start + token.Length));
     }
 }

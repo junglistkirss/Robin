@@ -1,5 +1,6 @@
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Nodes;
+using Robin.Contracts.Variables;
 using System.Collections.Immutable;
 
 namespace Robin.tests;
@@ -21,7 +22,7 @@ public class NodeParserTests
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
         TextNode textNode = Assert.IsType<TextNode>(node);
-        Assert.Equal("text", textNode.Text);
+        Assert.Equal("text", source[(Range)textNode.Text]);
     }
 
 
@@ -32,7 +33,7 @@ public class NodeParserTests
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
         CommentNode com = Assert.IsType<CommentNode>(node);
-        Assert.Equal("comment", com.Message);
+        Assert.Equal("comment", source[(Range)com.Range]);
     }
 
     [Fact]
@@ -45,7 +46,9 @@ public class NodeParserTests
         Assert.False(var.IsUnescaped);
         Assert.NotNull(var.Expression);
         IdentifierExpressionNode id = Assert.IsType<IdentifierExpressionNode>(var.Expression);
-        Assert.Equal("var", id.Path);
+        IVariableSegment first = Assert.Single(id.Path.Segments);
+        MemberSegment member = Assert.IsType<MemberSegment>(first);
+        Assert.Equal("var", source[(Range)member.MemberName]);
     }
 
     [Fact]
@@ -58,7 +61,9 @@ public class NodeParserTests
         Assert.True(esc.IsUnescaped);
         Assert.NotNull(esc.Expression);
         IdentifierExpressionNode id = Assert.IsType<IdentifierExpressionNode>(esc.Expression);
-        Assert.Equal("esc", id.Path);
+        IVariableSegment first = Assert.Single(id.Path.Segments);
+        MemberSegment member = Assert.IsType<MemberSegment>(first);
+        Assert.Equal("esc", source[(Range)member.MemberName]);
     }
 
     [Fact]
@@ -72,7 +77,9 @@ public class NodeParserTests
         Assert.Empty(section.Children);
         Assert.NotNull(section.Expression);
         IdentifierExpressionNode id = Assert.IsType<IdentifierExpressionNode>(section.Expression);
-        Assert.Equal("sec", id.Path);
+        IVariableSegment first = Assert.Single(id.Path.Segments);
+        MemberSegment member = Assert.IsType<MemberSegment>(first);
+        Assert.Equal("sec", source[(Range)member.MemberName]);
     }
 
     [Fact]
@@ -86,7 +93,9 @@ public class NodeParserTests
         Assert.Empty(section.Children);
         Assert.NotNull(section.Expression);
         IdentifierExpressionNode id = Assert.IsType<IdentifierExpressionNode>(section.Expression);
-        Assert.Equal("inv", id.Path);
+        IVariableSegment first = Assert.Single(id.Path.Segments);
+        MemberSegment member = Assert.IsType<MemberSegment>(first);
+        Assert.Equal("inv", source[(Range)member.MemberName]);
     }
 
     [Fact]
@@ -99,10 +108,12 @@ public class NodeParserTests
         Assert.False(section.Inverted);
         Assert.NotNull(section.Expression);
         IdentifierExpressionNode block = Assert.IsType<IdentifierExpressionNode>(section.Expression);
-        Assert.Equal("block", block.Path);
+        IVariableSegment first = Assert.Single(block.Path.Segments);
+        MemberSegment member = Assert.IsType<MemberSegment>(first);
+        Assert.Equal("block", source[(Range)member.MemberName]);
         INode content = Assert.Single(section.Children);
         TextNode contentText = Assert.IsType<TextNode>(content);
-        Assert.Equal("content", contentText.Text);
+        Assert.Equal("content", source[(Range)contentText.Text]);
     }
 
     [Fact]
@@ -112,7 +123,7 @@ public class NodeParserTests
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
         PartialDefineNode partial = Assert.IsType<PartialDefineNode>(node);
-        Assert.Equal("partial", partial.PartialName);
+        Assert.Equal("partial", source[(Range)partial.PartialName]);
         Assert.Empty(partial.Children);
     }
 
@@ -123,10 +134,10 @@ public class NodeParserTests
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
         PartialDefineNode partial = Assert.IsType<PartialDefineNode>(node);
-        Assert.Equal("block", partial.PartialName);
+        Assert.Equal("block", source[(Range)partial.PartialName]);
         INode content = Assert.Single(partial.Children);
         TextNode contentText = Assert.IsType<TextNode>(content);
-        Assert.Equal("content", contentText.Text);
+        Assert.Equal("content", source[(Range)contentText.Text]);
     }
 
     [Fact]
@@ -136,22 +147,25 @@ public class NodeParserTests
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
         PartialCallNode partial = Assert.IsType<PartialCallNode>(node);
-        Assert.Equal("partial", partial.PartialName);
+        Assert.Equal("partial", source[(Range)partial.PartialName]);
         Assert.NotNull(partial.Expression);
         IdentifierExpressionNode block = Assert.IsType<IdentifierExpressionNode>(partial.Expression);
-        Assert.Equal(".", block.Path);
+        IVariableSegment first = Assert.Single(block.Path.Segments);
+        ThisSegment member = Assert.IsType<ThisSegment>(first);
     }
 
     [Fact]
     public void CallPartialVariable()
     {
-        ReadOnlySpan<char> source = "{{> partial test.prop }}".AsSpan();
+        ReadOnlySpan<char> source = "{{> partial test }}".AsSpan();
         ImmutableArray<INode> nodes = source.Parse();
         INode node = Assert.Single(nodes);
         PartialCallNode partial = Assert.IsType<PartialCallNode>(node);
-        Assert.Equal("partial", partial.PartialName);
+        Assert.Equal("partial", source[(Range)partial.PartialName]);
         Assert.NotNull(partial.Expression);
         IdentifierExpressionNode block = Assert.IsType<IdentifierExpressionNode>(partial.Expression);
-        Assert.Equal("test.prop", block.Path);
+        IVariableSegment first = Assert.Single(block.Path.Segments);
+        MemberSegment member = Assert.IsType<MemberSegment>(first);
+        Assert.Equal("test", source[(Range)member.MemberName]);
     }
 }

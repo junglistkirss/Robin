@@ -1,21 +1,25 @@
+using Robin.Contracts;
+using Robin.Nodes;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Expressions;
 
 public ref struct ExpressionLexer
 {
-    private readonly ReadOnlySpan<char> _source;
+    private readonly NodeLexer _source;
+    private readonly Extract _range;
     private int _position;
 
-    public ExpressionLexer(ReadOnlySpan<char> source)
+    public ExpressionLexer(ref NodeLexer lexer, Extract range)
     {
-        _source = source;
-        _position = 0;
+        _source = lexer;
+        _range = range;
+        _position = _range.Start;
     }
 
     private readonly void SkipWhitespace(ref int pos)
     {
-        while (pos < _source.Length && char.IsWhiteSpace(_source[pos]))
+        while (pos < _range.End && char.IsWhiteSpace(_source[pos]))
         {
             pos++;
         }
@@ -42,7 +46,7 @@ public ref struct ExpressionLexer
     private readonly bool TryGetNextTokenInternal([NotNullWhen(true)] out ExpressionToken? token, ref int pos)
     {
         SkipWhitespace(ref pos);
-        if (pos >= _source.Length)
+        if (pos >= _range.End)
         {
             token = null;
             return false;
@@ -69,7 +73,7 @@ public ref struct ExpressionLexer
             char quote = _source[pos];
             pos++;
             start++;
-            while (pos < _source.Length && _source[pos] != quote)
+            while (pos < _range.End && _source[pos] != quote)
             {
                 pos++;
             }
@@ -80,7 +84,7 @@ public ref struct ExpressionLexer
         else if (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.')
         {
             bool isOnlyDigits = char.IsDigit(_source[pos]);
-            while (pos < _source.Length && (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.'))
+            while (pos < _range.End && (char.IsLetterOrDigit(_source[pos]) || _source[pos] is '_' or '.' or '[' or ']' or '.'))
             {
                 isOnlyDigits = isOnlyDigits && (char.IsDigit(_source[pos]));
                 pos++;
@@ -96,9 +100,10 @@ public ref struct ExpressionLexer
         throw new InvalidTokenException($"Invalid expression token found : \"{_source[pos]}\"");
     }
 
-    public readonly string GetValue(ExpressionToken token)
-    {
-        ReadOnlySpan<char> x = _source.Slice(token.Start, token.Length);
-        return x.ToString();
-    }
+    //public readonly ReadOnlySpan<char> GetValue(Range token)
+    //{
+    //    return _source[token];
+    //}
+    public readonly ReadOnlySpan<char> this[Extract extract] => _source[extract];
+    public readonly char this[int token] => _source[token];
 }

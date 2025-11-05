@@ -1,3 +1,4 @@
+using Robin.Contracts;
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Nodes;
 using Robin.Contracts.Variables;
@@ -34,13 +35,13 @@ public static class NodeParser
             switch (token.Value.Type)
             {
                 case TokenType.Text:
-                    nodes.Add(new TextNode(lexer.GetValue(token.Value)));
+                    nodes.Add(new TextNode(token.Value));
                     break;
                 case TokenType.Variable:
-                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), false));
+                    nodes.Add(lexer.ParseVariable(token.Value, false));
                     break;
                 case TokenType.UnescapedVariable:
-                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), true));
+                    nodes.Add(lexer.ParseVariable(token.Value, true));
                     break;
                 case TokenType.SectionOpen:
                     nodes.Add(ParseSection(ref lexer, token.Value, false));
@@ -49,16 +50,16 @@ public static class NodeParser
                     nodes.Add(ParseSection(ref lexer, token.Value, true));
                     break;
                 case TokenType.Comment:
-                    nodes.Add(new CommentNode(lexer.GetValue(token.Value)));
+                    nodes.Add(new CommentNode(token.Value));
                     break;
                 case TokenType.PartialDefine:
-                    nodes.Add(ParsePartial(ref lexer, token.Value));
+                    nodes.Add(lexer.ParsePartial(token.Value));
                     break;
                 case TokenType.PartialCall:
-                    nodes.Add(ParsePartialCall(lexer.GetValue(token.Value)));
+                    nodes.Add(lexer.ParsePartialCall(token.Value));
                     break;
                 case TokenType.LineBreak:
-                    nodes.Add(AggregateLineBreaks(ref lexer));
+                    nodes.Add(lexer.AggregateLineBreaks());
                     break;
                 default:
                     throw new InvalidTokenException($"Unsupported token type {token.Value.Type}");
@@ -67,7 +68,7 @@ public static class NodeParser
         return [.. nodes];
     }
 
-    private static LineBreakNode AggregateLineBreaks(ref NodeLexer lexer)
+    private static LineBreakNode AggregateLineBreaks(this ref NodeLexer lexer)
     {
         int c = 1;
         while (lexer.TryPeekNextToken(out Token? nextToken, out int position) && nextToken.Value.Type == TokenType.LineBreak)
@@ -78,111 +79,113 @@ public static class NodeParser
         return new LineBreakNode(c);
     }
 
-    private static VariableNode ParseVariable(string variableExpression, bool isEscaped)
+    private static VariableNode ParseVariable(this ref NodeLexer lexer, Extract range, bool isEscaped)
     {
-        ExpressionLexer exprLexer = new(variableExpression.AsSpan());
+        ExpressionLexer exprLexer = new(ref lexer, range);
         IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
 
         return new VariableNode(node, isEscaped);
     }
 
-    private static PartialCallNode ParsePartialCall(string variableExpression)
+    private static PartialCallNode ParsePartialCall(this ref NodeLexer lexer, Extract variableExpression)
     {
-        int firstSpace = variableExpression.IndexOf(' ');
-        if (firstSpace == -1)
+        int firstSpace = 0;
+        int len = variableExpression.Length;
+        while (firstSpace < len && !char.IsWhiteSpace(lexer[variableExpression.Start + firstSpace]))
+            firstSpace++;
+        if (firstSpace < len)
         {
-            return new PartialCallNode(variableExpression, That);
+            ExpressionLexer exprLexer = new(ref lexer, variableExpression.Offset(firstSpace+1));
+            IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
+            return new PartialCallNode(variableExpression.Limit(firstSpace), node);
         }
         else
         {
-            string name = variableExpression[..firstSpace];
-            ExpressionLexer exprLexer = new(variableExpression[(firstSpace + 1)..].AsSpan());
-            IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
-            return new PartialCallNode(name, node);
+            return new PartialCallNode(variableExpression, That);
         }
     }
 
-    private static PartialDefineNode ParsePartial(ref NodeLexer lexer, Token startToken)
+    private static PartialDefineNode ParsePartial(this ref NodeLexer lexer, Token startToken)
     {
-        string name = lexer.GetValue(startToken);
+        ReadOnlySpan<char> name = lexer[startToken];
         List<INode> nodes = [];
         while (lexer.TryGetNextToken(out Token? token))
         {
-            if (token.Value.Type == TokenType.SectionClose && lexer.GetValue(token.Value).Equals(name))
+            if (token.Value.Type == TokenType.SectionClose && lexer[token.Value].SequenceEqual(name))
                 break;
 
             switch (token.Value.Type)
             {
                 case TokenType.Text:
-                    nodes.Add(new TextNode(lexer.GetValue(token.Value)));
+                    nodes.Add(new TextNode(token.Value));
                     break;
                 case TokenType.Variable:
-                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), false));
+                    nodes.Add(lexer.ParseVariable(token.Value, false));
                     break;
                 case TokenType.UnescapedVariable:
-                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), true));
+                    nodes.Add(lexer.ParseVariable(token.Value, true));
                     break;
                 case TokenType.SectionOpen:
-                    nodes.Add(ParseSection(ref lexer, token.Value, false));
+                    nodes.Add(lexer.ParseSection(token.Value, false));
                     break;
                 case TokenType.InvertedSection:
-                    nodes.Add(ParseSection(ref lexer, token.Value, true));
+                    nodes.Add(lexer.ParseSection(token.Value, true));
                     break;
                 case TokenType.Comment:
-                    nodes.Add(new CommentNode(lexer.GetValue(token.Value)));
+                    nodes.Add(new CommentNode(token.Value));
                     break;
                 case TokenType.PartialCall:
-                    nodes.Add(ParsePartialCall(lexer.GetValue(token.Value)));
+                    nodes.Add(lexer.ParsePartialCall(token.Value));
                     break;
                 case TokenType.PartialDefine:
-                    nodes.Add(ParsePartial(ref lexer, token.Value));
+                    nodes.Add(lexer.ParsePartial(token.Value));
                     break;
                 case TokenType.LineBreak:
-                    nodes.Add(AggregateLineBreaks(ref lexer));
+                    nodes.Add(lexer.AggregateLineBreaks());
                     break;
                 default:
                     throw new InvalidTokenException($"Unsupported token type {token.Value.Type} in section");
             }
         }
-        PartialDefineNode partial = new(name, [.. nodes]);
+        PartialDefineNode partial = new(startToken, [.. nodes]);
 
         return partial;
 
     }
 
-    private static SectionNode ParseSection(ref NodeLexer lexer, Token startToken, bool inverted)
+    private static SectionNode ParseSection(this ref NodeLexer lexer, Token startToken, bool inverted)
     {
-        string name = lexer.GetValue(startToken);
-        ExpressionLexer exprLexer = new(name.AsSpan());
+        ReadOnlySpan<char> name = lexer[startToken];
+        ExpressionLexer exprLexer = new(ref lexer, startToken);
         IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
         List<INode> nodes = [];
         while (lexer.TryGetNextToken(out Token? token))
         {
-            if (token.Value.Type == TokenType.SectionClose && lexer.GetValue(token.Value).Equals(name))
+            if (token.Value.Type == TokenType.SectionClose && lexer[token.Value].SequenceEqual(name))
                 break;
 
             switch (token.Value.Type)
             {
                 case TokenType.Text:
-                    nodes.Add(new TextNode(lexer.GetValue(token.Value)));
+                    nodes.Add(new TextNode(token.Value));
                     break;
                 case TokenType.Variable:
-                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), false));
+                    nodes.Add(lexer.ParseVariable(token.Value, false));
                     break;
                 case TokenType.UnescapedVariable:
-                    nodes.Add(ParseVariable(lexer.GetValue(token.Value), true));
+                    nodes.Add(lexer.ParseVariable(token.Value, true));
                     break;
                 case TokenType.SectionOpen:
-                    nodes.Add(ParseSection(ref lexer, token.Value, false));
+                    nodes.Add(lexer.ParseSection(token.Value, false));
                     break;
                 case TokenType.InvertedSection:
-                    nodes.Add(ParseSection(ref lexer, token.Value, true));
+                    nodes.Add(lexer.ParseSection(token.Value, true));
                     break;
                 case TokenType.Comment:
-                    nodes.Add(new CommentNode(lexer.GetValue(token.Value)));
+                    nodes.Add(new CommentNode(token.Value));
                     break;
                 case TokenType.LineBreak:
-                    nodes.Add(AggregateLineBreaks(ref lexer));
+                    nodes.Add(lexer.AggregateLineBreaks());
                     break;
                 default:
                     throw new InvalidTokenException($"Unsupported token type {token.Value.Type} in section");

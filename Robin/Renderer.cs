@@ -1,7 +1,5 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Robin.Abstractions;
 using Robin.Abstractions.Context;
-using Robin.Abstractions.Extensions;
 using Robin.Abstractions.Helpers;
 using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
@@ -20,15 +18,19 @@ public static class Renderer
         }
     }
 
-    public static T Render<T>(this T defaultBuilder, INodeVisitor<NoValue, RenderContext<T>> visitor, IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
+    public static T Render<T>(this T defaultBuilder, string source, INodeVisitor<NoValue, RenderContext<T>> visitor, IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
         where T : class
     {
         DataContext dataContext = new(data, null);
-        helperConfig?.Invoke(dataContext.Helper);
+        //helperConfig?.Invoke(dataContext.Helper);
         RenderContext<T> ctx = new()
         {
-            Partials = template.ExtractsPartials(),
-            Data = dataContext,
+            Context = new SourceContext
+            {
+                Data = dataContext,
+                Source = source,
+            },
+            //Partials = template.ExtractsPartials(source),
             Evaluator = evaluator,
             Builder = defaultBuilder
         };
@@ -40,10 +42,10 @@ public static class Renderer
         return defaultBuilder;
     }
 
-    public static string RenderString(this IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
+    public static string RenderString(this IEvaluator evaluator, string source, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
     {
         StringBuilder sb = new();
-        Render(sb, StringNodeRender.Instance, evaluator, template, data, helperConfig);
+        Render(sb, source, StringNodeRender.Instance, evaluator, template, data, helperConfig);
         return sb.ToString();
     }
 }

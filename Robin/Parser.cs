@@ -15,10 +15,10 @@ public static class Parser
         return nodes;
     }
 
-    public static IExpressionNode? ParseExpression(this ReadOnlySpan<char> source)
-    {
-        ExpressionLexer lexer = new(source);
-        IExpressionNode? node = lexer.Parse();
-        return node;
-    }
+    //public static IExpressionNode? ParseExpression(this ReadOnlySpan<char> source)
+    //{
+    //    ExpressionLexer lexer = new(source);
+    //    IExpressionNode? node = lexer.Parse();
+    //    return node;
+    //}
 }

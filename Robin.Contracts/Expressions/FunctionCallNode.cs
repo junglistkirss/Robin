@@ -2,9 +2,9 @@ using System.Collections.Immutable;
 
 namespace Robin.Contracts.Expressions;
 
-public readonly struct FunctionCallNode(string functionName, ImmutableArray<IExpressionNode> arguments) : IExpressionNode
+public readonly struct FunctionCallNode(Extract functionName, ImmutableArray<IExpressionNode> arguments) : IExpressionNode
 {
-    public string FunctionName { get; } = functionName;
+    public Extract FunctionName { get; } = functionName;
     public ImmutableArray<IExpressionNode> Arguments { get; } = arguments;
 
     public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)

@@ -3,9 +3,9 @@ using System.Diagnostics.Contracts;
 
 namespace Robin.Abstractions.Context;
 
-public record class DataContext(object? Data, DataContext? Parent = null)
+public record class DataContext(object? Current, DataContext? Parent = null)
 {
-    public Helper Helper { get; } = new();
+    public readonly static DataContext Empty = new(null, null); 
 
     [Pure]
     public DataContext Child(object? data) => new(data, this);

@@ -1,8 +1,8 @@
 namespace Robin.Contracts.Variables;
 
-public readonly struct MemberSegment(string memberName) : IVariableSegment
+public readonly struct MemberSegment(Extract memberName) : IVariableSegment
 {
-    public string MemberName => memberName;
+    public Extract MemberName => memberName;
 
     public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)
     {

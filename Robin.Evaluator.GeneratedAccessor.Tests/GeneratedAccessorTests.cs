@@ -5,6 +5,9 @@ using Robin.Abstractions.Extensions;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
+using Robin.Expressions;
+using Robin.Nodes;
+using Robin.Variables;
 using System.Collections.Immutable;
 
 namespace Robin.Evaluator.GeneratedAccessor.Tests;
@@ -36,7 +39,9 @@ public class GeneratedAccessorTests
             IntValue = 42,
             StringValue = "Test"
         };
-        VariablePath path = VariableParser.Parse(".");
+        NodeLexer lexer = new(".");
+        ExpressionLexer eLexer = new ExpressionLexer(ref lexer, Range.All);
+        VariablePath path = VariableParser.ParseVariable(ref eLexer, Range.All);
         Assert.IsType<ThisSegment>(Assert.Single(path.Segments));
         IExpressionNode expression = new IdentifierExpressionNode(path);
         DataContext context = new(model, null);
@@ -52,9 +57,11 @@ public class GeneratedAccessorTests
     {
         IEvaluator eval = ServiceProvider.GetRequiredService<IEvaluator>();
         TestModel model = new();
-        VariablePath path = VariableParser.Parse("IntValue");
+        NodeLexer lexer = new("IntValue");
+        ExpressionLexer eLexer = new ExpressionLexer(ref lexer, Range.All);
+        VariablePath path = VariableParser.ParseVariable(ref eLexer, Range.All);
         MemberSegment member = Assert.IsType<MemberSegment>(Assert.Single(path.Segments));
-        Assert.Equal("IntValue", member.MemberName);
+        Assert.Equal("IntValue", lexer[member.MemberName]);
         IExpressionNode expression = new IdentifierExpressionNode(path);
         DataContext context = new(model, null);
         object? rawValue = eval.Resolve(expression, context, out IDataFacade facade);

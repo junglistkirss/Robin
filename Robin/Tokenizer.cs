@@ -1,3 +1,4 @@
+using Robin.Contracts;
 using Robin.Expressions;
 using Robin.Nodes;
 
@@ -21,7 +22,8 @@ public static class Tokenizer
     public static ExpressionToken[] TokenizeExpression(this ReadOnlySpan<char> source)
     {
         List<ExpressionToken> tokens = [];
-        ExpressionLexer lexer = new(source);
+        NodeLexer baseLexer = new(source);
+        ExpressionLexer lexer = new(ref baseLexer, Extract.Full(source.Length));
 
         while (lexer.TryGetNextToken(out ExpressionToken? token))
         {

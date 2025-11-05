@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Nodes;
 
-public interface INodeVisitor<TOut, TArgs>
+public interface INodeVisitor<TOut, in TArgs>
 {
     TOut VisitComment(CommentNode node, TArgs args);
     TOut VisitPartialDefine(PartialDefineNode node, TArgs args);

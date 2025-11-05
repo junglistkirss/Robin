@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Accessors;
+using Robin.Abstractions.Context;
 using Robin.Contracts.Variables;
 using System.Diagnostics.CodeAnalysis;
 
@@ -45,7 +46,7 @@ public static class EvaluatorExtensions
     {
         services.AddSingleton<ServiceEvaluator>();
         services.AddSingleton<IEvaluator, ServiceEvaluator>();
-        services.AddSingleton<IVariableSegmentVisitor<EvaluationResult, object?>, ServiceAccesorVisitor>();
+        services.AddSingleton<IVariableSegmentVisitor<EvaluationResult, SourceContext>, ServiceAccesorVisitor>();
         return services;
     }
 }

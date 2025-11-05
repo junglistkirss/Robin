@@ -15,7 +15,7 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
 
     public NoValue VisitText(TextNode node, RenderContext<StringBuilder> context)
     {
-        context.Builder.Append(node.Text);
+        context.Builder.Append(context.Context.GetValue(node.Text));
         return NoValue.Instance;
     }
     public NoValue VisitComment(CommentNode node, RenderContext<StringBuilder> context)
@@ -28,27 +28,27 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
         return NoValue.Instance;
     }
 
-    public NoValue VisitVariable(VariableNode node, RenderContext<StringBuilder> context)
+    public NoValue VisitVariable(VariableNode node, RenderContext<StringBuilder> args)
     {
-        object? value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        object? value = args.Evaluator.Resolve(node.Expression, args.Context, out IDataFacade facade);
         if (facade.IsTrue(value))
         {
             if (node.IsUnescaped)
-                context.Builder.Append(value?.ToString());
+                args.Builder.Append(value?.ToString());
             else
-                context.Builder.Append(WebUtility.HtmlEncode(value?.ToString()));
+                args.Builder.Append(WebUtility.HtmlEncode(value?.ToString()));
         }
         return NoValue.Instance;
     }
 
-    public NoValue VisitSection(SectionNode node, RenderContext<StringBuilder> context)
+    public NoValue VisitSection(SectionNode node, RenderContext<StringBuilder> args)
     {
-        object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        object? value = args.Evaluator.Resolve(node.Expression, args.Context, out IDataFacade facade);
         bool thruly = facade.IsTrue(value);
 
         if ((!node.Inverted && thruly) || (node.Inverted && !thruly))
         {
-            return RenderTree(context, value, facade, node.Children);
+            return RenderTree(args, value, facade, node.Children);
         }
 
         return NoValue.Instance;
@@ -56,30 +56,33 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
 
     public NoValue VisitPartialCall(PartialCallNode node, RenderContext<StringBuilder> context)
     {
-        object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        //object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
 
-        if (facade.IsTrue(value) && context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate))
-        {
-            context = context with
-            {
-                Partials = partialTemplate.ExtractsPartials(context.Partials)
-            };
-            return RenderTree(context, value, facade, partialTemplate);
+        //if (facade.IsTrue(value) && context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate))
+        //{
+        //    context = context with
+        //    {
+        //        Partials = partialTemplate.ExtractsPartials(context.Partials)
+        //    };
+        //    return RenderTree(context, value, facade, partialTemplate);
 
-        }
+        //}
         return NoValue.Instance;
     }
 
-    private NoValue RenderTree(RenderContext<StringBuilder> context, object? value, IDataFacade facade, ImmutableArray<INode> partialTemplate)
+    private NoValue RenderTree(RenderContext<StringBuilder> args, object? value, IDataFacade facade, ImmutableArray<INode> partialTemplate)
     {
         if (facade.IsCollection(value, out IEnumerator? collection))
         {
             while (collection.MoveNext())
             {
                 object? item = collection.Current;
-                RenderContext<StringBuilder> itemCtx = context with
+                RenderContext<StringBuilder> itemCtx = args with
                 {
-                    Data = context.Data?.Child(item) ?? new DataContext(item, null),
+                    Context = args.Context with
+                    {
+                        Data = args.Context.Data?.Child(item) ?? new DataContext(item, null),
+                    }
                 };
                 ImmutableArray<INode>.Enumerator enumerator = partialTemplate.GetEnumerator();
                 while (enumerator.MoveNext())
@@ -90,9 +93,12 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
         }
         else
         {
-            RenderContext<StringBuilder> innerCtx = context with
+            RenderContext<StringBuilder> innerCtx = args with
             {
-                Data = context.Data?.Child(value) ?? new DataContext(value, null),
+                Context = args.Context with
+                {
+                    Data = args.Context.Data?.Child(value) ?? new DataContext(value, null),
+                }
             };
             ImmutableArray<INode>.Enumerator enumerator = partialTemplate.GetEnumerator();
             while (enumerator.MoveNext())

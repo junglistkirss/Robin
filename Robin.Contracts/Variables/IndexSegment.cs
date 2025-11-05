@@ -1,8 +1,8 @@
 namespace Robin.Contracts.Variables;
 
-public readonly struct IndexSegment(int index) : IVariableSegment
+public readonly struct IndexSegment(Extract index) : IVariableSegment
 {
-    public int Index => index;
+    public Extract Index => index;
 
     public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)
     {

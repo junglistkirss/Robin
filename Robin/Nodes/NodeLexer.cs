@@ -1,3 +1,4 @@
+using Robin.Contracts;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Nodes;
@@ -232,9 +233,8 @@ public ref struct NodeLexer
         }
         return -1;
     }
-    public readonly string GetValue(Token token)
-    {
-        ReadOnlySpan<char> x = _source.Slice(token.Start, token.Length);
-        return x.ToString();
-    }
+    public readonly ReadOnlySpan<char> this[Extract token] => _source[(Range)token];
+    public readonly char this[int token] => _source[token];
 }
+
+
