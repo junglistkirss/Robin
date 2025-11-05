@@ -6,15 +6,17 @@ namespace Robin.Abstractions.Accessors;
 internal sealed class DictionaryMemberAccessor : IMemberAccessor
 {
     public readonly static DictionaryMemberAccessor Instance = new();
-    private DictionaryMemberAccessor(){}
-    public bool TryGetMember(object? source, string name, [MaybeNullWhen(false)] out object? value)
+    private DictionaryMemberAccessor() { }
+    public bool TryGetMember(string name, [NotNull] out Delegate value)
     {
-        if (source is IDictionary dict && dict.Contains(name))
+        value = (object? source) =>
         {
-            value = dict[name];
-            return true;
-        }
-        value = null;
-        return false;
+            if (source is IDictionary dict && dict.Contains(name))
+            {
+                return dict[name];
+            }
+            return null;
+        };
+        return true;;
     }
 }

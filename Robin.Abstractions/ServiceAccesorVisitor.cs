@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Accessors;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Variables;
@@ -9,30 +11,19 @@ using System.Reflection;
 
 namespace Robin.Abstractions;
 
-internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : IVariableSegmentVisitor<EvaluationResult, object?>
+internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider, IMemoryCache cache) : IVariableSegmentVisitor<Type>
 {
-    private static ConcurrentDictionary<Type, IMemberAccessor?> _membersAccessors = [];
-    private static ConcurrentDictionary<Type, IIndexAccessor?> _indexAccessors = [];
-
-    private bool TryGetMemberAccessor(object? data, [NotNullWhen(true)] out IMemberAccessor? accessor)
+    private bool TryGetMemberAccessor(Type dataType, [NotNullWhen(true)] out IMemberAccessor? accessor)
     {
-        if (data is null)
-        {
-            accessor = null;
-            return false;
-        }
-        if (data is IDictionary)
+        if (dataType == typeof(IDictionary))
         {
             accessor = DictionaryMemberAccessor.Instance;
         }
         else
         {
-
-            Type type = data.GetType();
-            accessor = _membersAccessors.GetOrAdd(type, (t) =>
+            accessor = cache.GetOrCreate(dataType, (t) =>
             {
-                Type type = typeof(IMemberAccessor<>).MakeGenericType(t);
-                IMemberAccessor? memberAccessor = (IMemberAccessor?)serviceProvider.GetService(type);
+                IMemberAccessor? memberAccessor = serviceProvider.GetKeyedService<IMemberAccessor>(t.Key);
                 if (memberAccessor is not null)
                     return memberAccessor;
 
@@ -44,25 +35,18 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
         return accessor is not null;
     }
 
-    private bool TryGetIndexAccessor(object? data, [NotNullWhen(true)] out IIndexAccessor? accessor)
+    private bool TryGetIndexAccessor(Type dataType, [NotNullWhen(true)] out IIndexAccessor? accessor)
     {
-        if (data is null)
-        {
-            accessor = null;
-            return false;
-        }
-         if (data is IList)
+        if (dataType == typeof(IList))
         {
             accessor = ListIndexAccessor.Instance;
             return true;
         }
         else
         {
-             Type type = data.GetType();
-            accessor = _indexAccessors.GetOrAdd(type, (t) =>
+            accessor = cache.GetOrCreate(dataType, (t) =>
             {
-                Type type = typeof(IIndexAccessor<>).MakeGenericType(t);
-                IIndexAccessor? indexAccessor = (IIndexAccessor?)serviceProvider.GetService(type);
+                IIndexAccessor? indexAccessor = serviceProvider.GetKeyedService<IIndexAccessor>(t.Key);
                 if (indexAccessor is not null)
                     return indexAccessor;
 
@@ -70,33 +54,36 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
                 return indexAccessor;
             });
         }
-        
-       
+
+
         return accessor is not null;
     }
 
-    public EvaluationResult VisitIndex(IndexSegment segment, object? args)
+    public bool VisitIndex(IndexSegment segment, Type args, [NotNull] out Delegate @delegate)
     {
-        if (args is not null && TryGetIndexAccessor(args, out IIndexAccessor? typedAccessor) && typedAccessor.TryGetIndex(args, segment.Index, out object? value))
-
-            return new EvaluationResult(true, value);
-
-        return new(false, null);
+        if (TryGetIndexAccessor(args, out IIndexAccessor? typedAccessor))
+        {
+            typedAccessor.TryGetIndex(segment.Index, out @delegate);
+            return true;
+        }
+        @delegate = (Func<object?, object?>)((object? _) => null);
+        return false;
     }
 
-    public EvaluationResult VisitMember(MemberSegment segment, object? args)
+    public bool VisitMember(MemberSegment segment, Type args, [NotNull] out Delegate @delegate)
     {
-        if (args is not null && TryGetMemberAccessor(args, out IMemberAccessor? typedAccessor)
-            && typedAccessor.TryGetMember(args, segment.MemberName, out object? value))
-
-            return new EvaluationResult(true, value);
-
-
-        return new(false, null);
+        if (TryGetMemberAccessor(args, out IMemberAccessor? typedAccessor))
+        {
+            typedAccessor.TryGetMember(segment.MemberName, out @delegate);
+            return true;
+        }
+        @delegate = (Func<object?, object?>)((object? _) => null);
+        return false;
     }
 
-    public EvaluationResult VisitThis(ThisSegment segment, object? args)
+    public bool VisitThis(ThisSegment segment, Type _, [NotNull] out Delegate @delegate)
     {
-        return new(true, args);
+        @delegate = (Func<object?, object?>)(x => x);
+        return true;
     }
 }

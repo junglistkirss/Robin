@@ -7,32 +7,24 @@ namespace Robin.Evaluator.System.Text.Json;
 
 public static class JsonAccessorExtensions
 {
-
+    public const string JsonEvaluatorKey = "json";
     public static IServiceCollection AddJsonAccessors(this IServiceCollection services)
     {
         return services
+            .AddKeyedSingleton<IJsonEvaluator, JsonEvaluator>(JsonEvaluatorKey)
+            .AddSingleton<IJsonEvaluator, JsonEvaluator>()
             .AddIndexAccessor<JsonArray>(TryGetIndexValue)
             .AddMemberAccessor<JsonObject>(TryGetMemberValue);
     }
 
-    internal static bool TryGetMemberValue(this JsonObject? source, string member, [MaybeNullWhen(false)] out object? value)
+    internal static bool TryGetMemberValue(string member, [NotNull] out Delegate @delegate)
     {
-        if (source is not null && source.TryGetPropertyValue(member, out JsonNode? node))
-        {
-            value = node;
-            return true;
-        }
-        value = null;
-        return false;
+        @delegate = (Func<JsonObject?, JsonNode?>)(x => x is not null && x.TryGetPropertyValue(member, out JsonNode? node) ? node : null);
+        return true;
     }
-    internal static bool TryGetIndexValue(this JsonArray? source, int index, [MaybeNullWhen(false)] out object? value)
+    internal static bool TryGetIndexValue(int index, [NotNull] out Delegate @delegate)
     {
-        if (source is not null && index >= 0 && index < source.Count)
-        {
-            value = source[index];
-            return true;
-        }
-        value = null;
+        @delegate = (Func<JsonArray?, JsonNode?>)((x) => x is not null && index < x.Count ? x[index] : null);
         return false;
     }
 }

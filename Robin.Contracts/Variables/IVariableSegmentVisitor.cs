@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Robin.Contracts.Variables;
 
-public interface IVariableSegmentVisitor<TOut, TArgs>
+public interface IVariableSegmentVisitor<in TArgs>
 {
-    TOut VisitThis(ThisSegment accessor, TArgs args);
-    TOut VisitMember(MemberSegment accessor, TArgs args);
-    TOut VisitIndex(IndexSegment accessor, TArgs args);
+    bool VisitThis(ThisSegment accessor, TArgs args, [NotNull] out Delegate @delegate);
+    bool VisitMember(MemberSegment accessor, TArgs args, [NotNull] out Delegate @delegate);
+    bool VisitIndex(IndexSegment accessor, TArgs args, [NotNull] out Delegate @delegate);
 }

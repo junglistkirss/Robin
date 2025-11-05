@@ -8,44 +8,41 @@ namespace Robin.Abstractions.Extensions;
 public static class EvaluatorExtensions
 {
 
-    public delegate bool TryGetMemberValue<T>(T? source, string member, [MaybeNullWhen(false)] out object? value);
-    public delegate bool TryGetIndexValue<T>(T? source, int index, [MaybeNullWhen(false)] out object? value);
+    public delegate bool TryGetMemberValue(string member, [NotNull] out Delegate? value);
+    public delegate bool TryGetIndexValue(int index, [NotNull] out Delegate? value);
 
-    private sealed class DelegatedMemberAccessor<T>(TryGetMemberValue<T> tryGetMemberValue) : IMemberAccessor<T>
+    private sealed class DelegatedMemberAccessor(TryGetMemberValue tryGetMemberValue) : IMemberAccessor
     {
-        public bool TryGetMember(T? source, string name, [MaybeNullWhen(false)] out object? value)
+        public bool TryGetMember(string name, [NotNull] out Delegate? value)
         {
-            return tryGetMemberValue(source, name, out value);
+            return tryGetMemberValue(name, out value);
         }
     }
-    public static IServiceCollection AddMemberAccessor<T>(this IServiceCollection services, TryGetMemberValue<T> tryGet)
+    public static IServiceCollection AddMemberAccessor<T>(this IServiceCollection services, TryGetMemberValue tryGet)
     {
-        DelegatedMemberAccessor<T> instance = new(tryGet);
         return services
-            .AddSingleton<IMemberAccessor<T>>(instance)
-            .AddSingleton<IMemberAccessor>(instance);
+            .AddKeyedSingleton<IMemberAccessor>(typeof(T), new DelegatedMemberAccessor(tryGet));
     }
 
-    private sealed class DelegatedIndexAccessor<T>(TryGetIndexValue<T> tryGetIndexValue) : IIndexAccessor<T>
+    private sealed class DelegatedIndexAccessor(TryGetIndexValue tryGetIndexValue) : IIndexAccessor
     {
-        public bool TryGetIndex(T? source, int index, [MaybeNullWhen(false)] out object? value)
+        public bool TryGetIndex(int index, [NotNull] out Delegate value)
         {
-            return tryGetIndexValue(source, index, out value);
+            return tryGetIndexValue(index, out value);
         }
     }
-    public static IServiceCollection AddIndexAccessor<T>(this IServiceCollection services, TryGetIndexValue<T> tryGet)
+    public static IServiceCollection AddIndexAccessor<T>(this IServiceCollection services, TryGetIndexValue tryGet)
     {
-        DelegatedIndexAccessor<T> instance = new(tryGet);
         return services
-            .AddSingleton<IIndexAccessor<T>>(instance)
-            .AddSingleton<IIndexAccessor>(instance);
+            .AddKeyedSingleton<IIndexAccessor>(typeof(T), new DelegatedIndexAccessor(tryGet));
     }
 
     public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)
     {
+        services.AddMemoryCache();
         services.AddSingleton<ServiceEvaluator>();
         services.AddSingleton<IEvaluator, ServiceEvaluator>();
-        services.AddSingleton<IVariableSegmentVisitor<EvaluationResult, object?>, ServiceAccesorVisitor>();
+        services.AddSingleton<IVariableSegmentVisitor<Type>, ServiceAccesorVisitor>();
         return services;
     }
 }

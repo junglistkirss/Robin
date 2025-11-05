@@ -1,10 +1,10 @@
 namespace Robin.Contracts.Variables;
 
-public  sealed class ThisSegment : IVariableSegment
+public sealed class ThisSegment : IVariableSegment
 {
     public readonly static ThisSegment Instance = new();
-    public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)
+    public bool Accept<TArgs>(IVariableSegmentVisitor<TArgs> visitor, TArgs args, out Delegate @delegate)
     {
-        return visitor.VisitThis(this, args);
+        return visitor.VisitThis(this, args, out @delegate);
     }
 }

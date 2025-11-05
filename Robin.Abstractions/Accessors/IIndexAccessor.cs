@@ -4,5 +4,5 @@ namespace Robin.Abstractions.Accessors;
 
 public interface IIndexAccessor
 {
-    bool TryGetIndex(object? source, int index, [MaybeNullWhen(false)] out object? value);
+    bool TryGetIndex(int index, [NotNull] out Delegate value);
 }

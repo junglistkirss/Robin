@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+using System.Xml.Serialization;
 
 namespace Robin.Abstractions.Accessors;
 
@@ -6,15 +8,16 @@ internal sealed class ListIndexAccessor : IIndexAccessor
 {
     public readonly static ListIndexAccessor Instance = new();
     private ListIndexAccessor(){}
-    bool IIndexAccessor.TryGetIndex(object? source, int index, out object? value)
+    public bool TryGetIndex(int index, [NotNull] out Delegate value)
     {
-
-        if (source is IList list && index >= 0 && index < list.Count)
+        value = (object? source) =>
         {
-            value = list[index];
-            return true;
-        }
-        value = null;
-        return false;
+            if (source is IList list && index >= 0 && index < list.Count)
+            {
+                return list[index];
+            }
+            return null;
+        };
+        return true;
     }
 }

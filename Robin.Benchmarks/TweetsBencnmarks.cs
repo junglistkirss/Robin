@@ -76,7 +76,7 @@ public class TweetsBencnmarks
         services
             .AddServiceEvaluator()
             .AddStringRenderer()
-            .AddMemberAccessor<Tweet>(TweetAccessor.TryGetPropertyValue);
+            .AddMemberAccessor<Tweet>(TweetAccessor.GetPropertyDelegate);
         serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
         {
             ValidateOnBuild = true,

@@ -2,5 +2,5 @@ namespace Robin.Contracts.Expressions;
 
 public interface IExpressionNode
 {
-    TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args);
+    bool Accept<TArgs>(IExpressionNodeVisitor<TArgs> visitor, TArgs args, out object? value);
 };

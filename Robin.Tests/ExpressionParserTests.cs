@@ -48,7 +48,7 @@ public class ExpressionParserTests
     public void NumberExpression()
     {
         IExpressionNode? node = "42".AsSpan().ParseExpression();
-        NumberExpressionNode func = Assert.IsType<NumberExpressionNode>(node);
+        IndexExpressionNode func = Assert.IsType<IndexExpressionNode>(node);
         Assert.Equal(42, func.Constant);
     }
     [Fact]

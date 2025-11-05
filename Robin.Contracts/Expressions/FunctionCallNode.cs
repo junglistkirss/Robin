@@ -7,8 +7,8 @@ public sealed class FunctionCallNode(string functionName, ImmutableArray<IExpres
     public string FunctionName { get; } = functionName;
     public ImmutableArray<IExpressionNode> Arguments { get; } = arguments;
 
-    public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)
+    public bool Accept<TArgs>(IExpressionNodeVisitor<TArgs> visitor, TArgs args, out object? value)
     {
-        return visitor.VisitFunctionCall(this, args);
+        return visitor.VisitFunctionCall(this, args, out value);
     }
 }

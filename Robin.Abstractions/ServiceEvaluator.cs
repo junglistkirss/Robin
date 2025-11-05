@@ -5,22 +5,27 @@ using Robin.Contracts.Variables;
 
 namespace Robin.Abstractions;
 
-public sealed class ServiceEvaluator(IVariableSegmentVisitor<EvaluationResult, object?> accesorVisitor) : IEvaluator
+public sealed class ServiceEvaluator(ExpressionNodeVisitor visitor) : IEvaluator
 {
     public object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade)
     {
-        ExpressionNodeVisitor visitor = new(accesorVisitor);
         if (data is not null)
         {
-            EvaluationResult result = expression.Accept(visitor, data);
-
-            if (!result.IsResolved && data.Parent is not null)
-                result = expression.Accept(visitor, data.Parent);
-
-            if (result.IsResolved)
+            bool resolved = expression.Accept(visitor, data, out object? value);
+            if (resolved)
             {
-                facade = result.Value.GetFacade();
-                return result.Value;
+                facade = value.GetFacade();
+                return value;
+            }
+
+            if (!resolved && data.Parent is not null)
+            {
+                resolved = expression.Accept(visitor, data.Parent, out object? parentValue);
+                if (resolved)
+                {
+                    facade = parentValue.GetFacade();
+                    return parentValue;
+                }
             }
         }
         facade = DataFacade.Null;

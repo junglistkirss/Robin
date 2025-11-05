@@ -15,15 +15,15 @@ public class RenderTests
         services
             .AddServiceEvaluator()
             .AddStringRenderer()
-            .AddMemberAccessor(static (TestSample? obj, string member, out object? value) =>
+            .AddMemberAccessor<TestSample>(static (string member, out Delegate value) =>
             {
                 value = member switch
                 {
-                    "Name" => obj!.Name,
-                    "Age" => obj!.Age,
-                    _ => null,
+                    "Name" => (Func<TestSample, string?>)(x => x.Name),
+                    "Age" => (Func<TestSample, int>)(x => x.Age),
+                    _ => (Func<TestSample, object?>)(_ => null),
                 };
-                return value is not null;
+                return true;
             });
         ServiceProvider = services.BuildServiceProvider(new ServiceProviderOptions
         {

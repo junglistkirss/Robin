@@ -4,8 +4,8 @@ public sealed  class LiteralExpressionNode(string constant) : IExpressionNode
 {
     public string Constant { get; } = constant;
 
-    public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)
+    public bool Accept<TArgs>(IExpressionNodeVisitor<TArgs> visitor, TArgs args, out object? value)
     {
-        return visitor.VisitLiteral(this, args);
+        return visitor.VisitLiteral(this, args, out value);
     }
 }
