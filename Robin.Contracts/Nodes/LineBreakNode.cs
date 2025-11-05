@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Nodes;
 
-public readonly struct LineBreakNode(int count) : INode
+public sealed  class LineBreakNode(int count) : INode
 {
     public int Count { get; } = count;
 

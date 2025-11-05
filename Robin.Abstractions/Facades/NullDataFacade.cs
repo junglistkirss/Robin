@@ -7,7 +7,7 @@ internal sealed class NullDataFacade : IDataFacade
 {
     public readonly static NullDataFacade Instance = new();
     private NullDataFacade() { }
-    public bool IsCollection(object? _, [NotNullWhen(true)] out IEnumerator? collection)
+    public bool IsCollection(object? _, [NotNullWhen(true)] out IEnumerable? collection)
     {
         collection = null;
         return false;

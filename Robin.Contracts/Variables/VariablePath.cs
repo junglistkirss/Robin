@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Robin.Contracts.Variables;
 
-public readonly struct VariablePath(ImmutableArray<IVariableSegment> segments)
+public sealed  class VariablePath(ImmutableArray<IVariableSegment> segments)
 {
     public static implicit operator string(VariablePath value) => value.ToString();
     public ImmutableArray<IVariableSegment> Segments { get; } = segments;

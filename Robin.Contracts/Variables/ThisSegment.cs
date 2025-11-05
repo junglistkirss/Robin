@@ -1,6 +1,6 @@
 namespace Robin.Contracts.Variables;
 
-public readonly struct ThisSegment : IVariableSegment
+public  sealed class ThisSegment : IVariableSegment
 {
     public readonly static ThisSegment Instance = new();
     public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)

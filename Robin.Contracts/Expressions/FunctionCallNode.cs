@@ -2,7 +2,7 @@ using System.Collections.Immutable;
 
 namespace Robin.Contracts.Expressions;
 
-public readonly struct FunctionCallNode(string functionName, ImmutableArray<IExpressionNode> arguments) : IExpressionNode
+public sealed class FunctionCallNode(string functionName, ImmutableArray<IExpressionNode> arguments) : IExpressionNode
 {
     public string FunctionName { get; } = functionName;
     public ImmutableArray<IExpressionNode> Arguments { get; } = arguments;

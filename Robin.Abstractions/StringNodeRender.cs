@@ -34,9 +34,9 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
         if (facade.IsTrue(value))
         {
             if (node.IsUnescaped)
-                context.Builder.Append(value?.ToString());
+                context.Builder.Append(value);
             else
-                context.Builder.Append(WebUtility.HtmlEncode(value?.ToString()));
+                context.Builder.Append(WebUtility.HtmlEncode($"{value}"));
         }
         return NoValue.Instance;
     }
@@ -72,19 +72,17 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
 
     private NoValue RenderTree(RenderContext<StringBuilder> context, object? value, IDataFacade facade, ImmutableArray<INode> partialTemplate)
     {
-        if (facade.IsCollection(value, out IEnumerator? collection))
+        if (facade.IsCollection(value, out IEnumerable? collection))
         {
-            while (collection.MoveNext())
+            foreach (object? item  in collection)
             {
-                object? item = collection.Current;
                 RenderContext<StringBuilder> itemCtx = context with
                 {
                     Data = context.Data?.Child(item) ?? new DataContext(item, null),
                 };
-                ImmutableArray<INode>.Enumerator enumerator = partialTemplate.GetEnumerator();
-                while (enumerator.MoveNext())
+                foreach (var node in partialTemplate)
                 {
-                    _ = enumerator.Current.Accept(this, itemCtx);
+                    node.Accept(this, itemCtx);
                 }
             }
         }
@@ -94,10 +92,9 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
             {
                 Data = context.Data?.Child(value) ?? new DataContext(value, null),
             };
-            ImmutableArray<INode>.Enumerator enumerator = partialTemplate.GetEnumerator();
-            while (enumerator.MoveNext())
+            foreach (var item in partialTemplate)
             {
-                _ = enumerator.Current.Accept(this, innerCtx);
+                _ = item.Accept(this, innerCtx);
             }
         }
 

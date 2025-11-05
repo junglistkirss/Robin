@@ -19,21 +19,25 @@ public static class RobinExtensions
     {
         bool shouldFallbackOnParentContext = useParentFallback;
         DataContext ctx = args;
-        ImmutableArray<IVariableSegment>.Enumerator enumerator = path.Segments.GetEnumerator();
-        if (enumerator.MoveNext())
+        int limit = path.Segments.Length;
+        if (limit > 0)
         {
-            EvaluationResult result = enumerator.Current.Accept(visitor, ctx.Data);
-            while (result.IsResolved && enumerator.MoveNext())
+            int i = 0;
+            IVariableSegment current = path.Segments[i];
+            EvaluationResult result = current.Accept(visitor, ctx.Data);
+            i++;
+            while (result.IsResolved && i < limit)
             {
                 ctx = ctx.Child(result.Value);
-                IVariableSegment item = enumerator.Current;
-                result = item.Accept(visitor, ctx.Data);
+                current = path.Segments[i]; ;
+                result = current.Accept(visitor, ctx.Data);
                 if (!result.IsResolved)
                 {
                     // avoid precedence
                     value = null;
                     return true;
                 }
+                i++;
             }
             if (result.IsResolved)
             {

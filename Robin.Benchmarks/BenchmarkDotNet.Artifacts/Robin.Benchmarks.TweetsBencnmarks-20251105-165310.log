@@ -1,0 +1,696 @@
+// Validating benchmarks:
+// ***** BenchmarkRunner: Start   *****
+// ***** Found 6 benchmark(s) in total *****
+// ***** Building 1 exe(s) in Parallel: Start   *****
+// start dotnet  restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/" /p:OutDir="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0/" /p:OutputPath="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0/" /p:PublishDir="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/publish/" in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1
+// command took 1.05 sec and exited with 0
+// start dotnet  build -c Release --no-restore --nodeReuse:false /p:UseSharedCompilation=false /p:Deterministic=true /p:Optimize=true /p:ArtifactsPath="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/" /p:OutDir="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0/" /p:OutputPath="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0/" /p:PublishDir="/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/publish/" --output "/config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0/" in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1
+// command took 4.2 sec and exited with 0
+// ***** Done, took 00:00:05 (5.3 sec)   *****
+// Found 6 benchmarks:
+//   TweetsBencnmarks.RenderSingleTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+//   TweetsBencnmarks.RenderManyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+//   TweetsBencnmarks.RenderEnumerableManyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+//   TweetsBencnmarks.RenderEmptyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+//   TweetsBencnmarks.RenderTakeAllTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+//   TweetsBencnmarks.RenderAllTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+// **************************
+// Benchmark: TweetsBencnmarks.RenderSingleTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Robin.Benchmarks-Fast-1.dll --anonymousPipes 141 142 --benchmarkName Robin.Benchmarks.TweetsBencnmarks.RenderSingleTweets --job Fast --benchmarkId 0 in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0
+// Failed to set up high priority (Permission denied). In order to run benchmarks with high priority, make sure you have the right permissions.
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.5
+// Runtime=.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256
+// Job: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+OverheadJitting  1: 1 op, 176884.00 ns, 176.8840 us/op
+WorkloadJitting  1: 1 op, 10099839.00 ns, 10.0998 ms/op
+
+OverheadJitting  2: 16 op, 320545.00 ns, 20.0341 us/op
+WorkloadJitting  2: 16 op, 2230923.00 ns, 139.4327 us/op
+
+WorkloadPilot    1: 16 op, 4526918.00 ns, 282.9324 us/op
+WorkloadPilot    2: 32 op, 9859994.00 ns, 308.1248 us/op
+WorkloadPilot    3: 64 op, 29165069.00 ns, 455.7042 us/op
+WorkloadPilot    4: 128 op, 83595868.00 ns, 653.0927 us/op
+WorkloadPilot    5: 256 op, 393844354.00 ns, 1.5385 ms/op
+WorkloadPilot    6: 512 op, 1826547765.00 ns, 3.5675 ms/op
+
+OverheadWarmup   1: 512 op, 4041.00 ns, 7.8926 ns/op
+OverheadWarmup   2: 512 op, 2285.00 ns, 4.4629 ns/op
+OverheadWarmup   3: 512 op, 2314.00 ns, 4.5195 ns/op
+OverheadWarmup   4: 512 op, 2271.00 ns, 4.4355 ns/op
+OverheadWarmup   5: 512 op, 2426.00 ns, 4.7383 ns/op
+OverheadWarmup   6: 512 op, 2578.00 ns, 5.0352 ns/op
+OverheadWarmup   7: 512 op, 2958.00 ns, 5.7773 ns/op
+OverheadWarmup   8: 512 op, 2779.00 ns, 5.4277 ns/op
+
+OverheadActual   1: 512 op, 2714.00 ns, 5.3008 ns/op
+OverheadActual   2: 512 op, 2875.00 ns, 5.6152 ns/op
+OverheadActual   3: 512 op, 2760.00 ns, 5.3906 ns/op
+OverheadActual   4: 512 op, 2772.00 ns, 5.4141 ns/op
+OverheadActual   5: 512 op, 3142.00 ns, 6.1367 ns/op
+OverheadActual   6: 512 op, 2772.00 ns, 5.4141 ns/op
+OverheadActual   7: 512 op, 2732.00 ns, 5.3359 ns/op
+OverheadActual   8: 512 op, 2684.00 ns, 5.2422 ns/op
+OverheadActual   9: 512 op, 2356.00 ns, 4.6016 ns/op
+OverheadActual  10: 512 op, 2648.00 ns, 5.1719 ns/op
+OverheadActual  11: 512 op, 2713.00 ns, 5.2988 ns/op
+OverheadActual  12: 512 op, 2269.00 ns, 4.4316 ns/op
+OverheadActual  13: 512 op, 2577.00 ns, 5.0332 ns/op
+OverheadActual  14: 512 op, 2966.00 ns, 5.7930 ns/op
+OverheadActual  15: 512 op, 2768.00 ns, 5.4063 ns/op
+OverheadActual  16: 512 op, 2688.00 ns, 5.2500 ns/op
+OverheadActual  17: 512 op, 2860.00 ns, 5.5859 ns/op
+OverheadActual  18: 512 op, 3112.00 ns, 6.0781 ns/op
+OverheadActual  19: 512 op, 2885.00 ns, 5.6348 ns/op
+OverheadActual  20: 512 op, 3102.00 ns, 6.0586 ns/op
+
+WorkloadWarmup   1: 512 op, 3099012728.00 ns, 6.0528 ms/op
+WorkloadWarmup   2: 512 op, 3877288388.00 ns, 7.5728 ms/op
+
+// BeforeActualRun
+WorkloadActual   1: 512 op, 4598251868.00 ns, 8.9810 ms/op
+WorkloadActual   2: 512 op, 5710793325.00 ns, 11.1539 ms/op
+WorkloadActual   3: 512 op, 5345639830.00 ns, 10.4407 ms/op
+WorkloadActual   4: 512 op, 3319563375.00 ns, 6.4835 ms/op
+WorkloadActual   5: 512 op, 4013765183.00 ns, 7.8394 ms/op
+WorkloadActual   6: 512 op, 4193066409.00 ns, 8.1896 ms/op
+WorkloadActual   7: 512 op, 4754712589.00 ns, 9.2865 ms/op
+WorkloadActual   8: 512 op, 5167587244.00 ns, 10.0929 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 512 op, 4598249104.00 ns, 8.9810 ms/op
+WorkloadResult   2: 512 op, 5710790561.00 ns, 11.1539 ms/op
+WorkloadResult   3: 512 op, 5345637066.00 ns, 10.4407 ms/op
+WorkloadResult   4: 512 op, 3319560611.00 ns, 6.4835 ms/op
+WorkloadResult   5: 512 op, 4013762419.00 ns, 7.8394 ms/op
+WorkloadResult   6: 512 op, 4193063645.00 ns, 8.1896 ms/op
+WorkloadResult   7: 512 op, 4754709825.00 ns, 9.2865 ms/op
+WorkloadResult   8: 512 op, 5167584480.00 ns, 10.0929 ms/op
+// GC:  512 511 511 32348631976 512
+// Threading:  0 0 512
+
+// AfterAll
+// Benchmark Process 14542 has exited with code 0.
+
+Mean = 9.058 ms, StdErr = 0.540 ms (5.96%), N = 8, StdDev = 1.526 ms
+Min = 6.484 ms, Q1 = 8.102 ms, Median = 9.134 ms, Q3 = 10.180 ms, Max = 11.154 ms
+IQR = 2.078 ms, LowerFence = 4.985 ms, UpperFence = 13.297 ms
+ConfidenceInterval = [6.141 ms; 11.976 ms] (CI 99.9%), Margin = 2.918 ms (32.21% of Mean)
+Skewness = -0.23, Kurtosis = 1.63, MValue = 2
+
+// ** Remained 5 (83.3%) benchmark(s) to run. Estimated finish 2025-11-05 16:58 (0h 4m from now) **
+// **************************
+// Benchmark: TweetsBencnmarks.RenderManyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Robin.Benchmarks-Fast-1.dll --anonymousPipes 141 142 --benchmarkName Robin.Benchmarks.TweetsBencnmarks.RenderManyTweets --job Fast --benchmarkId 1 in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0
+// Failed to set up high priority (Permission denied). In order to run benchmarks with high priority, make sure you have the right permissions.
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.5
+// Runtime=.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256
+// Job: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+OverheadJitting  1: 1 op, 140981.00 ns, 140.9810 us/op
+WorkloadJitting  1: 1 op, 10903205.00 ns, 10.9032 ms/op
+
+OverheadJitting  2: 16 op, 316616.00 ns, 19.7885 us/op
+WorkloadJitting  2: 16 op, 8921723.00 ns, 557.6077 us/op
+
+WorkloadPilot    1: 16 op, 12901362.00 ns, 806.3351 us/op
+WorkloadPilot    2: 32 op, 27243801.00 ns, 851.3688 us/op
+WorkloadPilot    3: 64 op, 101192836.00 ns, 1.5811 ms/op
+WorkloadPilot    4: 128 op, 450899127.00 ns, 3.5226 ms/op
+WorkloadPilot    5: 256 op, 1578955603.00 ns, 6.1678 ms/op
+
+OverheadWarmup   1: 256 op, 3133.00 ns, 12.2383 ns/op
+OverheadWarmup   2: 256 op, 1516.00 ns, 5.9219 ns/op
+OverheadWarmup   3: 256 op, 1573.00 ns, 6.1445 ns/op
+OverheadWarmup   4: 256 op, 1597.00 ns, 6.2383 ns/op
+OverheadWarmup   5: 256 op, 1568.00 ns, 6.1250 ns/op
+OverheadWarmup   6: 256 op, 1426.00 ns, 5.5703 ns/op
+OverheadWarmup   7: 256 op, 1487.00 ns, 5.8086 ns/op
+OverheadWarmup   8: 256 op, 1772.00 ns, 6.9219 ns/op
+OverheadWarmup   9: 256 op, 1899.00 ns, 7.4180 ns/op
+OverheadWarmup  10: 256 op, 1812.00 ns, 7.0781 ns/op
+
+OverheadActual   1: 256 op, 1548.00 ns, 6.0469 ns/op
+OverheadActual   2: 256 op, 1823.00 ns, 7.1211 ns/op
+OverheadActual   3: 256 op, 1579.00 ns, 6.1680 ns/op
+OverheadActual   4: 256 op, 1683.00 ns, 6.5742 ns/op
+OverheadActual   5: 256 op, 1768.00 ns, 6.9063 ns/op
+OverheadActual   6: 256 op, 1962.00 ns, 7.6641 ns/op
+OverheadActual   7: 256 op, 1596.00 ns, 6.2344 ns/op
+OverheadActual   8: 256 op, 1468.00 ns, 5.7344 ns/op
+OverheadActual   9: 256 op, 1647.00 ns, 6.4336 ns/op
+OverheadActual  10: 256 op, 2069.00 ns, 8.0820 ns/op
+OverheadActual  11: 256 op, 1776.00 ns, 6.9375 ns/op
+OverheadActual  12: 256 op, 1542.00 ns, 6.0234 ns/op
+OverheadActual  13: 256 op, 1661.00 ns, 6.4883 ns/op
+OverheadActual  14: 256 op, 1993.00 ns, 7.7852 ns/op
+OverheadActual  15: 256 op, 1649.00 ns, 6.4414 ns/op
+OverheadActual  16: 256 op, 2075.00 ns, 8.1055 ns/op
+OverheadActual  17: 256 op, 1514.00 ns, 5.9141 ns/op
+OverheadActual  18: 256 op, 1534.00 ns, 5.9922 ns/op
+OverheadActual  19: 256 op, 1527.00 ns, 5.9648 ns/op
+OverheadActual  20: 256 op, 1599.00 ns, 6.2461 ns/op
+
+WorkloadWarmup   1: 256 op, 2432911079.00 ns, 9.5036 ms/op
+WorkloadWarmup   2: 256 op, 2595006793.00 ns, 10.1367 ms/op
+
+// BeforeActualRun
+WorkloadActual   1: 256 op, 1877678246.00 ns, 7.3347 ms/op
+WorkloadActual   2: 256 op, 2196343622.00 ns, 8.5795 ms/op
+WorkloadActual   3: 256 op, 2730967417.00 ns, 10.6678 ms/op
+WorkloadActual   4: 256 op, 3147026510.00 ns, 12.2931 ms/op
+WorkloadActual   5: 256 op, 3611324394.00 ns, 14.1067 ms/op
+WorkloadActual   6: 256 op, 3778594838.00 ns, 14.7601 ms/op
+WorkloadActual   7: 256 op, 4549614235.00 ns, 17.7719 ms/op
+WorkloadActual   8: 256 op, 4673827081.00 ns, 18.2571 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 256 op, 1877676598.00 ns, 7.3347 ms/op
+WorkloadResult   2: 256 op, 2196341974.00 ns, 8.5795 ms/op
+WorkloadResult   3: 256 op, 2730965769.00 ns, 10.6678 ms/op
+WorkloadResult   4: 256 op, 3147024862.00 ns, 12.2931 ms/op
+WorkloadResult   5: 256 op, 3611322746.00 ns, 14.1067 ms/op
+WorkloadResult   6: 256 op, 3778593190.00 ns, 14.7601 ms/op
+WorkloadResult   7: 256 op, 4549612587.00 ns, 17.7719 ms/op
+WorkloadResult   8: 256 op, 4673825433.00 ns, 18.2571 ms/op
+// GC:  257 256 255 30321491104 256
+// Threading:  0 0 256
+
+// AfterAll
+// Benchmark Process 14785 has exited with code 0.
+
+Mean = 12.971 ms, StdErr = 1.416 ms (10.92%), N = 8, StdDev = 4.005 ms
+Min = 7.335 ms, Q1 = 10.146 ms, Median = 13.200 ms, Q3 = 15.513 ms, Max = 18.257 ms
+IQR = 5.367 ms, LowerFence = 2.095 ms, UpperFence = 23.564 ms
+ConfidenceInterval = [5.313 ms; 20.630 ms] (CI 99.9%), Margin = 7.658 ms (59.04% of Mean)
+Skewness = -0.02, Kurtosis = 1.33, MValue = 2
+
+// ** Remained 4 (66.7%) benchmark(s) to run. Estimated finish 2025-11-05 16:57 (0h 3m from now) **
+// **************************
+// Benchmark: TweetsBencnmarks.RenderEnumerableManyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Robin.Benchmarks-Fast-1.dll --anonymousPipes 141 142 --benchmarkName Robin.Benchmarks.TweetsBencnmarks.RenderEnumerableManyTweets --job Fast --benchmarkId 2 in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0
+// Failed to set up high priority (Permission denied). In order to run benchmarks with high priority, make sure you have the right permissions.
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.5
+// Runtime=.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256
+// Job: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+OverheadJitting  1: 1 op, 164453.00 ns, 164.4530 us/op
+WorkloadJitting  1: 1 op, 4279496.00 ns, 4.2795 ms/op
+
+OverheadJitting  2: 16 op, 488477.00 ns, 30.5298 us/op
+WorkloadJitting  2: 16 op, 603037.00 ns, 37.6898 us/op
+
+WorkloadPilot    1: 16 op, 73657.00 ns, 4.6036 us/op
+WorkloadPilot    2: 32 op, 134384.00 ns, 4.1995 us/op
+WorkloadPilot    3: 64 op, 267198.00 ns, 4.1750 us/op
+WorkloadPilot    4: 128 op, 739892.00 ns, 5.7804 us/op
+WorkloadPilot    5: 256 op, 2094656.00 ns, 8.1823 us/op
+WorkloadPilot    6: 512 op, 4965190.00 ns, 9.6976 us/op
+WorkloadPilot    7: 1024 op, 33976406.00 ns, 33.1801 us/op
+WorkloadPilot    8: 2048 op, 183480045.00 ns, 89.5899 us/op
+WorkloadPilot    9: 4096 op, 603927327.00 ns, 147.4432 us/op
+
+OverheadWarmup   1: 4096 op, 24733.00 ns, 6.0383 ns/op
+OverheadWarmup   2: 4096 op, 15427.00 ns, 3.7664 ns/op
+OverheadWarmup   3: 4096 op, 14616.00 ns, 3.5684 ns/op
+OverheadWarmup   4: 4096 op, 14711.00 ns, 3.5916 ns/op
+OverheadWarmup   5: 4096 op, 14603.00 ns, 3.5652 ns/op
+OverheadWarmup   6: 4096 op, 14492.00 ns, 3.5381 ns/op
+OverheadWarmup   7: 4096 op, 14598.00 ns, 3.5640 ns/op
+OverheadWarmup   8: 4096 op, 14593.00 ns, 3.5627 ns/op
+
+OverheadActual   1: 4096 op, 14825.00 ns, 3.6194 ns/op
+OverheadActual   2: 4096 op, 14576.00 ns, 3.5586 ns/op
+OverheadActual   3: 4096 op, 14809.00 ns, 3.6155 ns/op
+OverheadActual   4: 4096 op, 16296.00 ns, 3.9785 ns/op
+OverheadActual   5: 4096 op, 15396.00 ns, 3.7588 ns/op
+OverheadActual   6: 4096 op, 15516.00 ns, 3.7881 ns/op
+OverheadActual   7: 4096 op, 15564.00 ns, 3.7998 ns/op
+OverheadActual   8: 4096 op, 16242.00 ns, 3.9653 ns/op
+OverheadActual   9: 4096 op, 16176.00 ns, 3.9492 ns/op
+OverheadActual  10: 4096 op, 16003.00 ns, 3.9070 ns/op
+OverheadActual  11: 4096 op, 15576.00 ns, 3.8027 ns/op
+OverheadActual  12: 4096 op, 15537.00 ns, 3.7932 ns/op
+OverheadActual  13: 4096 op, 15606.00 ns, 3.8101 ns/op
+OverheadActual  14: 4096 op, 14692.00 ns, 3.5869 ns/op
+OverheadActual  15: 4096 op, 17292.00 ns, 4.2217 ns/op
+
+WorkloadWarmup   1: 4096 op, 1007771350.00 ns, 246.0379 us/op
+WorkloadWarmup   2: 4096 op, 1488100714.00 ns, 363.3058 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 4096 op, 1305701314.00 ns, 318.7747 us/op
+WorkloadActual   2: 4096 op, 1791476804.00 ns, 437.3723 us/op
+WorkloadActual   3: 4096 op, 1448834840.00 ns, 353.7194 us/op
+WorkloadActual   4: 4096 op, 2907337929.00 ns, 709.7993 us/op
+WorkloadActual   5: 4096 op, 2667942185.00 ns, 651.3531 us/op
+WorkloadActual   6: 4096 op, 1974905387.00 ns, 482.1546 us/op
+WorkloadActual   7: 4096 op, 2580508809.00 ns, 630.0070 us/op
+WorkloadActual   8: 4096 op, 2766188684.00 ns, 675.3390 us/op
+
+// AfterActualRun
+WorkloadResult   1: 4096 op, 1305685750.00 ns, 318.7709 us/op
+WorkloadResult   2: 4096 op, 1791461240.00 ns, 437.3685 us/op
+WorkloadResult   3: 4096 op, 1448819276.00 ns, 353.7156 us/op
+WorkloadResult   4: 4096 op, 2907322365.00 ns, 709.7955 us/op
+WorkloadResult   5: 4096 op, 2667926621.00 ns, 651.3493 us/op
+WorkloadResult   6: 4096 op, 1974889823.00 ns, 482.1508 us/op
+WorkloadResult   7: 4096 op, 2580493245.00 ns, 630.0032 us/op
+WorkloadResult   8: 4096 op, 2766173120.00 ns, 675.3352 us/op
+// GC:  1361 1360 1360 11749746200 4096
+// Threading:  0 0 4096
+
+// AfterAll
+// Benchmark Process 14961 has exited with code 0.
+
+Mean = 532.311 μs, StdErr = 54.231 μs (10.19%), N = 8, StdDev = 153.389 μs
+Min = 318.771 μs, Q1 = 416.455 μs, Median = 556.077 μs, Q3 = 657.346 μs, Max = 709.795 μs
+IQR = 240.891 μs, LowerFence = 55.120 μs, UpperFence = 1,018.682 μs
+ConfidenceInterval = [239.036 μs; 825.586 μs] (CI 99.9%), Margin = 293.275 μs (55.09% of Mean)
+Skewness = -0.18, Kurtosis = 1.1, MValue = 4
+
+// ** Remained 3 (50.0%) benchmark(s) to run. Estimated finish 2025-11-05 16:57 (0h 1m from now) **
+// **************************
+// Benchmark: TweetsBencnmarks.RenderEmptyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Robin.Benchmarks-Fast-1.dll --anonymousPipes 141 142 --benchmarkName Robin.Benchmarks.TweetsBencnmarks.RenderEmptyTweets --job Fast --benchmarkId 3 in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0
+// Failed to set up high priority (Permission denied). In order to run benchmarks with high priority, make sure you have the right permissions.
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.5
+// Runtime=.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256
+// Job: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+OverheadJitting  1: 1 op, 125450.00 ns, 125.4500 us/op
+WorkloadJitting  1: 1 op, 3280897.00 ns, 3.2809 ms/op
+
+OverheadJitting  2: 16 op, 295664.00 ns, 18.4790 us/op
+WorkloadJitting  2: 16 op, 500842.00 ns, 31.3026 us/op
+
+WorkloadPilot    1: 16 op, 47783.00 ns, 2.9864 us/op
+WorkloadPilot    2: 32 op, 148609.00 ns, 4.6440 us/op
+WorkloadPilot    3: 64 op, 265665.00 ns, 4.1510 us/op
+WorkloadPilot    4: 128 op, 629446.00 ns, 4.9175 us/op
+WorkloadPilot    5: 256 op, 2092930.00 ns, 8.1755 us/op
+WorkloadPilot    6: 512 op, 5037523.00 ns, 9.8389 us/op
+WorkloadPilot    7: 1024 op, 33067834.00 ns, 32.2928 us/op
+WorkloadPilot    8: 2048 op, 179174509.00 ns, 87.4876 us/op
+WorkloadPilot    9: 4096 op, 622536021.00 ns, 151.9863 us/op
+
+OverheadWarmup   1: 4096 op, 16236.00 ns, 3.9639 ns/op
+OverheadWarmup   2: 4096 op, 14538.00 ns, 3.5493 ns/op
+OverheadWarmup   3: 4096 op, 14897.00 ns, 3.6370 ns/op
+OverheadWarmup   4: 4096 op, 14677.00 ns, 3.5833 ns/op
+OverheadWarmup   5: 4096 op, 14684.00 ns, 3.5850 ns/op
+OverheadWarmup   6: 4096 op, 14950.00 ns, 3.6499 ns/op
+OverheadWarmup   7: 4096 op, 14694.00 ns, 3.5874 ns/op
+
+OverheadActual   1: 4096 op, 15369.00 ns, 3.7522 ns/op
+OverheadActual   2: 4096 op, 15142.00 ns, 3.6968 ns/op
+OverheadActual   3: 4096 op, 15392.00 ns, 3.7578 ns/op
+OverheadActual   4: 4096 op, 15474.00 ns, 3.7778 ns/op
+OverheadActual   5: 4096 op, 17610.00 ns, 4.2993 ns/op
+OverheadActual   6: 4096 op, 15406.00 ns, 3.7612 ns/op
+OverheadActual   7: 4096 op, 15644.00 ns, 3.8193 ns/op
+OverheadActual   8: 4096 op, 15478.00 ns, 3.7788 ns/op
+OverheadActual   9: 4096 op, 17070.00 ns, 4.1675 ns/op
+OverheadActual  10: 4096 op, 15063.00 ns, 3.6775 ns/op
+OverheadActual  11: 4096 op, 14813.00 ns, 3.6165 ns/op
+OverheadActual  12: 4096 op, 14973.00 ns, 3.6555 ns/op
+OverheadActual  13: 4096 op, 14736.00 ns, 3.5977 ns/op
+OverheadActual  14: 4096 op, 14665.00 ns, 3.5803 ns/op
+OverheadActual  15: 4096 op, 16822.00 ns, 4.1069 ns/op
+
+WorkloadWarmup   1: 4096 op, 997555635.00 ns, 243.5439 us/op
+WorkloadWarmup   2: 4096 op, 1503208409.00 ns, 366.9942 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 4096 op, 1449043633.00 ns, 353.7704 us/op
+WorkloadActual   2: 4096 op, 1824610130.00 ns, 445.4615 us/op
+WorkloadActual   3: 4096 op, 1418006740.00 ns, 346.1931 us/op
+WorkloadActual   4: 4096 op, 2922027645.00 ns, 713.3857 us/op
+WorkloadActual   5: 4096 op, 2643090865.00 ns, 645.2859 us/op
+WorkloadActual   6: 4096 op, 2048524937.00 ns, 500.1282 us/op
+WorkloadActual   7: 4096 op, 2526111218.00 ns, 616.7264 us/op
+WorkloadActual   8: 4096 op, 2836529847.00 ns, 692.5122 us/op
+
+// AfterActualRun
+WorkloadResult   1: 4096 op, 1449028241.00 ns, 353.7667 us/op
+WorkloadResult   2: 4096 op, 1824594738.00 ns, 445.4577 us/op
+WorkloadResult   3: 4096 op, 1417991348.00 ns, 346.1893 us/op
+WorkloadResult   4: 4096 op, 2922012253.00 ns, 713.3819 us/op
+WorkloadResult   5: 4096 op, 2643075473.00 ns, 645.2821 us/op
+WorkloadResult   6: 4096 op, 2048509545.00 ns, 500.1244 us/op
+WorkloadResult   7: 4096 op, 2526095826.00 ns, 616.7226 us/op
+WorkloadResult   8: 4096 op, 2836514455.00 ns, 692.5084 us/op
+// GC:  1360 1359 1359 11750299368 4096
+// Threading:  0 0 4096
+
+// AfterAll
+// Benchmark Process 15079 has exited with code 0.
+
+Mean = 539.179 μs, StdErr = 52.280 μs (9.70%), N = 8, StdDev = 147.870 μs
+Min = 346.189 μs, Q1 = 422.535 μs, Median = 558.424 μs, Q3 = 657.089 μs, Max = 713.382 μs
+IQR = 234.554 μs, LowerFence = 70.704 μs, UpperFence = 1,008.919 μs
+ConfidenceInterval = [256.455 μs; 821.903 μs] (CI 99.9%), Margin = 282.724 μs (52.44% of Mean)
+Skewness = -0.15, Kurtosis = 1.12, MValue = 2
+
+// ** Remained 2 (33.3%) benchmark(s) to run. Estimated finish 2025-11-05 16:56 (0h 1m from now) **
+// **************************
+// Benchmark: TweetsBencnmarks.RenderTakeAllTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Robin.Benchmarks-Fast-1.dll --anonymousPipes 141 142 --benchmarkName Robin.Benchmarks.TweetsBencnmarks.RenderTakeAllTweets --job Fast --benchmarkId 4 in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0
+// Failed to set up high priority (Permission denied). In order to run benchmarks with high priority, make sure you have the right permissions.
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.5
+// Runtime=.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256
+// Job: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+OverheadJitting  1: 1 op, 139657.00 ns, 139.6570 us/op
+WorkloadJitting  1: 1 op, 3610729.00 ns, 3.6107 ms/op
+
+OverheadJitting  2: 16 op, 268314.00 ns, 16.7696 us/op
+WorkloadJitting  2: 16 op, 457711.00 ns, 28.6069 us/op
+
+WorkloadPilot    1: 16 op, 55601.00 ns, 3.4751 us/op
+WorkloadPilot    2: 32 op, 111235.00 ns, 3.4761 us/op
+WorkloadPilot    3: 64 op, 273413.00 ns, 4.2721 us/op
+WorkloadPilot    4: 128 op, 687127.00 ns, 5.3682 us/op
+WorkloadPilot    5: 256 op, 2099346.00 ns, 8.2006 us/op
+WorkloadPilot    6: 512 op, 5249470.00 ns, 10.2529 us/op
+WorkloadPilot    7: 1024 op, 33693779.00 ns, 32.9041 us/op
+WorkloadPilot    8: 2048 op, 179787952.00 ns, 87.7871 us/op
+WorkloadPilot    9: 4096 op, 602003382.00 ns, 146.9735 us/op
+
+OverheadWarmup   1: 4096 op, 17301.00 ns, 4.2239 ns/op
+OverheadWarmup   2: 4096 op, 14565.00 ns, 3.5559 ns/op
+OverheadWarmup   3: 4096 op, 14543.00 ns, 3.5505 ns/op
+OverheadWarmup   4: 4096 op, 14638.00 ns, 3.5737 ns/op
+OverheadWarmup   5: 4096 op, 14643.00 ns, 3.5750 ns/op
+OverheadWarmup   6: 4096 op, 14723.00 ns, 3.5945 ns/op
+OverheadWarmup   7: 4096 op, 14960.00 ns, 3.6523 ns/op
+OverheadWarmup   8: 4096 op, 14597.00 ns, 3.5637 ns/op
+OverheadWarmup   9: 4096 op, 14563.00 ns, 3.5554 ns/op
+OverheadWarmup  10: 4096 op, 14568.00 ns, 3.5566 ns/op
+
+OverheadActual   1: 4096 op, 14550.00 ns, 3.5522 ns/op
+OverheadActual   2: 4096 op, 14542.00 ns, 3.5503 ns/op
+OverheadActual   3: 4096 op, 17399.00 ns, 4.2478 ns/op
+OverheadActual   4: 4096 op, 15185.00 ns, 3.7073 ns/op
+OverheadActual   5: 4096 op, 16790.00 ns, 4.0991 ns/op
+OverheadActual   6: 4096 op, 16889.00 ns, 4.1233 ns/op
+OverheadActual   7: 4096 op, 17597.00 ns, 4.2961 ns/op
+OverheadActual   8: 4096 op, 14497.00 ns, 3.5393 ns/op
+OverheadActual   9: 4096 op, 14575.00 ns, 3.5583 ns/op
+OverheadActual  10: 4096 op, 14640.00 ns, 3.5742 ns/op
+OverheadActual  11: 4096 op, 16805.00 ns, 4.1028 ns/op
+OverheadActual  12: 4096 op, 14519.00 ns, 3.5447 ns/op
+OverheadActual  13: 4096 op, 14715.00 ns, 3.5925 ns/op
+OverheadActual  14: 4096 op, 14786.00 ns, 3.6099 ns/op
+OverheadActual  15: 4096 op, 14750.00 ns, 3.6011 ns/op
+OverheadActual  16: 4096 op, 14462.00 ns, 3.5308 ns/op
+OverheadActual  17: 4096 op, 14607.00 ns, 3.5662 ns/op
+OverheadActual  18: 4096 op, 14520.00 ns, 3.5449 ns/op
+OverheadActual  19: 4096 op, 14557.00 ns, 3.5540 ns/op
+OverheadActual  20: 4096 op, 14637.00 ns, 3.5735 ns/op
+
+WorkloadWarmup   1: 4096 op, 1006839368.00 ns, 245.8104 us/op
+WorkloadWarmup   2: 4096 op, 1464455859.00 ns, 357.5332 us/op
+
+// BeforeActualRun
+WorkloadActual   1: 4096 op, 1279895567.00 ns, 312.4745 us/op
+WorkloadActual   2: 4096 op, 1808503673.00 ns, 441.5292 us/op
+WorkloadActual   3: 4096 op, 1373480758.00 ns, 335.3225 us/op
+WorkloadActual   4: 4096 op, 2943677384.00 ns, 718.6712 us/op
+WorkloadActual   5: 4096 op, 2668188358.00 ns, 651.4132 us/op
+WorkloadActual   6: 4096 op, 2171179835.00 ns, 530.0732 us/op
+WorkloadActual   7: 4096 op, 2454909737.00 ns, 599.3432 us/op
+WorkloadActual   8: 4096 op, 2851490609.00 ns, 696.1647 us/op
+
+// AfterActualRun
+WorkloadResult   1: 4096 op, 1279880928.50 ns, 312.4709 us/op
+WorkloadResult   2: 4096 op, 1808489034.50 ns, 441.5256 us/op
+WorkloadResult   3: 4096 op, 1373466119.50 ns, 335.3189 us/op
+WorkloadResult   4: 4096 op, 2943662745.50 ns, 718.6677 us/op
+WorkloadResult   5: 4096 op, 2668173719.50 ns, 651.4096 us/op
+WorkloadResult   6: 4096 op, 2171165196.50 ns, 530.0696 us/op
+WorkloadResult   7: 4096 op, 2454895098.50 ns, 599.3396 us/op
+WorkloadResult   8: 4096 op, 2851475970.50 ns, 696.1611 us/op
+// GC:  1357 1356 1356 11749783720 4096
+// Threading:  0 0 4096
+
+// AfterAll
+// Benchmark Process 15191 has exited with code 0.
+
+Mean = 535.620 μs, StdErr = 55.989 μs (10.45%), N = 8, StdDev = 158.361 μs
+Min = 312.471 μs, Q1 = 414.974 μs, Median = 564.705 μs, Q3 = 662.597 μs, Max = 718.668 μs
+IQR = 247.624 μs, LowerFence = 43.539 μs, UpperFence = 1,034.033 μs
+ConfidenceInterval = [232.838 μs; 838.403 μs] (CI 99.9%), Margin = 302.783 μs (56.53% of Mean)
+Skewness = -0.25, Kurtosis = 1.22, MValue = 2
+
+// ** Remained 1 (16.7%) benchmark(s) to run. Estimated finish 2025-11-05 16:56 (0h 0m from now) **
+// **************************
+// Benchmark: TweetsBencnmarks.RenderAllTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+// *** Execute ***
+// Launch: 1 / 1
+// Execute: dotnet Robin.Benchmarks-Fast-1.dll --anonymousPipes 141 142 --benchmarkName Robin.Benchmarks.TweetsBencnmarks.RenderAllTweets --job Fast --benchmarkId 5 in /config/workspace/Robin/Robin.Benchmarks/bin/Release/net9.0/Robin.Benchmarks-Fast-1/bin/Release/net9.0
+// Failed to set up high priority (Permission denied). In order to run benchmarks with high priority, make sure you have the right permissions.
+// BeforeAnythingElse
+
+// Benchmark Process Environment Information:
+// BenchmarkDotNet v0.15.5
+// Runtime=.NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+// GC=Concurrent Workstation
+// HardwareIntrinsics=AVX2+BMI1+BMI2+F16C+FMA+LZCNT+MOVBE,AVX,SSE3+SSSE3+SSE4.1+SSE4.2+POPCNT,X86Base+SSE+SSE2,AES+PCLMUL,AvxVnni,SERIALIZE VectorSize=256
+// Job: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+
+OverheadJitting  1: 1 op, 142087.00 ns, 142.0870 us/op
+WorkloadJitting  1: 1 op, 12699656.00 ns, 12.6997 ms/op
+
+OverheadJitting  2: 16 op, 314718.00 ns, 19.6699 us/op
+WorkloadJitting  2: 16 op, 92029475.00 ns, 5.7518 ms/op
+
+WorkloadPilot    1: 16 op, 173673938.00 ns, 10.8546 ms/op
+WorkloadPilot    2: 32 op, 508963652.00 ns, 15.9051 ms/op
+
+OverheadWarmup   1: 32 op, 3021.00 ns, 94.4063 ns/op
+OverheadWarmup   2: 32 op, 1135.00 ns, 35.4688 ns/op
+OverheadWarmup   3: 32 op, 1130.00 ns, 35.3125 ns/op
+OverheadWarmup   4: 32 op, 1231.00 ns, 38.4688 ns/op
+OverheadWarmup   5: 32 op, 1204.00 ns, 37.6250 ns/op
+OverheadWarmup   6: 32 op, 1200.00 ns, 37.5000 ns/op
+OverheadWarmup   7: 32 op, 957.00 ns, 29.9063 ns/op
+OverheadWarmup   8: 32 op, 4524.00 ns, 141.3750 ns/op
+OverheadWarmup   9: 32 op, 786.00 ns, 24.5625 ns/op
+
+OverheadActual   1: 32 op, 1186.00 ns, 37.0625 ns/op
+OverheadActual   2: 32 op, 768.00 ns, 24.0000 ns/op
+OverheadActual   3: 32 op, 848.00 ns, 26.5000 ns/op
+OverheadActual   4: 32 op, 759.00 ns, 23.7188 ns/op
+OverheadActual   5: 32 op, 716.00 ns, 22.3750 ns/op
+OverheadActual   6: 32 op, 1435.00 ns, 44.8438 ns/op
+OverheadActual   7: 32 op, 1206.00 ns, 37.6875 ns/op
+OverheadActual   8: 32 op, 1025.00 ns, 32.0313 ns/op
+OverheadActual   9: 32 op, 883.00 ns, 27.5938 ns/op
+OverheadActual  10: 32 op, 961.00 ns, 30.0313 ns/op
+OverheadActual  11: 32 op, 866.00 ns, 27.0625 ns/op
+OverheadActual  12: 32 op, 771.00 ns, 24.0938 ns/op
+OverheadActual  13: 32 op, 859.00 ns, 26.8438 ns/op
+OverheadActual  14: 32 op, 795.00 ns, 24.8438 ns/op
+OverheadActual  15: 32 op, 929.00 ns, 29.0313 ns/op
+OverheadActual  16: 32 op, 921.00 ns, 28.7813 ns/op
+OverheadActual  17: 32 op, 1011.00 ns, 31.5938 ns/op
+OverheadActual  18: 32 op, 798.00 ns, 24.9375 ns/op
+OverheadActual  19: 32 op, 755.00 ns, 23.5938 ns/op
+OverheadActual  20: 32 op, 787.00 ns, 24.5938 ns/op
+
+WorkloadWarmup   1: 32 op, 377838064.00 ns, 11.8074 ms/op
+WorkloadWarmup   2: 32 op, 334892599.00 ns, 10.4654 ms/op
+
+// BeforeActualRun
+WorkloadActual   1: 32 op, 587870339.00 ns, 18.3709 ms/op
+WorkloadActual   2: 32 op, 518799016.00 ns, 16.2125 ms/op
+WorkloadActual   3: 32 op, 732394874.00 ns, 22.8873 ms/op
+WorkloadActual   4: 32 op, 712274038.00 ns, 22.2586 ms/op
+WorkloadActual   5: 32 op, 1002262008.00 ns, 31.3207 ms/op
+WorkloadActual   6: 32 op, 882890876.00 ns, 27.5903 ms/op
+WorkloadActual   7: 32 op, 1096985709.00 ns, 34.2808 ms/op
+WorkloadActual   8: 32 op, 1148208256.00 ns, 35.8815 ms/op
+
+// AfterActualRun
+WorkloadResult   1: 32 op, 587869476.50 ns, 18.3709 ms/op
+WorkloadResult   2: 32 op, 518798153.50 ns, 16.2124 ms/op
+WorkloadResult   3: 32 op, 732394011.50 ns, 22.8873 ms/op
+WorkloadResult   4: 32 op, 712273175.50 ns, 22.2585 ms/op
+WorkloadResult   5: 32 op, 1002261145.50 ns, 31.3207 ms/op
+WorkloadResult   6: 32 op, 882890013.50 ns, 27.5903 ms/op
+WorkloadResult   7: 32 op, 1096984846.50 ns, 34.2808 ms/op
+WorkloadResult   8: 32 op, 1148207393.50 ns, 35.8815 ms/op
+// GC:  35 33 31 6134009384 32
+// Threading:  0 0 32
+
+// AfterAll
+// Benchmark Process 15302 has exited with code 0.
+
+Mean = 26.100 ms, StdErr = 2.587 ms (9.91%), N = 8, StdDev = 7.316 ms
+Min = 16.212 ms, Q1 = 21.287 ms, Median = 25.239 ms, Q3 = 32.061 ms, Max = 35.881 ms
+IQR = 10.774 ms, LowerFence = 5.126 ms, UpperFence = 48.222 ms
+ConfidenceInterval = [12.112 ms; 40.088 ms] (CI 99.9%), Margin = 13.988 ms (53.59% of Mean)
+Skewness = 0.04, Kurtosis = 1.21, MValue = 2
+
+// ** Remained 0 (0.0%) benchmark(s) to run. Estimated finish 2025-11-05 16:56 (0h 0m from now) **
+// ***** BenchmarkRunner: Finish  *****
+
+// * Export *
+  BenchmarkDotNet.Artifacts/results/Robin.Benchmarks.TweetsBencnmarks-report.csv
+  BenchmarkDotNet.Artifacts/results/Robin.Benchmarks.TweetsBencnmarks-report-github.md
+  BenchmarkDotNet.Artifacts/results/Robin.Benchmarks.TweetsBencnmarks-report.html
+  BenchmarkDotNet.Artifacts/results/Robin.Benchmarks.TweetsBencnmarks-report-default.md
+
+// * Detailed results *
+TweetsBencnmarks.RenderSingleTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+Runtime = .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 9.058 ms, StdErr = 0.540 ms (5.96%), N = 8, StdDev = 1.526 ms
+Min = 6.484 ms, Q1 = 8.102 ms, Median = 9.134 ms, Q3 = 10.180 ms, Max = 11.154 ms
+IQR = 2.078 ms, LowerFence = 4.985 ms, UpperFence = 13.297 ms
+ConfidenceInterval = [6.141 ms; 11.976 ms] (CI 99.9%), Margin = 2.918 ms (32.21% of Mean)
+Skewness = -0.23, Kurtosis = 1.63, MValue = 2
+-------------------- Histogram --------------------
+[5.482 ms ;  7.562 ms) | @
+[7.562 ms ;  9.564 ms) | @@@@
+[9.564 ms ; 11.625 ms) | @@@
+---------------------------------------------------
+
+TweetsBencnmarks.RenderManyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+Runtime = .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 12.971 ms, StdErr = 1.416 ms (10.92%), N = 8, StdDev = 4.005 ms
+Min = 7.335 ms, Q1 = 10.146 ms, Median = 13.200 ms, Q3 = 15.513 ms, Max = 18.257 ms
+IQR = 5.367 ms, LowerFence = 2.095 ms, UpperFence = 23.564 ms
+ConfidenceInterval = [5.313 ms; 20.630 ms] (CI 99.9%), Margin = 7.658 ms (59.04% of Mean)
+Skewness = -0.02, Kurtosis = 1.33, MValue = 2
+-------------------- Histogram --------------------
+[ 4.706 ms ; 10.085 ms) | @@
+[10.085 ms ; 15.343 ms) | @@@@
+[15.343 ms ; 20.886 ms) | @@
+---------------------------------------------------
+
+TweetsBencnmarks.RenderEnumerableManyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+Runtime = .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 532.311 μs, StdErr = 54.231 μs (10.19%), N = 8, StdDev = 153.389 μs
+Min = 318.771 μs, Q1 = 416.455 μs, Median = 556.077 μs, Q3 = 657.346 μs, Max = 709.795 μs
+IQR = 240.891 μs, LowerFence = 55.120 μs, UpperFence = 1,018.682 μs
+ConfidenceInterval = [239.036 μs; 825.586 μs] (CI 99.9%), Margin = 293.275 μs (55.09% of Mean)
+Skewness = -0.18, Kurtosis = 1.1, MValue = 4
+-------------------- Histogram --------------------
+[299.800 μs ; 501.122 μs) | @@@@
+[501.122 μs ; 569.238 μs) | 
+[569.238 μs ; 810.457 μs) | @@@@
+---------------------------------------------------
+
+TweetsBencnmarks.RenderEmptyTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+Runtime = .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 539.179 μs, StdErr = 52.280 μs (9.70%), N = 8, StdDev = 147.870 μs
+Min = 346.189 μs, Q1 = 422.535 μs, Median = 558.424 μs, Q3 = 657.089 μs, Max = 713.382 μs
+IQR = 234.554 μs, LowerFence = 70.704 μs, UpperFence = 1,008.919 μs
+ConfidenceInterval = [256.455 μs; 821.903 μs] (CI 99.9%), Margin = 282.724 μs (52.44% of Mean)
+Skewness = -0.15, Kurtosis = 1.12, MValue = 2
+-------------------- Histogram --------------------
+[326.117 μs ; 568.012 μs) | @@@@
+[568.012 μs ; 762.092 μs) | @@@@
+---------------------------------------------------
+
+TweetsBencnmarks.RenderTakeAllTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+Runtime = .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 535.620 μs, StdErr = 55.989 μs (10.45%), N = 8, StdDev = 158.361 μs
+Min = 312.471 μs, Q1 = 414.974 μs, Median = 564.705 μs, Q3 = 662.597 μs, Max = 718.668 μs
+IQR = 247.624 μs, LowerFence = 43.539 μs, UpperFence = 1,034.033 μs
+ConfidenceInterval = [232.838 μs; 838.403 μs] (CI 99.9%), Margin = 302.783 μs (56.53% of Mean)
+Skewness = -0.25, Kurtosis = 1.22, MValue = 2
+-------------------- Histogram --------------------
+[273.074 μs ; 520.444 μs) | @@@
+[520.444 μs ; 728.293 μs) | @@@@@
+---------------------------------------------------
+
+TweetsBencnmarks.RenderAllTweets: Fast(IterationCount=8, LaunchCount=1, WarmupCount=2)
+Runtime = .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3; GC = Concurrent Workstation
+Mean = 26.100 ms, StdErr = 2.587 ms (9.91%), N = 8, StdDev = 7.316 ms
+Min = 16.212 ms, Q1 = 21.287 ms, Median = 25.239 ms, Q3 = 32.061 ms, Max = 35.881 ms
+IQR = 10.774 ms, LowerFence = 5.126 ms, UpperFence = 48.222 ms
+ConfidenceInterval = [12.112 ms; 40.088 ms] (CI 99.9%), Margin = 13.988 ms (53.59% of Mean)
+Skewness = 0.04, Kurtosis = 1.21, MValue = 2
+-------------------- Histogram --------------------
+[14.749 ms ; 24.351 ms) | @@@@
+[24.351 ms ; 36.537 ms) | @@@@
+---------------------------------------------------
+
+// * Summary *
+
+BenchmarkDotNet v0.15.5, Linux Ubuntu 24.04.3 LTS (Noble Numbat) (container)
+13th Gen Intel Core i7-1370P 2.19GHz, 1 CPU, 20 logical and 10 physical cores
+.NET SDK 9.0.305
+  [Host] : .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+  Fast   : .NET 9.0.9 (9.0.9, 9.0.925.41916), X64 RyuJIT x86-64-v3
+
+Job=Fast  IterationCount=8  LaunchCount=1  
+WarmupCount=2  
+
+| Method                     | Mean        | Error       | StdDev     | Gen0      | Gen1      | Gen2     | Allocated |
+|--------------------------- |------------:|------------:|-----------:|----------:|----------:|---------:|----------:|
+| RenderSingleTweets         |  9,058.4 μs |  2,917.7 μs | 1,526.0 μs | 1000.0000 |  998.0469 | 998.0469 |  60.25 MB |
+| RenderManyTweets           | 12,971.4 μs |  7,658.2 μs | 4,005.4 μs | 1003.9063 | 1000.0000 | 996.0938 | 112.96 MB |
+| RenderEnumerableManyTweets |    532.3 μs |    293.3 μs |   153.4 μs |  332.2754 |  332.0313 | 332.0313 |   2.74 MB |
+| RenderEmptyTweets          |    539.2 μs |    282.7 μs |   147.9 μs |  332.0313 |  331.7871 | 331.7871 |   2.74 MB |
+| RenderTakeAllTweets        |    535.6 μs |    302.8 μs |   158.4 μs |  331.2988 |  331.0547 | 331.0547 |   2.74 MB |
+| RenderAllTweets            | 26,100.3 μs | 13,987.9 μs | 7,315.9 μs | 1093.7500 | 1031.2500 | 968.7500 | 182.81 MB |
+
+// * Legends *
+  Mean      : Arithmetic mean of all measurements
+  Error     : Half of 99.9% confidence interval
+  StdDev    : Standard deviation of all measurements
+  Gen0      : GC Generation 0 collects per 1000 operations
+  Gen1      : GC Generation 1 collects per 1000 operations
+  Gen2      : GC Generation 2 collects per 1000 operations
+  Allocated : Allocated memory per single operation (managed only, inclusive, 1KB = 1024B)
+  1 μs      : 1 Microsecond (0.000001 sec)
+
+// * Diagnostic Output - MemoryDiagnoser *
+
+
+// ***** BenchmarkRunner: End *****
+Run time: 00:02:53 (173.52 sec), executed benchmarks: 6
+
+Global total time: 00:02:58 (178.9 sec), executed benchmarks: 6
+// * Artifacts cleanup *
+Artifacts cleanup is finished
