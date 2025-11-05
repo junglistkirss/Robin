@@ -11,6 +11,7 @@ public static class JsonAccessorExtensions
     public static IServiceCollection AddJsonAccessors(this IServiceCollection services)
     {
         return services
+            .AddSingleton<JsonEvaluator>()
             .AddIndexAccessor<JsonArray>(TryGetIndexValue)
             .AddMemberAccessor<JsonObject>(TryGetMemberValue);
     }

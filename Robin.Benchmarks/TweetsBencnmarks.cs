@@ -94,6 +94,6 @@ public class TweetsBencnmarks
     }
 
     [Benchmark]
-    public string RenderTweets() => renderer.Render(template, tweets);
+    public string RenderTweets() => renderer.Render(template, TweetsTemplates.List, tweets);
 
 }

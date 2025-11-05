@@ -12,7 +12,7 @@ public sealed class JsonEvaluator : IEvaluator
     private static readonly ServiceEvaluator BaseEvaluator = new(JsonAccesorVisitor.Instance);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade)
+    public object? Resolve(IExpressionNode expression, SourceContext data, out IDataFacade facade)
     {
         object? value = BaseEvaluator.Resolve(expression, data, out IDataFacade baseFacade);
         facade = value.AsJsonFacade(baseFacade);
