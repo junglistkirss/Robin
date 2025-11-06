@@ -1,3 +1,4 @@
+using Robin.Abstractions;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Extensions;
 using Robin.Abstractions.Facades;
@@ -7,9 +8,9 @@ using System.Collections.Immutable;
 using System.Net;
 using System.Text;
 
-namespace Robin.Abstractions;
+namespace Robin.Internals;
 
-public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<StringBuilder>>
+internal sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<StringBuilder>>
 {
     public readonly static StringNodeRender Instance = new();
 
@@ -43,10 +44,10 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
 
     public NoValue VisitSection(SectionNode node, RenderContext<StringBuilder> context)
     {
-        object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        object? value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
         bool thruly = facade.IsTrue(value);
 
-        if ((!node.Inverted && thruly) || (node.Inverted && !thruly))
+        if (!node.Inverted && thruly || node.Inverted && !thruly)
         {
             return RenderTree(context, value, facade, node.Children);
         }
@@ -56,7 +57,7 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
 
     public NoValue VisitPartialCall(PartialCallNode node, RenderContext<StringBuilder> context)
     {
-        object?  value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
+        object? value = context.Evaluator.Resolve(node.Expression, context.Data, out IDataFacade facade);
 
         if (facade.IsTrue(value) && context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate))
         {
@@ -74,7 +75,7 @@ public sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Strin
     {
         if (facade.IsCollection(value, out IEnumerable? collection))
         {
-            foreach (object? item  in collection)
+            foreach (object? item in collection)
             {
                 RenderContext<StringBuilder> itemCtx = context with
                 {

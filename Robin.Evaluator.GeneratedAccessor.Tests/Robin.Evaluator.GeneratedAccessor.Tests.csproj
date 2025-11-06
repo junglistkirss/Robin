@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Robin.Abstractions\Robin.Abstractions.csproj" />
+    <ProjectReference Include="..\Robin\Robin.csproj" />
     <ProjectReference Include="..\Robin.Generators.Accessor\Robin.Generators.Accessor.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 

@@ -1,11 +1,11 @@
 namespace Robin.Contracts.Variables;
 
-public sealed  class MemberSegment(string memberName) : IVariableSegment
+public sealed class MemberSegment(string memberName) : IVariableSegment
 {
     public string MemberName => memberName;
 
-    public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)
+    public bool Accept<TArgs>(IVariableSegmentVisitor<TArgs> visitor, TArgs args, out Delegate @delegate)
     {
-        return visitor.VisitMember(this, args);
+        return visitor.VisitMember(this, args, out @delegate);
     }
 }

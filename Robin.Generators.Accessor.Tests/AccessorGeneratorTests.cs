@@ -24,14 +24,13 @@ namespace TestNamespace
         string code = GenerateTestCode(source);
 
         Assert.Contains("namespace TestNamespace", code);
-        Assert.Contains("#nullable disable", code);
         Assert.Contains("public static class TestAccessor", code);
         Assert.Contains("TestNamespace.Test", code);
         Assert.Contains("switch(propertyName.ToLowerInvariant())", code);
         Assert.Contains(@"case ""value""", code);
         Assert.Contains("return true;", code);
         Assert.Contains("default:", code);
-        Assert.Contains("value = null;", code);
+        Assert.Contains("value = (Func<TestNamespace.Test, object>)(_ => null);", code);
         Assert.Contains("return false;", code);
     }
 
@@ -53,14 +52,13 @@ namespace TestNamespace
         string code = GenerateTestCode(source);
 
         Assert.Contains("namespace TestNamespace", code);
-        Assert.Contains("#nullable disable", code);
         Assert.Contains("public static class TestAccessor", code);
         Assert.Contains("TestNamespace.Test", code);
         Assert.Contains("switch(propertyName.ToLowerInvariant())", code);
         Assert.Contains(@"case ""value""", code);
         Assert.Contains("return true;", code);
         Assert.Contains("default:", code);
-        Assert.Contains("value = null;", code);
+        Assert.Contains("value = (Func<TestNamespace.Test, object>)(_ => null);", code);
         Assert.Contains("return false;", code);
     }
 
@@ -82,9 +80,7 @@ namespace TestNamespace
         string code = GenerateTestCode(source);
 
         Assert.Contains("namespace TestNamespace", code);
-        Assert.Contains("#nullable disable", code);
         Assert.Contains("public static class TestAccessor", code);
-        Assert.Contains("TestNamespace.Test", code);
         Assert.Contains("switch(propertyName.ToLowerInvariant())", code);
         Assert.Contains("default:", code);
         Assert.Contains("throw new ArgumentException", code);
@@ -107,9 +103,7 @@ namespace TestNamespace
 }";
         string code = GenerateTestCode(source);
         Assert.Contains("namespace TestNamespace", code);
-        Assert.Contains("#nullable disable", code);
         Assert.Contains("internal static class TestAccessor", code);
-        Assert.Contains("TestNamespace.Test", code);
         Assert.Contains("switch(propertyName.ToLowerInvariant())", code);
         Assert.Contains("default:", code);
         Assert.Contains("throw new ArgumentException", code);
@@ -133,20 +127,19 @@ namespace TestNamespace
 }";
         string code = GenerateTestCode(source);
         Assert.Contains("namespace TestNamespace", code);
-        Assert.Contains("#nullable disable", code);
         Assert.Contains("internal static class TestAccessor", code);
         Assert.Contains("TestNamespace.Test", code);
         Assert.Contains("switch(propertyName.ToLowerInvariant())", code);
         Assert.Contains(@"case ""value""", code);
         Assert.Contains("return true;", code);
         Assert.Contains("default:", code);
-        Assert.Contains("value = null;", code);
+        Assert.Contains("value = (Func<TestNamespace.Test, object>)(_ => null);", code);
         Assert.Contains("return false;", code);
     }
     private static string GenerateTestCode(string source)
     {
         CSharpCompilation compilation = CreateCompilation(source);
-        AccessorGenerator generator = new AccessorGenerator();
+        AccessorGenerator generator = new();
         System.Collections.Immutable.ImmutableArray<Diagnostic> compilationDiagnostics = compilation.GetDiagnostics();
         Assert.Empty(compilationDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error));
 

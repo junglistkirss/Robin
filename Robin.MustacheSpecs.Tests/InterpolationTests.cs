@@ -1,4 +1,4 @@
-using Robin.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Robin.Contracts.Nodes;
 using Robin.Evaluator.System.Text.Json;
 using System.Collections.Immutable;
@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace Robin.MustacheSpecs.Tests;
 
-public class InterpolationTests
+public class InterpolationTests : BaseMustacheTests
 {
     public static IEnumerable<object[]> GetTestsSpec1_4_3()
     {
@@ -25,8 +25,9 @@ public class InterpolationTests
     [MemberData(nameof(GetTestsSpec1_4_3))]
     public void Should_Add_Correctly(MustacheTestCase @case)
     {
+        IJsonEvaluator eval = ServiceProvider.GetRequiredService<IJsonEvaluator>();
         ImmutableArray<INode> template = @case.Template.AsSpan().Parse();
-        string result = JsonEvaluator.Instance.RenderString(template, @case.Data);
+        string result = eval.RenderString(template, @case.Data);
         if (!@case.Expected.EqualsIgnoringWhitespace(result))
         {
             Assert.Fail($"{@case.Name} : {@case.Description}{Environment.NewLine}Excpected: \"{@case.Expected}\"{Environment.NewLine}Actual: \"{result}\"");

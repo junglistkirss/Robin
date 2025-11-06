@@ -1,32 +1,35 @@
-using Robin.Abstractions;
-using Robin.Abstractions.Facades;
 using Robin.Contracts.Variables;
 using System.Text.Json.Nodes;
 
 namespace Robin.Evaluator.System.Text.Json;
 
-internal sealed class JsonAccesorVisitor : IVariableSegmentVisitor<EvaluationResult, object?>
+internal sealed class JsonAccesorVisitor : IVariableSegmentVisitor<Type>
 {
     public readonly static JsonAccesorVisitor Instance = new();
-    public EvaluationResult VisitIndex(IndexSegment segment, object? args)
+    public bool VisitIndex(IndexSegment segment, Type args, out Delegate @delegate)
     {
-        if (args is JsonArray json && json.TryGetIndexValue(segment.Index, out object? node))
-            return new(true, node);
-
-        return new(false, null);
+        if (Nullable.GetUnderlyingType(args) == typeof(JsonArray))
+        {
+            return JsonAccessorExtensions.TryGetIndexValue(segment.Index, out @delegate);
+        }
+        @delegate = (Func<JsonArray?, object?>)(_ => null);
+        return false;
     }
 
-    public EvaluationResult VisitMember(MemberSegment segment, object? args)
+    public bool VisitMember(MemberSegment segment, Type args, out Delegate @delegate)
     {
-        if (args is JsonObject json && json.TryGetMemberValue(segment.MemberName, out object? node))
-            return new(true, node);
-
-        return new(false, null);
+        if (Nullable.GetUnderlyingType(args) == typeof(JsonObject))
+        {
+            return JsonAccessorExtensions.TryGetMemberValue(segment.MemberName, out @delegate);
+        }
+        @delegate = (Func<JsonObject?, object?>)(_ => null);
+        return false;
     }
 
-    public EvaluationResult VisitThis(ThisSegment segment, object? args)
+    public bool VisitThis(ThisSegment segment, Type args, out Delegate @delegate)
     {
-        return new(true, args);
+        @delegate = (Func<object?, object?>)(x => x);
+        return true;
     }
 }
 

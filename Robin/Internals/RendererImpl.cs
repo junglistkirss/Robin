@@ -3,9 +3,8 @@ using Robin.Abstractions.Context;
 using Robin.Abstractions.Helpers;
 using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
-using System.Text;
 
-namespace Robin;
+namespace Robin.Internals;
 
 internal sealed class RendererImpl<T, TOut>(
     T defaultBuilder,
@@ -18,17 +17,7 @@ internal sealed class RendererImpl<T, TOut>(
 {
     public TOut Render(ImmutableArray<INode> template, object? data)
     {
-        T result = defaultBuilder.Render<T>(visitor, evaluator, template, data, helperConfig);
+        T result = defaultBuilder.Render(visitor, evaluator, template, data, helperConfig);
         return output(result);
-    }
-}
-
-internal sealed class StringRendererImpl(
-    IRenderer<string> inner
-    ) : IStringRenderer
-{
-    public string Render(ImmutableArray<INode> template, object? data)
-    {
-        return inner.Render(template, data);
     }
 }

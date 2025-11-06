@@ -1,7 +1,7 @@
 using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
 
-namespace Robin.Abstractions;
+namespace Robin.Internals;
 
 internal sealed class PartialExtractor : INodeVisitor<ImmutableDictionary<string, ImmutableArray<INode>>, ImmutableDictionary<string, ImmutableArray<INode>>>
 {

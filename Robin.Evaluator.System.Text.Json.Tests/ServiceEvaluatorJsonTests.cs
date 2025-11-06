@@ -50,7 +50,7 @@ public class ServiceEvaluatorJsonTests
     {
         IEvaluator eval = ServiceProvider.GetRequiredService<IEvaluator>();
         JsonObject json = [];
-        IExpressionNode expression = new NumberExpressionNode(42);
+        IExpressionNode expression = new IndexExpressionNode(42);
         DataContext context = new(json, null);
         object? rawValue = eval.Resolve(expression, context, out IDataFacade facade);
         Assert.NotNull(rawValue);

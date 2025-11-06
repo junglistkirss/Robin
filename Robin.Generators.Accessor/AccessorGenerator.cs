@@ -12,23 +12,23 @@ namespace Robin.Generators.Accessor
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             // Sélectionne toutes les classes et structs
-            var classDeclarations = context.SyntaxProvider
+            IncrementalValuesProvider<TypeDeclarationSyntax> classDeclarations = context.SyntaxProvider
                 .CreateSyntaxProvider(
                     predicate: static (node, _) => node is TypeDeclarationSyntax,
                     transform: static (ctx, _) => (TypeDeclarationSyntax)ctx.Node)
                 .Where(static m => m != null);
 
             // Combine avec le Compilation pour avoir les symboles
-            var compilationAndClasses = context.CompilationProvider.Combine(classDeclarations.Collect());
+            IncrementalValueProvider<(Compilation Left, System.Collections.Immutable.ImmutableArray<TypeDeclarationSyntax> Right)> compilationAndClasses = context.CompilationProvider.Combine(classDeclarations.Collect());
 
             context.RegisterSourceOutput(compilationAndClasses, (spc, source) =>
             {
-                var (compilation, classes) = source;
+                (Compilation compilation, System.Collections.Immutable.ImmutableArray<TypeDeclarationSyntax> classes) = source;
 
                 INamedTypeSymbol attributeSymbol = compilation.GetTypeByMetadataName(typeof(GenerateAccessorAttribute).FullName);
                 if (attributeSymbol is null) return;
 
-                foreach (var classDecl in classes)
+                foreach (TypeDeclarationSyntax classDecl in classes)
                 {
                     SemanticModel model = compilation.GetSemanticModel(classDecl.SyntaxTree);
                     if (model.GetDeclaredSymbol(classDecl) is not INamedTypeSymbol namedTypeSymbol)
@@ -64,24 +64,24 @@ namespace Robin.Generators.Accessor
                         sb.AppendLine("{");
                     }
 
-                    sb.AppendLineIndented(1, "#nullable disable");
+                    //sb.AppendLineIndented(1, "#nullable disable");
                     sb.AppendLineIndented(1, $"{visibility} static class {accessorName}");
                     sb.AppendLineIndented(1, "{");
-                    sb.AppendLineIndented(2, $"public static bool TryGetPropertyValue(this {longClassName} obj, string propertyName, [MaybeNullWhen(true)] out object value)");
+                    sb.AppendLineIndented(2, $"public static bool GetPropertyDelegate(string propertyName, [NotNull] out Delegate value)");
                     sb.AppendLineIndented(2, "{");
                     sb.AppendLineIndented(3, "switch(propertyName.ToLowerInvariant())");
                     sb.AppendLineIndented(3, "{");
 
                     if (properties.Length > 0)
                     {
-                        foreach (var prop in properties)
+                        foreach (IPropertySymbol prop in properties)
                         {
                             sb.AppendLineIndented(4, $"case \"{prop.Name.ToLowerInvariant()}\":");
-                            sb.AppendLineIndented(5, $"value = obj.{prop.Name};");
+                            sb.AppendLineIndented(5, $"value = (Func<{longClassName}, {prop.Type.ToDisplayString()}>)(obj => obj.{prop.Name});");
                             sb.AppendLineIndented(5, "return true;");
                         }
                         sb.AppendLineIndented(4, "default:");
-                        sb.AppendLineIndented(5, "value = null;");
+                        sb.AppendLineIndented(5, $"value = (Func<{longClassName}, object>)(_ => null);");
                         sb.AppendLineIndented(5, "return false;");
                     }
                     else

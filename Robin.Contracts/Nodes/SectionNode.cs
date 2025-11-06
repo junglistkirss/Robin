@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 
 namespace Robin.Contracts.Nodes;
 
-public sealed  class SectionNode(IExpressionNode expression, ImmutableArray<INode> children, bool inverted = false) : INode
+public sealed class SectionNode(IExpressionNode expression, ImmutableArray<INode> children, bool inverted = false) : INode
 {
     public IExpressionNode Expression { get; } = expression;
     public ImmutableArray<INode> Children { get; } = children;
