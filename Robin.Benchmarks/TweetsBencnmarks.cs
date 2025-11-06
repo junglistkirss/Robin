@@ -29,7 +29,7 @@ public class TweetsBencnmarks
             .AddServiceEvaluator()
             .AddStringRenderer()
             .AddMemberAccessor<Tweet>(TweetAccessor.GetPropertyDelegate);
-            ;
+
         foreach (var descriptor in services)
         {
             if (descriptor == null)
@@ -57,23 +57,17 @@ public class TweetsBencnmarks
     }
 
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public string RenderSingleTweets() => renderer.Render(template, tweets[0]);
+    
+    [Benchmark]
+    public string RenderEmptyTweets() => renderer.Render(template, Array.Empty<Tweet>());
 
     [Benchmark]
     public string RenderTake5TweetsAsArray() => renderer.Render(template, tweets.Take(5).ToArray());
 
     [Benchmark]
-    public string RenderTake50Tweets() => renderer.Render(template, tweets.Take(50));
-
-    [Benchmark]
-    public string RenderEmptyTweets() => renderer.Render(template, Array.Empty<Tweet>());
-
-    [Benchmark]
-    public string RenderEnumerableTweets() => renderer.Render(template, Enumerable.Empty<Tweet>());
-
-    [Benchmark]
-    public string RenderTakeAllTweets() => renderer.Render(template, tweets.Take(100));
+    public string RenderTake50Tweets() => renderer.Render(template, tweets.Take(50).ToArray());
 
     [Benchmark]
     public string RenderAllTweets() => renderer.Render(template, tweets);
