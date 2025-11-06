@@ -20,9 +20,8 @@ public static class RobinExtensions
     {
         return services
             .AddMemoryCache()
-            .AddKeyedSingleton<IEvaluator, ServiceEvaluator>(BaseEvaluatorKey)
-            .AddSingleton<IEvaluator, ServiceEvaluator>()
             .AddSingleton<IExpressionNodeVisitor<DataContext>, ExpressionNodeVisitor>()
+            .AddKeyedSingleton<IEvaluator, ServiceEvaluator>(BaseEvaluatorKey)
             .AddSingleton<IEvaluator, ServiceEvaluator>()
             .AddSingleton<IVariableSegmentVisitor<Type>, ServiceAccesorVisitor>();
     }
