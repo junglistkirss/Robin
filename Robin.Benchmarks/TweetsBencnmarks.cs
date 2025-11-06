@@ -15,11 +15,13 @@ namespace Robin.Benchmarks;
 
 public class TweetsBencnmarks
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly Tweet[] tweets;
-    private readonly ImmutableArray<INode> template;
-    private readonly IStringRenderer renderer;
-    public TweetsBencnmarks()
+    private IServiceProvider serviceProvider = default!;
+    private Tweet[] tweets = [];
+    private ImmutableArray<INode> template = [];
+    private IStringRenderer renderer = default!;
+
+[Global setup]
+    public Setup()
     {
 
         ServiceCollection services = [];
