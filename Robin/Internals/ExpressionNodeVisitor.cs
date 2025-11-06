@@ -42,9 +42,14 @@ internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> access
             value = null;
             return false;
         }
+        if (node.Path.Segments.Length == 0)
+        {
+            value = null;
+            return false;
+        }
+
         Type type = current.GetType();
-#pragma warning disable CS8600 // Conversion de littéral ayant une valeur null ou d'une éventuelle valeur null en type non-nullable.
-        TryDelegateChain @delegate = cache.GetOrCreate(new CacheKey(type, node.Path), (entry) =>
+        TryDelegateChain? @delegate = cache.GetOrCreate(new CacheKey(type, node.Path), (entry) =>
         {
             CacheKey cacheKey = (CacheKey)entry.Key;
             Type currentType = cacheKey.Type;
@@ -52,34 +57,32 @@ internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> access
 
             TryDelegateChain chain = new(currentType);
             int limit = cacheKey.Path.Segments.Length;
-            if (limit == 0)
-                chain.Fail();
-            else
+            int i = 0;
+            IVariableSegment current = path.Segments[i];
+            bool resolved = current.Accept(accessorVisitor, currentType, out Delegate @delegate);
+            if (!resolved)
+                return chain.Fail();
+            chain.Push(@delegate);
+            i++;
+            while (resolved && i < limit)
             {
-                int i = 0;
-                IVariableSegment current = path.Segments[i];
-                bool resolved = current.Accept(accessorVisitor, currentType, out Delegate @delegate);
-                if (!resolved)
+                currentType = @delegate.GetReturnType();
+                current = path.Segments[i]; ;
+                resolved = current.Accept(accessorVisitor, currentType, out @delegate);
+                if (!resolved) // avoid precedence
                     return chain.Fail();
                 chain.Push(@delegate);
                 i++;
-                while (resolved && i < limit)
-                {
-                    currentType = @delegate.GetReturnType();
-                    current = path.Segments[i]; ;
-                    resolved = current.Accept(accessorVisitor, currentType, out @delegate);
-                    if (!resolved) // avoid precedence
-                        return chain.Fail();
-                    chain.Push(@delegate);
-                    i++;
-                }
             }
+
             return chain;
         });
-#pragma warning restore CS8600 // Conversion de littéral ayant une valeur null ou d'une éventuelle valeur null en type non-nullable.
-        bool resolved = @delegate!.Execute(current, out value);
-        if (resolved)
-            return true;
+        if (@delegate is not null)
+        {
+            bool resolved = @delegate!.Execute(current, out value);
+            if (resolved)
+                return true;
+        }
         if (args.Parent is not null)
             return VisitIdenitifer(node, args.Parent, out value);
 

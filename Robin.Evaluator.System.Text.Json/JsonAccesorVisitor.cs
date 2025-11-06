@@ -18,7 +18,7 @@ internal sealed class JsonAccesorVisitor : IVariableSegmentVisitor<Type>
 
     public bool VisitMember(MemberSegment segment, Type args, out Delegate @delegate)
     {
-        if (Nullable.GetUnderlyingType( args) == typeof(JsonObject))
+        if (Nullable.GetUnderlyingType(args) == typeof(JsonObject))
         {
             return JsonAccessorExtensions.TryGetMemberValue(segment.MemberName, out @delegate);
         }

@@ -2,6 +2,21 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Internals;
 
+public sealed class ResolutionException : Exception
+{
+    public int Level { get; set; }
+    public ResolutionException(int level, string? message) : base(message)
+    {
+        Level = level;
+    }
+
+
+    public ResolutionException(int level, string? message, Exception? innerException) : base(message, innerException)
+    {
+        Level = level;
+    }
+}
+
 internal sealed class TryDelegateChain(Type initialType)
 {
     private readonly Type initialType = initialType;
@@ -54,15 +69,32 @@ internal sealed class TryDelegateChain(Type initialType)
     public bool Execute(object? input, out object? value)
     {
         object? result = input;
-        if (shouldResolve)
+        try
         {
-            foreach (var lambda in _chain)
+            if (shouldResolve)
             {
-                result = lambda.Delegate.DynamicInvoke(result);
+                int level = 0;
+                foreach (var lambda in _chain)
+                {
+                    try
+                    {
+                        result = lambda.Delegate.DynamicInvoke(result);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ResolutionException(level, "Resolution fail", ex);
+                    }
+                    level++;
+                }
             }
+            value = result;
+            return shouldResolve;
         }
-        value = result;
-        return shouldResolve;
+        catch (ResolutionException rex)
+        {
+            value = null;
+            return rex.Level > 0;
+        }
     }
 
     /// <summary>

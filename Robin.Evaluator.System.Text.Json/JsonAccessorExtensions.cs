@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata;
 using System.Text.Json.Nodes;
 
 namespace Robin.Evaluator.System.Text.Json;
@@ -21,12 +22,12 @@ public static class JsonAccessorExtensions
 
     internal static bool TryGetMemberValue(string member, [NotNull] out Delegate @delegate)
     {
-        @delegate = (Func<JsonNode?, JsonNode?>)(x => x is JsonObject  obj && obj.TryGetPropertyValue(member, out JsonNode? node) ? node : null);
+        @delegate = (Func<JsonNode?, JsonNode?>)(x => x is JsonObject obj && obj.TryGetPropertyValue(member, out JsonNode? node) ? node : throw new Exception("Bad type or missing proppoerty"));
         return true;
     }
     internal static bool TryGetIndexValue(int index, [NotNull] out Delegate @delegate)
     {
-        @delegate = (Func<JsonNode?, JsonNode?>)((x) => x is JsonArray arr && index < arr.Count ? arr[index] : null);
+        @delegate = (Func<JsonNode?, JsonNode?>)((x) => x is JsonArray arr && index < arr.Count ? arr[index] : throw new Exception("Bad type or index out of range"));
         return false;
     }
 }

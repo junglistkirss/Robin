@@ -26,7 +26,7 @@ internal record TestSubModel
     public IDictionary<ImplicitKey, object?> DictionaryImplicitKeyCollection { get; set; } = default!;
 }
 
-public struct ImplicitKey(string value)
+public readonly struct ImplicitKey(string value)
 {
     public string Value { get; } = value;
     public static implicit operator string(ImplicitKey key) => key.Value;
