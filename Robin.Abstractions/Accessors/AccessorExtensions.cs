@@ -20,6 +20,7 @@ public static class MemberAccessorRegistry
 
     public static IMemberAccessor? Get<T>() => Get(typeof(T));
 }
+
 public static class IndexAccessorRegistry
 {
     private static readonly ConcurrentDictionary<Type, IIndexAccessor> _map
@@ -38,7 +39,6 @@ public static class IndexAccessorRegistry
 }
 public static class AccessorExtensions
 {
-
     public delegate bool TryGetMemberValue(string member, [NotNull] out Delegate? value);
     public delegate bool TryGetIndexValue(int index, [NotNull] out Delegate? value);
 
@@ -50,12 +50,12 @@ public static class AccessorExtensions
             return tryGetMemberValue(name, out value);
         }
     }
-    public static IServiceCollection AddMemberAccessor<T>(this IServiceCollection services,  TryGetMemberValue tryGet)
+    public static IServiceCollection AddMemberAccessor<T>(this IServiceCollection services, TryGetMemberValue tryGet)
     {
         ArgumentNullException.ThrowIfNull(tryGet);
         IMemberAccessor instance = new DelegatedMemberAccessor(tryGet);
-         MemberAccessorRegistry.Add<T>(instance);
-return services;
+        MemberAccessorRegistry.Add<T>(instance);
+        return services;
     }
 
     private sealed class DelegatedIndexAccessor(TryGetIndexValue tryGetIndexValue) : IIndexAccessor
@@ -70,10 +70,10 @@ return services;
     {
         ArgumentNullException.ThrowIfNull(tryGet);
         IIndexAccessor instance = new DelegatedIndexAccessor(tryGet);
-         IndexAccessorRegistry.Add<T>(instance);
+        IndexAccessorRegistry.Add<T>(instance);
 
         return services;
-            // .AddKeyedSingleton<IIndexAccessor>(typeof(T), instance);
+        // .AddKeyedSingleton<IIndexAccessor>(typeof(T), instance);
     }
 
 }

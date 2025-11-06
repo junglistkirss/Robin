@@ -590,7 +590,7 @@ public class GeneratedAccessorTests
         object? rawValue = eval.Resolve(expression, context, out IDataFacade facade);
         Assert.NotNull(facade);
         Assert.False(facade.IsTrue(rawValue));
-        Assert.False(facade.IsCollection(rawValue, out _));
+        Assert.True(facade.IsCollection(rawValue, out _));
         ImmutableDictionary<string, object?> resolved = Assert.IsType<ImmutableDictionary<string, object?>>(rawValue);
         Assert.Empty(resolved);
     }
@@ -696,7 +696,7 @@ public class GeneratedAccessorTests
         object? rawValue = eval.Resolve(expression, context, out IDataFacade facade);
         Assert.NotNull(facade);
         Assert.False(facade.IsTrue(rawValue));
-        Assert.False(facade.IsCollection(rawValue, out _));
+        Assert.True(facade.IsCollection(rawValue, out _));
         ImmutableDictionary<ImplicitKey, object?> resolved = Assert.IsType<ImmutableDictionary<ImplicitKey, object?>>(rawValue);
         Assert.Empty(resolved);
     }

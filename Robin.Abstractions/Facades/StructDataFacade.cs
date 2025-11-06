@@ -1,3 +1,4 @@
+using Robin.Abstractions.Accessors;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
@@ -8,7 +9,7 @@ internal sealed class StructDataFacade : IDataFacade
     public readonly static StructDataFacade Instance = new();
     private StructDataFacade() { }
     public bool IsTrue(object? obj) => obj is not null;
-    public bool IsCollection(object? _, [NotNullWhen(true)] out IEnumerable? collection)
+    public bool IsCollection(object? _, [NotNullWhen(true)] out IIterator? collection)
     {
         collection = null;
         return false;

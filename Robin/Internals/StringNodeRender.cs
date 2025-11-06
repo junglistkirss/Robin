@@ -1,4 +1,5 @@
 using Robin.Abstractions;
+using Robin.Abstractions.Accessors;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Extensions;
 using Robin.Abstractions.Facades;
@@ -73,31 +74,22 @@ internal sealed class StringNodeRender : INodeVisitor<NoValue, RenderContext<Str
 
     private NoValue RenderTree(RenderContext<StringBuilder> context, object? value, IDataFacade facade, ImmutableArray<INode> partialTemplate)
     {
-        if (facade.IsCollection(value, out IEnumerable? collection))
+        void action(object? o)
         {
-            foreach (object? item in collection)
+            RenderContext<StringBuilder> itemCtx = context with
             {
-                RenderContext<StringBuilder> itemCtx = context with
-                {
-                    Data = context.Data?.Child(item) ?? new DataContext(item, null),
-                };
-                foreach (var node in partialTemplate)
-                {
-                    node.Accept(this, itemCtx);
-                }
-            }
-        }
-        else
-        {
-            RenderContext<StringBuilder> innerCtx = context with
-            {
-                Data = context.Data?.Child(value) ?? new DataContext(value, null),
+                Data = context.Data?.Child(o) ?? new DataContext(o, null),
             };
-            foreach (var item in partialTemplate)
+            foreach (var node in partialTemplate)
             {
-                _ = item.Accept(this, innerCtx);
+                node.Accept(this, itemCtx);
             }
         }
+
+        if (facade.IsCollection(value, out IIterator? collection))
+            collection.Iterate(action);
+        else
+            action(value);
 
         return NoValue.Instance;
     }

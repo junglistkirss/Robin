@@ -1,3 +1,4 @@
+using Robin.Abstractions.Accessors;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
@@ -7,7 +8,7 @@ internal sealed class NullDataFacade : IDataFacade
 {
     public readonly static NullDataFacade Instance = new();
     private NullDataFacade() { }
-    public bool IsCollection(object? _, [NotNullWhen(true)] out IEnumerable? collection)
+    public bool IsCollection(object? _, [NotNullWhen(true)] out IIterator? collection)
     {
         collection = null;
         return false;

@@ -55,7 +55,7 @@ public static class DataFacade
                 switch (obj)
                 {
                     case IDictionary: return DictionaryDataFacade.Instance;
-                    case IList: return ListDataFacade.Instance;
+                    case IList: return IListDataFacade.Instance;
                     case IEnumerator: return EnumeratorDataFacade.Instance;
                     default: return ObjectDataFacade.Instance;
                 }

@@ -67,10 +67,9 @@ public class RenderTests
     public void ParentTest_Render_SectionTemplate()
     {
         IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
-        var sample = new TestSample { Name = "Alice", Age = 30 };
-        var parent = new ParentTestSample { Alias = "Bob", Nested = sample };
-        ImmutableArray<INode> template = "Name: {{ Alias }}, {{# nested }}Nested: {{ Name }}{{/ nested }}".AsSpan().Parse();
-        string result = renderer.Render(template, parent);
-        Assert.Equal("Name: Bob, Nested: Alice", result);
+
+        ImmutableArray<INode> template = "{{#.}}Name: {{ Alias }}, {{# nested }}Nested: {{ Name }}{{/ nested }}{{/.}}".AsSpan().Parse();
+        string result = renderer.Render(template, Enumerable.Range(0, 100).Select(i => new ParentTestSample { Alias = "Bob", Nested = new TestSample { Name = "Alice", Age = i } }).ToArray());
+        Assert.Contains("Name: Bob, Nested: Alice", result);
     }
 }

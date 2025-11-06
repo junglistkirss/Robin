@@ -1,3 +1,4 @@
+using Robin.Abstractions.Accessors;
 using Robin.Abstractions.Facades;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -6,18 +7,27 @@ using System.Text.Json.Nodes;
 
 namespace Robin.Evaluator.System.Text.Json;
 
+internal sealed class JsonArrayIteraor(JsonArray array) : IIterator
+{
+    public void Iterate(Action<object?> action)
+    {
+        foreach (var item in array)
+            action(item);
+    }
+}
+
 internal sealed class JsonNodeFacade : IDataFacade
 {
     public readonly static JsonNodeFacade Instance = new();
     private JsonNodeFacade() { }
-    public bool IsCollection(object? obj, [NotNullWhen(true)] out IEnumerable? collection)
+    public bool IsCollection(object? obj, [NotNullWhen(true)] out IIterator? collection)
     {
         if (obj is JsonNode node)
             switch (node.GetValueKind())
             {
                 case JsonValueKind.Array:
                     JsonArray jArray = node.AsArray()!;
-                    collection = jArray;
+                    collection = new JsonArrayIteraor(jArray);
                     return jArray.Count > 0;
                 default:
                     break;
@@ -42,7 +52,6 @@ internal sealed class JsonNodeFacade : IDataFacade
                 case JsonValueKind.String:
                     return !string.IsNullOrEmpty(node.GetValue<string>());
                 case JsonValueKind.Number:
-                    return true;
                 case JsonValueKind.True:
                     return true;
                 case JsonValueKind.False:
@@ -51,5 +60,6 @@ internal sealed class JsonNodeFacade : IDataFacade
             }
         return false;
     }
+    
 }
 
