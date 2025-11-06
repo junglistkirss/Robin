@@ -25,7 +25,7 @@ internal static class DelegateHelper
         // int level;
         ParameterExpression levelVar = Expression.Variable(typeof(int), "level");
         // int level = 0;
-        BinaryExpression initLevelVar = Expression.Assign(levelVar, Expression.Constant(0));
+        // BinaryExpression initLevelVar = Expression.Assign(levelVar, Expression.Constant(0));
         Expression current = inputParam;
         foreach (ChainableGetter f in chain)
         {

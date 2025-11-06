@@ -75,7 +75,7 @@ internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> access
                 i++;
             }
             return chain.Compile();
-        });
+        }, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(3)));
         if (@delegate is not null)
         {
             bool resolved = @delegate!(current, out value);
