@@ -18,7 +18,7 @@ public class AutoBenchmarkConfig : ManualConfig
                 .WithLaunchCount(1)
                 );
 #if WINDOWS
-         AddDiagnoser(new BenchmarkDotNet.Diagnostics.Windows.EtwProfiler());
+        //  AddDiagnoser(new BenchmarkDotNet.Diagnostics.Windows.EtwProfiler());
 #endif
         // AddDiagnoser(MemoryDiagnoser.Default);
         // AddExporter(MarkdownExporter.GitHub);
