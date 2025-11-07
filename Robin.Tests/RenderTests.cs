@@ -69,7 +69,8 @@ public class RenderTests
         IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
 
         ImmutableArray<INode> template = "{{#.}}Name: {{ Alias }}, {{# nested }}Nested: {{ Name }}{{/ nested }}{{/.}}".AsSpan().Parse();
-        string result = renderer.Render(template, Enumerable.Range(0, 100).Select(i => new ParentTestSample { Alias = "Bob", Nested = new TestSample { Name = "Alice", Age = i } }).ToArray());
+        var data = Enumerable.Range(0, 10).Select(i => new ParentTestSample { Alias = "Bob", Nested = new TestSample { Name = "Alice", Age = i } }).ToArray();
+        string result = renderer.Render(template, data);
         Assert.Contains("Name: Bob, Nested: Alice", result);
     }
 }

@@ -1,13 +1,15 @@
-using Microsoft.Extensions.Caching.Memory;
 using Robin.Abstractions.Context;
 using Robin.Contracts.Expressions;
 using Robin.Contracts.Variables;
+using System.Collections.Concurrent;
 
 namespace Robin.Internals;
 
-internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> accessorVisitor, IMemoryCache cache) : IExpressionNodeVisitor<DataContext>
+internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> accessorVisitor) : IExpressionNodeVisitor<DataContext>
 {
 
+
+    private readonly ConcurrentDictionary<CacheKey, ChainedGetter?> cache = new();
     private record struct CacheKey(Type Type, VariablePath Path);
 
     public bool VisitFunctionCall(FunctionCallNode node, DataContext args, out object? value)
@@ -49,9 +51,8 @@ internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> access
         }
 
         Type type = current.GetType();
-        ChainedGetter? @delegate = cache.GetOrCreate(new CacheKey(type, node.Path), (entry) =>
+        ChainedGetter? @delegate = cache.GetOrAdd(new CacheKey(type, node.Path), (cacheKey) =>
         {
-            CacheKey cacheKey = (CacheKey)entry.Key;
             Type currentType = cacheKey.Type;
             VariablePath path = cacheKey.Path;
 
@@ -75,7 +76,7 @@ internal sealed class ExpressionNodeVisitor(IVariableSegmentVisitor<Type> access
                 i++;
             }
             return chain.Compile();
-        }, new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(3)));
+        });
         if (@delegate is not null)
         {
             bool resolved = @delegate!(current, out value);

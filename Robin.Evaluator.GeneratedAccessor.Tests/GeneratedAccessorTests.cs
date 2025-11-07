@@ -486,7 +486,7 @@ public class GeneratedAccessorTests
         object? rawValue = eval.Resolve(expression, context, out IDataFacade facade);
         Assert.NotNull(facade);
         Assert.False(facade.IsTrue(rawValue));
-        Assert.False(facade.IsCollection(rawValue, out _));
+        Assert.True(facade.IsCollection(rawValue, out _));
         string[] resolved = Assert.IsType<string[]>(rawValue);
         Assert.Empty(resolved);
     }

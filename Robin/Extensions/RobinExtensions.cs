@@ -20,7 +20,6 @@ public static class RobinExtensions
     public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)
     {
         return services
-            .AddMemoryCache()
             .AddSingleton<IExpressionNodeVisitor<DataContext>, ExpressionNodeVisitor>()
             // .AddKeyedSingleton<IEvaluator, ServiceEvaluator>(BaseEvaluatorKey)
             .AddSingleton<IDataFacadeResolver, DataFacadeResolver>()

@@ -4,12 +4,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions.Facades;
 
-internal sealed class EnumerableIterator(IEnumerable objects) : IIterator
+internal sealed class EnumerableIterator(object? value) : IIterator
 {
     public void Iterate(Action<object?> action)
     {
-        foreach (var item in objects)
-            action(item);
+        if (value is IEnumerable enumerable)
+        {
+            foreach (var item in enumerable)
+                action(item);
+        }
     }
 }
 
@@ -20,12 +23,6 @@ internal sealed class ObjectDataFacade : IDataFacade
     public bool IsTrue(object? value) => value is not null;
     public bool IsCollection(object? value, [NotNullWhen(true)] out IIterator? collection)
     {
-        if (value is IEnumerable enumerable)
-        {
-            collection = new EnumerableIterator(enumerable);
-            return true;
-        }
-        collection = null;
-        return false;
+        return IteratorCache.GetIterator(value, out collection);
     }
 }

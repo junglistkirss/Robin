@@ -1,16 +1,16 @@
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Expressions;
+using System.Collections.Concurrent;
 
 namespace Robin.Internals;
 
-internal sealed class DataFacadeResolver(IServiceProvider provider, IMemoryCache cache) : IDataFacadeResolver
+internal sealed class DataFacadeResolver(IServiceProvider provider) : IDataFacadeResolver
 {
 
-    private record DataFacadeCacheKey(Type ObjectType);
+    private readonly ConcurrentDictionary<Type, IDataFacade?> cache = new();
+
     public IDataFacade ResolveDataFacade(object? data)
     {
         if (data is null)
@@ -18,13 +18,13 @@ internal sealed class DataFacadeResolver(IServiceProvider provider, IMemoryCache
             return DataFacade.Null;
         }
         Type type = data.GetType();
-        return cache.GetOrCreate(new DataFacadeCacheKey(type), (_) =>
+        return cache.GetOrAdd(type, (_) =>
         {
             Type genType = typeof(IDataFacade<>).MakeGenericType(type);
             IDataFacade ? facade = (IDataFacade?)provider.GetService(genType);
             if(facade is not null) return facade;
             return data.GetFacade()!;
-        }, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(1) }) ?? data.GetFacade();
+        }) ?? data.GetFacade();
 
 
     }
