@@ -8,39 +8,35 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Internals;
 
-internal sealed class ServiceAccesorVisitor(/*IServiceProvider serviceProvider, */IMemoryCache cache) : IVariableSegmentVisitor<Type>
+internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider, IMemoryCache cache) : IVariableSegmentVisitor<Type>
 {
+    private record MemberAccesorCacheKey(Type ObjectType);
+    private record IndexAccessorCacheKey(Type ObjectType);
+
     private bool TryGetMemberAccessor(Type dataType, [NotNullWhen(true)] out IMemberAccessor? accessor)
     {
-
-        accessor = cache.GetOrCreate(dataType, (entry) =>
+        accessor = cache.GetOrCreate(new MemberAccesorCacheKey(dataType), (_) =>
         {
-            IMemberAccessor? memberAccessor = MemberAccessorRegistry.Get((Type)entry.Key);
-            if (memberAccessor is null && entry.Key is Type type
-                && (
-                    type.IsAssignableTo(typeof(IDictionary))
-                    || (
-                        type.IsGenericType
-                        && type.GetGenericTypeDefinition().IsAssignableTo(typeof(IDictionary<,>))
-                    )
-                )
-            )
+            Type genType = typeof(IMemberAccessor<>).MakeGenericType(dataType);
+            IMemberAccessor? memberAccessor = (IMemberAccessor?)serviceProvider.GetService(genType);
+            if (memberAccessor is null && (dataType.IsAssignableTo(typeof(IDictionary)) || (dataType.IsGenericType && dataType.GetGenericTypeDefinition().IsAssignableTo(typeof(IDictionary<,>)))))
                 memberAccessor = DictionaryMemberAccessor.Instance;
             return memberAccessor;
-        });
+        }, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(1) });
         return accessor is not null;
     }
 
     private bool TryGetIndexAccessor(Type dataType, [NotNullWhen(true)] out IIndexAccessor? accessor)
     {
-        accessor = cache.GetOrCreate(dataType, (entry) =>
+        accessor = cache.GetOrCreate(new IndexAccessorCacheKey(dataType), (_) =>
         {
-            IIndexAccessor? indexAccessor = IndexAccessorRegistry.Get((Type)entry.Key);
-            if (indexAccessor is null && entry.Key is Type type && (type.IsAssignableTo(typeof(IList)) || type.IsArray))
+            Type genType = typeof(IIndexAccessor<>).MakeGenericType(dataType);
+            IIndexAccessor? indexAccessor = (IIndexAccessor?)serviceProvider.GetService(genType);
+            if (indexAccessor is null && (dataType.IsAssignableTo(typeof(IList)) || dataType.IsArray))
                 indexAccessor = ListIndexAccessor.Instance;
 
             return indexAccessor;
-        });
+        }, new MemoryCacheEntryOptions { SlidingExpiration = TimeSpan.FromHours(1) });
 
 
 

@@ -2,20 +2,16 @@ using System.Collections;
 
 namespace Robin.Abstractions.Facades;
 
+public interface IDataFacadeResolver
+{
+    IDataFacade ResolveDataFacade(object? data);
+}
+
 public static class DataFacade
 {
     public delegate IDataFacade DataFacadeFactory(object? data);
 
-
-
     public static readonly IDataFacade Null = NullDataFacade.Instance;
-
-    private readonly static HierarchicalTypeDictionary<DataFacadeFactory> _facadeFactories = new();
-
-    public static bool RegisterFacadeFactory<T>(DataFacadeFactory factory)
-    {
-        return _facadeFactories.TryAdd<T>(factory);
-    }
 
     public static IDataFacade GetFacade(this object? obj)
     {
@@ -48,17 +44,10 @@ public static class DataFacade
             case TimeOnly: return StructDataFacade.Instance;
             case TimeSpan: return StructDataFacade.Instance;
             // collection
-
-            default:
-                if (_facadeFactories.TryGetValue(obj.GetType(), out DataFacadeFactory? factory) && factory is not null)
-                    return factory(obj);
-                switch (obj)
-                {
-                    case IDictionary: return DictionaryDataFacade.Instance;
-                    case IList: return IListDataFacade.Instance;
-                    case IEnumerator: return EnumeratorDataFacade.Instance;
-                    default: return ObjectDataFacade.Instance;
-                }
+            case IDictionary: return DictionaryDataFacade.Instance;
+            case IList: return IListDataFacade.Instance;
+            case IEnumerator: return EnumeratorDataFacade.Instance;
+            default: return ObjectDataFacade.Instance;
         }
     }
 }

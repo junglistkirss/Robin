@@ -15,13 +15,17 @@ public class ServiceEvaluatorJsonTests
 
     public ServiceEvaluatorJsonTests()
     {
-        DataFacade.RegisterFacadeFactory<JsonNode>(JsonFacades.FromJsonNode);
-        DataFacade.RegisterFacadeFactory<JsonArray>(JsonFacades.FromJsonNode);
-        DataFacade.RegisterFacadeFactory<JsonObject>(JsonFacades.FromJsonNode);
+        //DataFacade.RegisterFacadeFactory<JsonNode>(JsonFacades.FromJsonNode);
+        //DataFacade.RegisterFacadeFactory<JsonArray>(JsonFacades.FromJsonNode);
+        //DataFacade.RegisterFacadeFactory<JsonObject>(JsonFacades.FromJsonNode);
+
         ServiceCollection services = [];
         services
             .AddServiceEvaluator()
-            .AddJsonAccessors();
+            .AddJsonAccessors()
+            .AddDataFacade<JsonNode>(JsonFacades.FromJsonNode)
+            .AddDataFacade<JsonArray>(JsonFacades.FromJsonNode)
+            .AddDataFacade<JsonObject>(JsonFacades.FromJsonNode);
         ServiceProvider = services.BuildServiceProvider(new ServiceProviderOptions
         {
             ValidateOnBuild = true,
