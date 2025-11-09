@@ -19,16 +19,16 @@ jobs:
         dotnet-version: 9.0.x
       
     - name: Restore dependencies
-      run: dotnet restore ./Robin.slnx
+      run: dotnet restore ./RobinMustache.slnx
       
     - name: Build
-      run: dotnet build ./Robin.slnx --configuration Release --no-restore
+      run: dotnet build ./RobinMustache.slnx --configuration Release --no-restore
     
     - name: Test
-      run: dotnet test ./Robin.slnx --verbosity normal
+      run: dotnet test ./RobinMustache.slnx --verbosity normal
     
     - name: Pack
-      run: dotnet pack ./Robin.slnx --configuration Release -o ./nupkgs
+      run: dotnet pack ./RobinMustache.slnx --configuration Release -o ./nupkgs
       
     - name: Push
       run: |
