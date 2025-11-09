@@ -5,18 +5,19 @@ namespace Robin.Abstractions.Accessors;
 
 public static class DelegateHelper
 {
-    public static ChainableGetter AsChainable(this Delegate del)
+    public static ChainableGetter AsChainable(this Delegate @delegate)
     {
-        ArgumentNullException.ThrowIfNull(del);
+        if(@delegate is null)
+        throw new ArgumentNullException(nameof(@delegate));
 
-        MethodInfo method = del.Method;
-        ConstantExpression? target = del.Target == null ? null : Expression.Constant(del.Target);
+        MethodInfo method = @delegate.Method;
+        ConstantExpression? target = @delegate.Target == null ? null : Expression.Constant(@delegate.Target);
 
         ParameterExpression inputParam = Expression.Parameter(typeof(object), "input");
         ParameterExpression outputParam = Expression.Parameter(typeof(object).MakeByRefType(), "value");
         LabelTarget returnLabel = Expression.Label(typeof(bool), "returnLabel");
 
-        Type funcType = del.GetType();
+        Type funcType = @delegate.GetType();
         Type[] genericArgs = funcType.GetGenericArguments();
         Type argType = genericArgs[0];
 

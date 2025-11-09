@@ -1,89 +1,47 @@
+using System.Buffers;
+using System.Text;
+
 namespace Robin.Internals;
 
 public static class HtmlEscaper
 {
-    /// <summary>
-    /// Échappe les caractères HTML essentiels dans la chaîne fournie.
-    /// Retourne la même instance de chaîne si rien n'est à échapper.
-    /// </summary>
+
     public static string? Escape(this string? value)
     {
-        if (value is null) return null;
+        if (value is null || string.IsNullOrEmpty(value) )
+            return null;
 
-        int len = value.Length;
-        int extra = 0; // longueur supplémentaire nécessaire
+        var pool = ArrayPool<char>.Shared;
+        char[] buffer = pool.Rent(value.Length * 6); // worst case, every char escaped
+        int pos = 0;
 
-        // Comptage des occurrences pour calculer la nouvelle longueur exacte
-        for (int i = 0; i < len; i++)
+        try
         {
-            switch (value[i])
+            foreach (char c in value)
             {
-                case '&': extra += 4; break; // & -> &amp; (5 chars, +4)
-                case '<': extra += 3; break; // < -> &lt;  (4 chars, +3)
-                case '>': extra += 3; break; // > -> &gt;  (4 chars, +3)
-                case '"': extra += 5; break; // " -> &quot; (6 chars, +5)
-                case '\'': extra += 4; break; // ' -> &#39;  (5 chars, +4)
-                case '`': extra += 4; break; // ' -> &#96;  (5 chars, +4)
-                case '=': extra += 4; break; // ' -> &#61;  (5 chars, +4)
-                default: break;
-            }
-        }
-
-        // Rien à faire -> retourner l'instance d'origine (optimisation importante)
-        if (extra == 0) return value;
-
-        int newLen = len + extra;
-
-        // Construire la nouvelle chaîne en une seule allocation
-        return string.Create(newLen, value, (span, src) =>
-        {
-            int pos = 0;
-            ReadOnlySpan<char> amp = "&amp;";
-            ReadOnlySpan<char> lt = "&lt;";
-            ReadOnlySpan<char> gt = "&gt;";
-            ReadOnlySpan<char> quot = "&quot;";
-            ReadOnlySpan<char> apos = "&#39;";
-            ReadOnlySpan<char> btck = "&#96;";
-            ReadOnlySpan<char> eq = "&#61;";
-
-            for (int i = 0; i < src.Length; i++)
-            {
-                char c = src[i];
                 switch (c)
                 {
-                    case '&':
-                        amp.CopyTo(span.Slice(pos));
-                        pos += amp.Length;
-                        break;
-                    case '<':
-                        lt.CopyTo(span.Slice(pos));
-                        pos += lt.Length;
-                        break;
-                    case '>':
-                        gt.CopyTo(span.Slice(pos));
-                        pos += gt.Length;
-                        break;
-                    case '"':
-                        quot.CopyTo(span.Slice(pos));
-                        pos += quot.Length;
-                        break;
-                    case '\'':
-                        apos.CopyTo(span.Slice(pos));
-                        pos += apos.Length;
-                        break;
-                    case '`':
-                        btck.CopyTo(span.Slice(pos));
-                        pos += btck.Length;
-                        break;
-                    case '=':
-                        eq.CopyTo(span.Slice(pos));
-                        pos += eq.Length;
-                        break;
-                    default:
-                        span[pos++] = c;
-                        break;
+                    case '&': pos += "&amp;".CopyTo(buffer, pos); break;
+                    case '<': pos += "&lt;".CopyTo(buffer, pos); break;
+                    case '>': pos += "&gt;".CopyTo(buffer, pos); break;
+                    case '"': pos += "&quot;".CopyTo(buffer, pos); break;
+                    case '\'': pos += "&#39;".CopyTo(buffer, pos); break;
+                    case '`': pos += "&#96;".CopyTo(buffer, pos); break;
+                    case '=': pos += "&#61;".CopyTo(buffer, pos); break;
+                    default: buffer[pos++] = c; break;
                 }
             }
-        });
+
+            return new string(buffer, 0, pos);
+        }
+        finally
+        {
+            pool.Return(buffer);
+        }
+    }
+    private static int CopyTo(this string s, char[] buffer, int index)
+    {
+        s.CopyTo(0, buffer, index, s.Length);
+        return s.Length;
     }
 }

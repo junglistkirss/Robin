@@ -28,7 +28,7 @@ internal sealed class StringNodeRender(IEnumerable<IPartialLoader> loaders) : IN
     public void VisitVariable(VariableNode node, RenderContext<StringBuilder> context)
     {
         object? value = context.Evaluator.Resolve(node.Expression, DataContext.Current, out IDataFacade facade);
-        if (facade.IsTrue(value))
+        if (value is not null && facade.IsTrue(value))
         {
             string? str;
             if (value is string s)
@@ -70,7 +70,7 @@ internal sealed class StringNodeRender(IEnumerable<IPartialLoader> loaders) : IN
                 {
                     ReadOnlySpan<INode> span = partialTemplate.AsSpan();
 
-                    ReadOnlyDictionary<string, ImmutableArray<INode>> tempPartials = span.ExtractsPartials(context.Partials).AsReadOnly();
+                    ReadOnlyDictionary<string, ImmutableArray<INode>> tempPartials = new(span.ExtractsPartials(context.Partials));
                     using (new PartialsScope<StringBuilder>(context, tempPartials))
                     {
                         RenderTree(context, value, facade, span);
@@ -83,7 +83,7 @@ internal sealed class StringNodeRender(IEnumerable<IPartialLoader> loaders) : IN
 
     private void RenderTree(RenderContext<StringBuilder> context, object? value, IDataFacade facade, ReadOnlySpan<INode> partialTemplate)
     {
-        if (facade.IsCollection(value, out IIterator? iterator))
+        if (facade.IsCollection(value, out IIterator? iterator) && iterator is not null)
             iterator.Iterate(value, context, partialTemplate, this);
         else
             using (DataContext.Push(value))

@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Robin.Contracts\Robin.Contracts.csproj" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
+    <ProjectReference Include="..\Robin.Abstractions\Robin.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

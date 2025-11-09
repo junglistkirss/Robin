@@ -14,5 +14,6 @@
   <Project Path="Robin.Contracts/Robin.Contracts.csproj" />
   <Project Path="Robin.Evaluator.System.Text.Json/Robin.Evaluator.System.Text.Json.csproj" />
   <Project Path="Robin.Generators.Accessor/Robin.Generators.Accessor.csproj" />
+  <Project Path="Robin.Helpers/Robin.Helpers.csproj" Id="b6f3fa45-f581-4037-93d7-1381a7a0564a" />
   <Project Path="Robin/Robin.csproj" />
 </Solution>

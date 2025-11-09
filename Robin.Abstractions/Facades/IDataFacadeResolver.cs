@@ -4,5 +4,5 @@ namespace Robin.Abstractions.Facades;
 
 public interface IDataFacadeResolver
 {
-    bool ResolveDataFacade(object? data, [NotNullWhen(true)] out IDataFacade? facade);
+    bool ResolveDataFacade(object? data, out IDataFacade? facade);
 }

@@ -26,11 +26,11 @@ internal sealed class JsonArrayIteraor : BaseIterator
     }
 }
 
-internal sealed class JsonNodeFacade : IDataFacade<JsonNode>
+internal sealed class JsonNodeFacade : BaseDataFacade<JsonNode>
 {
     public readonly static JsonNodeFacade Instance = new();
     private JsonNodeFacade() { }
-    public bool IsCollection(JsonNode node, [NotNullWhen(true)] out IIterator? collection)
+    public override bool IsCollection(JsonNode node, [NotNullWhen(true)] out IIterator? collection)
     {
         switch (node.GetValueKind())
         {
@@ -44,7 +44,7 @@ internal sealed class JsonNodeFacade : IDataFacade<JsonNode>
         return false;
     }
 
-    public bool IsTrue([NotNullWhen(true)] JsonNode node)
+    public override bool IsTrue([NotNullWhen(true)] JsonNode node)
     {
         switch (node.GetValueKind())
         {
@@ -69,11 +69,11 @@ internal sealed class JsonNodeFacade : IDataFacade<JsonNode>
     }
 }
 
-internal sealed class JsonValueFacade : IDataFacade<JsonValue>
+internal sealed class JsonValueFacade : BaseDataFacade<JsonValue>
 {
     public readonly static JsonValueFacade Instance = new();
     private JsonValueFacade() { }
-    public bool IsCollection(JsonValue node, [NotNullWhen(true)] out IIterator? collection)
+    public override bool IsCollection(JsonValue node, [NotNullWhen(true)] out IIterator? collection)
     {
         switch (node.GetValueKind())
         {
@@ -87,7 +87,7 @@ internal sealed class JsonValueFacade : IDataFacade<JsonValue>
         return false;
     }
 
-    public bool IsTrue([NotNullWhen(true)] JsonValue node)
+    public override bool IsTrue([NotNullWhen(true)] JsonValue node)
     {
         switch (node.GetValueKind())
         {
@@ -111,25 +111,25 @@ internal sealed class JsonValueFacade : IDataFacade<JsonValue>
         return false;
     }
 }
-internal sealed class JsonArrayFacade : IDataFacade<JsonArray>
+internal sealed class JsonArrayFacade : BaseDataFacade<JsonArray>
 {
     public readonly static JsonArrayFacade Instance = new();
     private JsonArrayFacade() { }
-    public bool IsCollection(JsonArray obj, [NotNullWhen(true)] out IIterator? collection)
+    public override bool IsCollection(JsonArray obj, [NotNullWhen(true)] out IIterator? collection)
     {
         collection = JsonArrayIteraor.Instance;
         return obj.Count > 0;
     }
-    public bool IsTrue([NotNullWhen(true)] JsonArray obj)
+    public override bool IsTrue([NotNullWhen(true)] JsonArray obj)
     {
         return obj is not null && obj.Count > 0;
     }
 }
-internal sealed class JsonObjectFacade : IDataFacade<JsonObject>
+internal sealed class JsonObjectFacade : BaseDataFacade<JsonObject>
 {
     public readonly static JsonObjectFacade Instance = new();
     private JsonObjectFacade() { }
-    public bool IsCollection(JsonObject obj, [NotNullWhen(true)] out IIterator? collection)
+    public override bool IsCollection(JsonObject obj, [NotNullWhen(true)] out IIterator? collection)
     {
         collection = null;
         return false;
@@ -138,7 +138,7 @@ internal sealed class JsonObjectFacade : IDataFacade<JsonObject>
 
 
 
-    public bool IsTrue([NotNullWhen(true)] JsonObject obj)
+    public override bool IsTrue([NotNullWhen(true)] JsonObject obj)
     {
         return obj is not null;
     }

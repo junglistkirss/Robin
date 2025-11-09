@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Extensions;
+using Robin.Abstractions.Helpers;
 using Robin.Contracts.Nodes;
 using Robin.Extensions;
+using Robin.Helpers;
 using System.Collections;
 using System.Collections.Immutable;
 
@@ -13,10 +15,23 @@ public class RenderTests
 
     public RenderTests()
     {
+        StringHelpers.AsGlobalHelpers();
         ServiceCollection services = [];
         services
             .AddServiceEvaluator()
-            .AddStringRenderer()
+            .AddStringRenderer(helperConfig: h =>
+            {
+                h.TryAddFunction("Length", (object?[] args) =>
+                {
+                    if (args.Length == 1)
+                    {
+                        if (args[0] is Array arr) return arr.Length;
+                        if (args[0] is IList list) return list.Count;
+                        if (args[0] is IDictionary dic) return dic.Count;
+                    }
+                    return null;
+                });
+            })
             .AddMemberDelegateAccessor<TestSample>(static (string member, out Delegate value) =>
             {
                 value = member switch
@@ -108,6 +123,45 @@ public class RenderTests
         Assert.Contains("Name: Bob, Nested: Alice", result);
     }
 
+    [Fact]
+    public void ParentTest_Render_Function()
+    {
+        IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
+
+        ImmutableArray<INode> template = "{{{Length(.)}}}".AsSpan().Parse();
+        ParentTestSample[] data = [.. Enumerable.Range(0, 10).Select(i => new ParentTestSample { Alias = "Bob", Nested = new TestSample { Name = "Alice", Age = i } })];
+        string result = renderer.Render(template, data);
+        Assert.Equal("10", result);
+    }
+    [Fact]
+    public void ParentTest_Render_FunctionIgnoreCase()
+    {
+        IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
+
+        ImmutableArray<INode> template = "{{{length(.)}}}".AsSpan().Parse();
+        ParentTestSample[] data = [.. Enumerable.Range(0, 10).Select(i => new ParentTestSample { Alias = "Bob", Nested = new TestSample { Name = "Alice", Age = i } })];
+        string result = renderer.Render(template, data);
+        Assert.Equal("10", result);
+    }
+
+    [Fact]
+    public void ParentTest_Render_NextedFunction()
+    {
+        IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
+
+        ImmutableArray<INode> template = "{{{lowercase(trim(.))}}}".AsSpan().Parse();
+        string result = renderer.Render(template, "   TEST   ");
+        Assert.Equal("test", result);
+    }
+    [Fact]
+    public void ParentTest_Render_NextedFunctionArg()
+    {
+        IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
+
+        ImmutableArray<INode> template = "{{{lowercase(trim(. 'c'))}}}".AsSpan().Parse();
+        string result = renderer.Render(template, "TESTccc");
+        Assert.Equal("test", result);
+    }
     private class TestCollection<T>(IEnumerable<T> items) : IEnumerable<T>
     {
         public IEnumerator<T> GetEnumerator()

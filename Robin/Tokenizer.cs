@@ -10,7 +10,7 @@ public static class Tokenizer
         List<Token> tokens = [];
         NodeLexer lexer = new(source);
 
-        while (lexer.TryGetNextToken(out Token? token))
+        while (lexer.TryGetNextToken(out Token? token) && token is not null)
         {
             tokens.Add(token.Value);
         }
@@ -23,7 +23,7 @@ public static class Tokenizer
         List<ExpressionToken> tokens = [];
         ExpressionLexer lexer = new(source);
 
-        while (lexer.TryGetNextToken(out ExpressionToken? token))
+        while (lexer.TryGetNextToken(out ExpressionToken? token) && token is not null)
         {
             tokens.Add(token.Value);
         }

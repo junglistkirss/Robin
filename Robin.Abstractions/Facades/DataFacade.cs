@@ -35,8 +35,8 @@ public static class DataFacade
             Guid => StructDataFacade.Instance,
             DateTime => StructDataFacade.Instance,
             DateTimeOffset => StructDataFacade.Instance,
-            DateOnly => StructDataFacade.Instance,
-            TimeOnly => StructDataFacade.Instance,
+            //DateOnly => StructDataFacade.Instance,
+            //TimeOnly => StructDataFacade.Instance,
             TimeSpan => StructDataFacade.Instance,
             // collection
             IDictionary => DictionaryDataFacade.Instance,

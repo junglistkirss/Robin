@@ -19,7 +19,7 @@ public static class Renderer
         Action<Helper>? helperConfig = null)
         where T : class
     {
-        ReadOnlyDictionary<string, ImmutableArray<INode>> partials = template.ExtractsPartials().AsReadOnly(); // calculer une seule fois
+        ReadOnlyDictionary<string, ImmutableArray<INode>> partials = new(template.ExtractsPartials()); // calculer une seule fois
         using (DataContext.Push(data))
         {
             helperConfig?.Invoke(DataContext.Current.Helper);

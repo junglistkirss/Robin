@@ -30,6 +30,22 @@ internal sealed class ExpressionNodeVisitor(IEnumerable<IVariableSegmentVisitor<
             }
             value = function(evaluatedArgs);
             return true;
+        }else if (GlobalHelpers.TryGetFunction(node.FunctionName, out Helper.Function? gfunction) && gfunction is not null)
+        {
+            object?[] evaluatedArgs = new object?[node.Arguments.Length];
+            for (int i = 0; i < node.Arguments.Length; i++)
+            {
+                if (node.Arguments[i].Accept(this, args, out object? argValue))
+                {
+                    evaluatedArgs[i] = argValue;
+                }
+                else
+                {
+                    evaluatedArgs[i] = null;
+                }
+            }
+            value = gfunction(evaluatedArgs);
+            return true;
         }
         value = null;
         return false;

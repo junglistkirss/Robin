@@ -12,26 +12,26 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
     private readonly ConcurrentDictionary<Type, IMemberAccessor?> memberCache = new();
     private readonly ConcurrentDictionary<Type, IIndexAccessor?> indexCache = new();
 
-    private bool TryGetMemberAccessor(Type dataType, [NotNullWhen(true)] out IMemberAccessor? accessor)
+    private bool TryGetMemberAccessor(Type dataType, out IMemberAccessor? accessor)
     {
         accessor = memberCache.GetOrAdd(dataType, (key) =>
         {
             Type genType = typeof(IMemberAccessor<>).MakeGenericType(key);
             IMemberAccessor? memberAccessor = (IMemberAccessor?)serviceProvider.GetService(genType);
-            if (memberAccessor is null && (key.IsAssignableTo(typeof(IDictionary)) || (key.IsGenericType && key.GetGenericTypeDefinition().IsAssignableTo(typeof(IDictionary<,>)))))
+            if (memberAccessor is null && (key is IDictionary || (key.IsGenericType && typeof(IDictionary<,>).IsAssignableFrom(key.GetGenericTypeDefinition()))))
                 memberAccessor = DictionaryMemberAccessor.Instance;
             return memberAccessor;
         });
         return accessor is not null;
     }
 
-    private bool TryGetIndexAccessor(Type dataType, [NotNullWhen(true)] out IIndexAccessor? accessor)
+    private bool TryGetIndexAccessor(Type dataType, out IIndexAccessor? accessor)
     {
         accessor = indexCache.GetOrAdd(dataType, (key) =>
         {
             Type genType = typeof(IIndexAccessor<>).MakeGenericType(key);
             IIndexAccessor? indexAccessor = (IIndexAccessor?)serviceProvider.GetService(genType);
-            if (indexAccessor is null && (key.IsAssignableTo(typeof(IList)) || key.IsArray))
+            if (indexAccessor is null && (key is IList || key.IsArray))
                 indexAccessor = ListIndexAccessor.Instance;
 
             return indexAccessor;
@@ -44,7 +44,7 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
 
     public override bool VisitIndex(IndexSegment segment, Type args, out ChainableGetter getter)
     {
-        if (TryGetIndexAccessor(args, out IIndexAccessor? typedAccessor))
+        if (TryGetIndexAccessor(args, out IIndexAccessor? typedAccessor) && typedAccessor is not null)
         {
             int index = segment.Index;
             getter = new ChainableGetter((object? input, out object? value) =>
@@ -65,7 +65,7 @@ internal sealed class ServiceAccesorVisitor(IServiceProvider serviceProvider) : 
 
     public override bool VisitMember(MemberSegment segment, Type args, out ChainableGetter getter)
     {
-        if (TryGetMemberAccessor(args, out IMemberAccessor? typedAccessor))
+        if (TryGetMemberAccessor(args, out IMemberAccessor? typedAccessor) && typedAccessor is not null)
         {
             string memberName = segment.MemberName;
             getter = new ChainableGetter((object? input, out object? value) =>

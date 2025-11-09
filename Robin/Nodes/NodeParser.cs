@@ -12,7 +12,7 @@ public static class NodeParser
 {
     private readonly static IdentifierExpressionNode That = new(new VariablePath([ThisSegment.Instance]));
 
-    public static bool TryParse(this ref NodeLexer lexer, [NotNullWhen(true)] out ImmutableArray<INode>? nodes)
+    public static bool TryParse(this ref NodeLexer lexer, out ImmutableArray<INode>? nodes)
     {
         try
         {
@@ -29,7 +29,7 @@ public static class NodeParser
     public static ImmutableArray<INode> Parse(this ref NodeLexer lexer)
     {
         List<INode> nodes = [];
-        while (lexer.TryGetNextToken(out Token? token))
+        while (lexer.TryGetNextToken(out Token? token) && token is not null)
         {
             switch (token.Value.Type)
             {
@@ -70,7 +70,7 @@ public static class NodeParser
     private static LineBreakNode AggregateLineBreaks(ref NodeLexer lexer)
     {
         int c = 1;
-        while (lexer.TryPeekNextToken(out Token? nextToken, out int position) && nextToken.Value.Type == TokenType.LineBreak)
+        while (lexer.TryPeekNextToken(out Token? nextToken, out int position) && nextToken is not null && nextToken.Value.Type == TokenType.LineBreak)
         {
             c++;
             lexer.AdvanceTo(position);
@@ -95,8 +95,8 @@ public static class NodeParser
         }
         else
         {
-            string name = variableExpression[..firstSpace];
-            ExpressionLexer exprLexer = new(variableExpression[(firstSpace + 1)..].AsSpan());
+            string name = variableExpression.Substring(0, firstSpace);
+            ExpressionLexer exprLexer = new(variableExpression.Substring(firstSpace + 1).AsSpan());
             IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
             return new PartialCallNode(name, node);
         }
@@ -106,7 +106,7 @@ public static class NodeParser
     {
         string name = lexer.GetValue(startToken);
         List<INode> nodes = [];
-        while (lexer.TryGetNextToken(out Token? token))
+        while (lexer.TryGetNextToken(out Token? token) && token is not null)
         {
             if (token.Value.Type == TokenType.SectionClose && lexer.GetValue(token.Value).Equals(name))
                 break;
@@ -156,7 +156,7 @@ public static class NodeParser
         ExpressionLexer exprLexer = new(name.AsSpan());
         IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
         List<INode> nodes = [];
-        while (lexer.TryGetNextToken(out Token? token))
+        while (lexer.TryGetNextToken(out Token? token) && token is not null)
         {
             if (token.Value.Type == TokenType.SectionClose && lexer.GetValue(token.Value).Equals(name))
                 break;

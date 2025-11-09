@@ -22,14 +22,14 @@ public static class ExpressionParser
 
     public static IExpressionNode? Parse(this ref ExpressionLexer lexer)
     {
-        if (!lexer.TryGetNextToken(out ExpressionToken? currentToken))
+        if (!lexer.TryGetNextToken(out ExpressionToken? currentToken) || currentToken is null)
             return null;
 
         IExpressionNode result = ParseExpression(ref lexer, currentToken.Value);
 
         // Vérifier qu'il n'y a plus de tokens
         if (lexer.TryPeekNextToken(out ExpressionToken? extraToken, out _))
-            throw new Exception($"Tokens inattendus après la fin: {extraToken.Value.Type}");
+            throw new Exception($"Tokens inattendus après la fin");
 
         return result;
     }
@@ -39,13 +39,12 @@ public static class ExpressionParser
         // Parenthèses
         if (currentToken.Type == ExpressionType.LeftParenthesis)
         {
-            if (!lexer.TryGetNextToken(out ExpressionToken? innerToken))
+            if ((!lexer.TryGetNextToken(out ExpressionToken? innerToken)) || innerToken is null)
                 throw new Exception("Expression attendue après '('");
 
             IExpressionNode node = ParseExpression(ref lexer, innerToken.Value);
 
-            if (!lexer.TryGetNextToken(out ExpressionToken? closingToken) ||
-                closingToken.Value.Type != ExpressionType.RightParenthesis)
+            if ((!lexer.TryGetNextToken(out ExpressionToken? closingToken)) || closingToken is null || closingToken.Value.Type != ExpressionType.RightParenthesis)
                 throw new Exception("')' attendu");
 
             return node;
@@ -72,7 +71,7 @@ public static class ExpressionParser
             string name = lexer.GetValue(currentToken);
 
             // Vérifier si c'est un appel de fonction (PEEK sans consommer)
-            if (lexer.TryPeekNextToken(out ExpressionToken? nextToken, out int endPosition) &&
+            if (lexer.TryPeekNextToken(out ExpressionToken? nextToken, out int endPosition) && nextToken is not null &&
                 nextToken.Value.Type == ExpressionType.LeftParenthesis)
             {
                 // C'est une fonction, on consomme la parenthèse ouvrante
@@ -81,7 +80,7 @@ public static class ExpressionParser
                 List<IExpressionNode> arguments = [];
 
                 // Vérifier s'il y a des arguments
-                if (lexer.TryPeekNextToken(out ExpressionToken? peekToken, out int peekEndPosition))
+                if (lexer.TryPeekNextToken(out ExpressionToken? peekToken, out int peekEndPosition) && peekToken is not null)
                 {
                     if (peekToken.Value.Type == ExpressionType.RightParenthesis)
                     {
@@ -92,7 +91,7 @@ public static class ExpressionParser
                     {
                         // Il y a au moins un argument
                         // Consommer le premier token pour commencer l'expression
-                        if (!lexer.TryGetNextToken(out ExpressionToken? firstArgToken))
+                        if (!lexer.TryGetNextToken(out ExpressionToken? firstArgToken) || firstArgToken is null)
                             throw new Exception("Argument attendu après '('");
 
                         // Parser le premier argument (expression complète)
@@ -101,7 +100,7 @@ public static class ExpressionParser
                         // Parser les arguments suivants
                         while (true)
                         {
-                            if (!lexer.TryPeekNextToken(out ExpressionToken? sepToken, out int sepEndPosition))
+                            if (!lexer.TryPeekNextToken(out ExpressionToken? sepToken, out int sepEndPosition) || sepToken is null)
                                 throw new Exception("')' attendu à la fin de la liste d'arguments");
 
                             if (sepToken.Value.Type == ExpressionType.RightParenthesis)
@@ -119,7 +118,7 @@ public static class ExpressionParser
                             // lexer.AdvanceTo(sepEndPosition);
 
                             // Consommer le token suivant pour l'argument
-                            if (!lexer.TryGetNextToken(out ExpressionToken? nextArgToken))
+                            if (!lexer.TryGetNextToken(out ExpressionToken? nextArgToken) || nextArgToken is null)
                                 throw new Exception("Argument attendu après ','");
 
                             // Parser l'argument suivant (expression complète)

@@ -18,19 +18,19 @@ public ref struct NodeLexer
     {
         _position = position;
     }
-    public readonly bool TryPeekNextToken([NotNullWhen(true)] out Token? token, out int endPosition)
+    public readonly bool TryPeekNextToken(out Token? token, out int endPosition)
     {
         int savedPosition = _position;
         bool result = TryGetNextTokenInternal(out token, ref savedPosition);
         endPosition = savedPosition;
         return result;
     }
-    public bool TryGetNextToken([NotNullWhen(true)] out Token? token)
+    public bool TryGetNextToken(out Token? token)
     {
         return TryGetNextTokenInternal(out token, ref _position);
 
     }
-    private readonly bool TryGetNextTokenInternal([NotNullWhen(true)] out Token? token, ref int pos)
+    private readonly bool TryGetNextTokenInternal(out Token? token, ref int pos)
     {
         if (pos >= _source.Length)
         {
@@ -54,7 +54,7 @@ public ref struct NodeLexer
         }
 
         // Look for opening delimiter
-        int delimiterPos = IndexOf(_source[pos..], OpenDelimiter);
+        int delimiterPos = IndexOf(_source.Slice(pos), OpenDelimiter);
 
         // If no delimiter found, rest is text
         if (delimiterPos == -1)
@@ -70,7 +70,7 @@ public ref struct NodeLexer
         if (delimiterPos > 0)
         {
             int start = pos;
-            int lastIndex = pos + delimiterPos; // dernier caractère du texte avant le délimiteur
+            //int lastIndex = pos + delimiterPos; // dernier caractère du texte avant le délimiteur
             if (TrimLineBreaksBounds(ref pos, start, delimiterPos, out token))
                 return true;
 
@@ -84,7 +84,7 @@ public ref struct NodeLexer
         return TryParseMustacheTag(out token, ref pos);
     }
 
-    private readonly bool TrimLineBreaksBounds(ref int pos, int start, int lastIndex, [NotNullWhen(true)] out Token? token)
+    private readonly bool TrimLineBreaksBounds(ref int pos, int start, int lastIndex, out Token? token)
     {
         // Position de fin effective
         int end = start + lastIndex;
@@ -107,7 +107,7 @@ public ref struct NodeLexer
         return false;
     }
 
-    private readonly bool TryParseMustacheTag([NotNullWhen(true)] out Token? token, ref int pos)
+    private readonly bool TryParseMustacheTag(out Token? token, ref int pos)
     {
         int tagStart = pos;
         pos += OpenDelimiter.Length;
@@ -177,7 +177,7 @@ public ref struct NodeLexer
 
         // Find closing delimiter
         string closingDelim = isTripleBrace ? "}}}" : CloseDelimiter;
-        int closePos = IndexOf(_source[pos..], closingDelim);
+        int closePos = IndexOf(_source.Slice(pos), closingDelim);
 
         if (closePos == -1)
         {

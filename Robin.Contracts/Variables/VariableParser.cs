@@ -4,7 +4,7 @@ namespace Robin.Contracts.Variables;
 
 public static class VariableParser
 {
-    public static bool TryParse(this string path, [NotNullWhen(true)] out VariablePath? accesorPath)
+    public static bool TryParse(this string path, out VariablePath? accesorPath)
     {
         try
         {
@@ -18,10 +18,12 @@ public static class VariableParser
         }
     }
 
-    public static VariablePath Parse(this string path)
+    public static VariablePath Parse(this string strPath)
     {
-        if (string.IsNullOrEmpty(path))
+        if (string.IsNullOrEmpty(strPath))
             return new VariablePath([]);
+
+        ReadOnlySpan<char> path = strPath.AsSpan();
 
         List<IVariableSegment> segments = [];
         int i = 0;
@@ -61,10 +63,10 @@ public static class VariableParser
                 if (bracketDepth != 0)
                     throw new FormatException("Unclosed accessor");
 
-                string content = path[start..i].Trim();
+                string content = path.Slice(start,i-start).Trim().ToString();
 
                 // Try to parse as numeric index first
-                if (int.TryParse(content, out int index))
+                if (int.TryParse(content.ToString(), out int index))
                 {
                     segments.Add(new IndexSegment(index));
                 }
@@ -83,7 +85,7 @@ public static class VariableParser
                 while (i < path.Length && path[i] != '.' && path[i] != '[')
                     i++;
 
-                string memberName = path[start..i];
+                string memberName = path.Slice(start, i-start).ToString();
                 if (string.IsNullOrEmpty(memberName))
                     throw new FormatException("Empty member name");
 

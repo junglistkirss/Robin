@@ -8,7 +8,7 @@ internal sealed class DataFacadeResolver(IServiceProvider provider) : IDataFacad
 {
     private readonly ConcurrentDictionary<Type, IDataFacade?> cache = new();
 
-    public bool ResolveDataFacade(object? data, [NotNullWhen(true)] out IDataFacade? facade)
+    public bool ResolveDataFacade(object? data, out IDataFacade? facade)
     {
         if (data is null)
         {

@@ -9,14 +9,14 @@ public static class DataFacadeExtensions
 {
     public delegate IDataFacade DataFacadeFactory(object? obj);
 
-    private sealed class TypedDataFacade<T>(DataFacadeFactory facadeFactory) : IDataFacade<T>
+    private sealed class TypedDataFacade<T>(DataFacadeFactory facadeFactory) : BaseDataFacade<T>
     {
-        public bool IsCollection(T obj, [NotNullWhen(true)] out IIterator? collection)
+        public override bool IsCollection(T obj, out IIterator? collection)
         {
             return facadeFactory(obj).IsCollection(obj, out collection);
         }
 
-        public bool IsTrue(T obj)
+        public override bool IsTrue(T obj)
         {
             return facadeFactory(obj).IsTrue(obj);
         }
@@ -25,12 +25,14 @@ public static class DataFacadeExtensions
 
     public static IServiceCollection AddDataFacade<T>(this IServiceCollection services, IDataFacade<T> facade)
     {
-        ArgumentNullException.ThrowIfNull(facade);
+        if (facade is null)
+            throw new ArgumentNullException(nameof(facade));
         return services.AddSingleton<IDataFacade<T>>(facade);
     }
     public static IServiceCollection AddDataFacadeFactory<T>(this IServiceCollection services, DataFacadeFactory factory)
     {
-        ArgumentNullException.ThrowIfNull(factory);
+        if (factory is null)
+            throw new ArgumentNullException(nameof(factory));
         return services.AddSingleton<IDataFacade<T>>(new TypedDataFacade<T>(factory));
     }
 }

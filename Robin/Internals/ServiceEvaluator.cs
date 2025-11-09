@@ -15,7 +15,7 @@ internal sealed class ServiceEvaluator(IExpressionNodeVisitor<DataContext> visit
             {
                 foreach (IDataFacadeResolver resolver in facadeResolver)
                 {
-                    if (resolver.ResolveDataFacade(value, out IDataFacade? resolvedFacade))
+                    if (resolver.ResolveDataFacade(value, out IDataFacade? resolvedFacade) && resolvedFacade is not null)
                     {
                         facade = resolvedFacade;
                         return value;
@@ -30,7 +30,7 @@ internal sealed class ServiceEvaluator(IExpressionNodeVisitor<DataContext> visit
                 {
                     foreach (IDataFacadeResolver resolver in facadeResolver)
                     {
-                        if (resolver.ResolveDataFacade(parentValue, out IDataFacade? resolvedFacade))
+                        if (resolver.ResolveDataFacade(parentValue, out IDataFacade? resolvedFacade) && resolvedFacade is not null)
                         {
                             facade = resolvedFacade;
                             return parentValue;

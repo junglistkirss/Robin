@@ -4,11 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Internals;
 
-internal sealed class ListIndexAccessor : IIndexDelegateAccessor, IIndexAccessor<IList>
+internal sealed class ListIndexAccessor : BaseIndexAccessor<IList>, IIndexDelegateAccessor
 {
     public readonly static ListIndexAccessor Instance = new();
     private ListIndexAccessor() { }
-    public bool TryGetIndex(int index, [NotNull] out Delegate value)
+    public bool TryGetIndex(int index, out Delegate value)
     {
         value = (object? source) =>
         {
@@ -21,7 +21,7 @@ internal sealed class ListIndexAccessor : IIndexDelegateAccessor, IIndexAccessor
         return true;
     }
 
-    public bool TryGetIndex(IList obj, int index, out object? value)
+    public override bool TryGetIndex(IList obj, int index, out object? value)
     {
         if (obj is not null && index >= 0 && index < obj.Count)
         {

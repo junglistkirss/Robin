@@ -14,7 +14,7 @@ public static class IteratorCache
     public delegate IIterator Factory(object? value);
     private static readonly ConcurrentDictionary<Type, Factory> _cache = new();
 
-    public static bool GetIterator(object? value, [NotNullWhen(true)] out IIterator? collection)
+    public static bool GetIterator(object? value, out IIterator? collection)
     {
         if (value is IEnumerable)
         {

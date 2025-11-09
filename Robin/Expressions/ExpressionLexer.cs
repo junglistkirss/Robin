@@ -26,12 +26,12 @@ public ref struct ExpressionLexer
         _position = position;
     }
 
-    public bool TryGetNextToken([NotNullWhen(true)] out ExpressionToken? token)
+    public bool TryGetNextToken(out ExpressionToken? token)
     {
         return TryGetNextTokenInternal(out token, ref _position);
     }
 
-    public readonly bool TryPeekNextToken([NotNullWhen(true)] out ExpressionToken? token, out int endPosition)
+    public readonly bool TryPeekNextToken(out ExpressionToken? token, out int endPosition)
     {
         int peekPosition = _position;
         bool result = TryGetNextTokenInternal(out token, ref peekPosition);
@@ -39,7 +39,7 @@ public ref struct ExpressionLexer
         return result;
     }
 
-    private readonly bool TryGetNextTokenInternal([NotNullWhen(true)] out ExpressionToken? token, ref int pos)
+    private readonly bool TryGetNextTokenInternal(out ExpressionToken? token, ref int pos)
     {
         SkipWhitespace(ref pos);
         if (pos >= _source.Length)
