@@ -31,4 +31,9 @@ jobs:
       run: dotnet pack ./Robin.slnx --configuration Release -o ./nupkgs
       
     - name: Push
-      run: dotnet nuget push ./nupkgs/*.nupkg --api-key "${{ secrets.PUBLIC_NUGET_TOKEN }}" --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: |
+        for pkg in ./nupkgs/*.nupkg; do
+          echo "Pushing $pkg"
+          dotnet nuget push "$pkg" --api-key ${{ secrets.PUBLIC_NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate || true
+          sleep 10
+        done
