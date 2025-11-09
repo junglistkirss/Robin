@@ -1,6 +1,0 @@
-namespace Robin.Abstractions.Variables;
-
-public interface IVariableSegment
-{
-    bool Accept<TArgs, TOut>(IVariableSegmentVisitor<TArgs, TOut> visitor, TArgs args, out TOut result);
-};
