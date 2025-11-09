@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
   <Folder Name="/Tests/">
     <Project Path="Robin.Benchmarks/Robin.Benchmarks.csproj" Id="c255a6c0-c6ae-4e75-a11d-bca70b2be59c" />
     <Project Path="Robin.Evaluator.GeneratedAccessor.Tests/Robin.Evaluator.GeneratedAccessor.Tests.csproj" />

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace Robin.Benchmarks;
 
 [GenerateAccessor]
-public record Tweet(
+public record class Tweet(
     [property: JsonPropertyName("id")] Guid Id,
     [property: JsonPropertyName("user")] string User,
     [property: JsonPropertyName("content")] string Content,

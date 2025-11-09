@@ -1,14 +1,16 @@
 using System.Collections.Immutable;
+using System.Runtime.CompilerServices;
 
 namespace Robin.Contracts.Expressions;
 
-public readonly struct FunctionCallNode(string functionName, ImmutableArray<IExpressionNode> arguments) : IExpressionNode
+public sealed class FunctionCallNode(string functionName, ImmutableArray<IExpressionNode> arguments) : IExpressionNode
 {
     public string FunctionName { get; } = functionName;
     public ImmutableArray<IExpressionNode> Arguments { get; } = arguments;
 
-    public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Accept<TArgs>(IExpressionNodeVisitor<TArgs> visitor, TArgs args, out object? value)
     {
-        return visitor.VisitFunctionCall(this, args);
+        return visitor.VisitFunctionCall(this, args, out value);
     }
 }

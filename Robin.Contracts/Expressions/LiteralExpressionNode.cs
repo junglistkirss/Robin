@@ -1,11 +1,14 @@
+using System.Runtime.CompilerServices;
+
 namespace Robin.Contracts.Expressions;
 
-public readonly struct LiteralExpressionNode(string constant) : IExpressionNode
+public sealed class LiteralExpressionNode(string constant) : IExpressionNode
 {
     public string Constant { get; } = constant;
 
-    public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Accept<TArgs>(IExpressionNodeVisitor<TArgs> visitor, TArgs args, out object? value)
     {
-        return visitor.VisitLiteral(this, args);
+        return visitor.VisitLiteral(this, args, out value);
     }
 }

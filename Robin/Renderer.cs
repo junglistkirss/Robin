@@ -1,49 +1,45 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Robin.Abstractions;
 using Robin.Abstractions.Context;
-using Robin.Abstractions.Extensions;
 using Robin.Abstractions.Helpers;
 using Robin.Contracts.Nodes;
+using Robin.Extensions;
 using System.Collections.Immutable;
-using System.Text;
+using System.Collections.ObjectModel;
 
 namespace Robin;
 
 public static class Renderer
 {
-    public static IEnumerable<TOut> Accept<TIn, TOut>(this ImmutableArray<INode> template, INodeVisitor<TOut, TIn> visitor, TIn args)
-    {
-        ImmutableArray<INode>.Enumerator enumerator = template.GetEnumerator();
-        while (enumerator.MoveNext())
-        {
-            yield return enumerator.Current.Accept(visitor, args);
-        }
-    }
-
-    public static T Render<T>(this T defaultBuilder, INodeVisitor<NoValue, RenderContext<T>> visitor, IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
+    public static void Render<T>(
+        this T defaultBuilder,
+        INodeVisitor<RenderContext<T>> visitor,
+        IEvaluator evaluator,
+        ReadOnlySpan<INode> template,
+        object? data,
+        Action<Helper>? helperConfig = null)
         where T : class
     {
-        DataContext dataContext = new(data, null);
-        helperConfig?.Invoke(dataContext.Helper);
-        RenderContext<T> ctx = new()
+        ReadOnlyDictionary<string, ImmutableArray<INode>> partials = template.ExtractsPartials().AsReadOnly(); // calculer une seule fois
+        using (DataContext.Push(data))
         {
-            Partials = template.ExtractsPartials(),
-            Data = dataContext,
-            Evaluator = evaluator,
-            Builder = defaultBuilder
-        };
-        ImmutableArray<INode>.Enumerator enumerator = template.GetEnumerator();
-        while (enumerator.MoveNext())
-        {
-            _ = enumerator.Current.Accept(visitor, ctx);
+            helperConfig?.Invoke(DataContext.Current.Helper);
+            RenderContext<T> ctx = RenderContextPool<T>.Get(evaluator, defaultBuilder, partials);
+            try
+            {
+                foreach (INode item in template)
+                    item.Accept(visitor, ctx);
+            }
+            finally
+            {
+                RenderContextPool<T>.Return(ctx); // remet dans le pool
+            }
         }
-        return defaultBuilder;
     }
 
-    public static string RenderString(this IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
-    {
-        StringBuilder sb = new();
-        Render(sb, StringNodeRender.Instance, evaluator, template, data, helperConfig);
-        return sb.ToString();
-    }
+    //public static string RenderString(this IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
+    //{
+    //    StringBuilder sb = new();
+    //    Render(sb, StringNodeRender.Instance, evaluator, template.AsSpan(), data, helperConfig);
+    //    return sb.ToString();
+    //}
 }

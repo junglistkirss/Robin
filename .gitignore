@@ -40,6 +40,7 @@ ScaffoldingReadMe.txt
 ~$*
 *~
 CodeCoverage/
+**/BenchmarkDotNet.Artifacts*
 .vs
 
 # MSBuild Binary and Structured Log
@@ -53,5 +54,4 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
-coverage*
-**/coverage*
+coverage*.*

@@ -4,5 +4,5 @@ namespace Robin.MustacheSpecs.Tests;
 
 public sealed record MustacheTestFile(
     [property: JsonPropertyName("overview")] string Overview,
-    [property: JsonPropertyName("tests")] IReadOnlyList<MustacheTestCase> Tests
+    [property: JsonPropertyName("tests")] MustacheTestCase[] Tests
 );

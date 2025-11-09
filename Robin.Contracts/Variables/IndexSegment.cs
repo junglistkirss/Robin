@@ -1,11 +1,14 @@
+using System.Runtime.CompilerServices;
+
 namespace Robin.Contracts.Variables;
 
-public readonly struct IndexSegment(int index) : IVariableSegment
+public sealed class IndexSegment(int index) : IVariableSegment
 {
     public int Index => index;
 
-    public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Accept<TArgs, TOut>(IVariableSegmentVisitor<TArgs, TOut> visitor, TArgs args, out TOut @delegate)
     {
-        return visitor.VisitIndex(this, args);
+        return visitor.VisitIndex(this, args, out @delegate);
     }
 }

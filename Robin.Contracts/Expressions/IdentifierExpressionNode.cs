@@ -1,13 +1,15 @@
 using Robin.Contracts.Variables;
+using System.Runtime.CompilerServices;
 
 namespace Robin.Contracts.Expressions;
 
-public readonly struct IdentifierExpressionNode(VariablePath path) : IExpressionNode
+public sealed class IdentifierExpressionNode(VariablePath path) : IExpressionNode
 {
     public VariablePath Path { get; } = path;
 
-    public TOut Accept<TOut, TArgs>(IExpressionNodeVisitor<TOut, TArgs> visitor, TArgs args)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Accept<TArgs>(IExpressionNodeVisitor<TArgs> visitor, TArgs args, out object? value)
     {
-        return visitor.VisitIdenitifer(this, args);
+        return visitor.VisitIdenitifer(this, args, out value);
     }
 };

@@ -63,7 +63,7 @@ public static class ExpressionParser
         {
             string value = lexer.GetValue(currentToken);
             int number = int.Parse(value, CultureInfo.InvariantCulture);
-            return new NumberExpressionNode(number);
+            return new IndexExpressionNode(number);
         }
 
         // Identifier (variable ou fonction)

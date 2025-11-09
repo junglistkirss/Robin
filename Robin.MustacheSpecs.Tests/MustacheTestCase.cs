@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Robin.MustacheSpecs.Tests;
 
-public sealed record MustacheTestCase(
+public readonly record struct MustacheTestCase(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("desc")] string Description,
     [property: JsonPropertyName("data")] JsonNode Data,

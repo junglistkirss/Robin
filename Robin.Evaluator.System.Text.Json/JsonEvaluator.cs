@@ -2,19 +2,15 @@ using Robin.Abstractions;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Facades;
 using Robin.Contracts.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace Robin.Evaluator.System.Text.Json;
 
-public sealed class JsonEvaluator : IEvaluator
+internal sealed class JsonEvaluator(IEvaluator evaluator) : IJsonEvaluator
 {
-    public static readonly JsonEvaluator Instance = new();
-    private static readonly ServiceEvaluator BaseEvaluator = new(JsonAccesorVisitor.Instance);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public object? Resolve(IExpressionNode expression, DataContext? data, out IDataFacade facade)
     {
-        return BaseEvaluator.Resolve(expression, data, out facade);
+        object? value = evaluator.Resolve(expression, data, out IDataFacade baseFacade);
+        facade = value.AsJsonFacade(baseFacade);
+        return value;
     }
 }
-

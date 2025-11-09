@@ -4,9 +4,9 @@ namespace Robin.Abstractions.Helpers;
 
 public sealed class Helper
 {
-    public delegate object? Function(params object?[] args);
+    public delegate object? Function(object?[] args);
 
-    private readonly Dictionary<string, Function> _functions = new();
+    private readonly Dictionary<string, Function> _functions = [];
 
     public bool TryAddFunction(string name, Function function)
     {

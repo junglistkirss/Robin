@@ -1,18 +1,17 @@
 using Robin.Contracts.Nodes;
 using System.Collections.Immutable;
-using System.Text;
+using System.Collections.ObjectModel;
 
 namespace Robin.Abstractions.Context;
 
-public record class RenderContext<T>
-    where T : class
+public abstract class RenderContext
 {
-    public ImmutableDictionary<string, ImmutableArray<INode>> Partials { get; init; } = ImmutableDictionary<string, ImmutableArray<INode>>.Empty;
-    public DataContext? Data { get; init; }
-    public required IEvaluator Evaluator { get; init; }
-    public required T Builder { get; init; }
-
+    public ReadOnlyDictionary<string, ImmutableArray<INode>>? Partials { get; internal set; }
+    public IEvaluator Evaluator { get; internal set; } = null!;
 }
 
-
-
+public sealed class RenderContext<T> : RenderContext
+    where T : class
+{
+    public T Builder { get; internal set; } = null!;
+}

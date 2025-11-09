@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# xUnit1044: Avoid using TheoryData type arguments that are not serializable
+dotnet_diagnostic.xUnit1044.severity = silent

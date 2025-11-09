@@ -1,9 +1,9 @@
 namespace Robin.Contracts.Expressions;
 
-public interface IExpressionNodeVisitor<TOut, TArgs>
+public interface IExpressionNodeVisitor<TArgs>
 {
-    TOut VisitIdenitifer(IdentifierExpressionNode node, TArgs args);
-    TOut VisitFunctionCall(FunctionCallNode node, TArgs args);
-    TOut VisitIndex(NumberExpressionNode node, TArgs args);
-    TOut VisitLiteral(LiteralExpressionNode node, TArgs args);
+    bool VisitIdenitifer(IdentifierExpressionNode node, TArgs args, out object? value);
+    bool VisitFunctionCall(FunctionCallNode node, TArgs args, out object? value);
+    bool VisitIndex(IndexExpressionNode node, TArgs args, out object? value);
+    bool VisitLiteral(LiteralExpressionNode node, TArgs args, out object? value);
 }

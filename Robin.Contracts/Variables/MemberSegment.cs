@@ -1,11 +1,14 @@
+using System.Runtime.CompilerServices;
+
 namespace Robin.Contracts.Variables;
 
-public readonly struct MemberSegment(string memberName) : IVariableSegment
+public sealed class MemberSegment(string memberName) : IVariableSegment
 {
     public string MemberName => memberName;
 
-    public TOut Accept<TOut, TArgs>(IVariableSegmentVisitor<TOut, TArgs> visitor, TArgs args)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Accept<TArgs, TOut>(IVariableSegmentVisitor<TArgs, TOut> visitor, TArgs args, out TOut @delegate)
     {
-        return visitor.VisitMember(this, args);
+        return visitor.VisitMember(this, args, out @delegate);
     }
 }

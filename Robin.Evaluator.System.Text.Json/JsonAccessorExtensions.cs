@@ -1,23 +1,31 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Extensions;
-using System.Diagnostics.CodeAnalysis;
+using Robin.Abstractions.Facades;
 using System.Text.Json.Nodes;
 
 namespace Robin.Evaluator.System.Text.Json;
 
 public static class JsonAccessorExtensions
 {
-
     public static IServiceCollection AddJsonAccessors(this IServiceCollection services)
     {
         return services
-            .AddIndexAccessor<JsonArray>(TryGetIndexValue)
-            .AddMemberAccessor<JsonObject>(TryGetMemberValue);
+            .AddSingleton<IJsonEvaluator, JsonEvaluator>()
+            .AddSingleton<IDataFacadeResolver, JsonDataFacadeResolver>()
+            .AddDataFacade<JsonNode>(JsonNodeFacade.Instance)
+            .AddDataFacade<JsonValue>(JsonValueFacade.Instance)
+            .AddDataFacade<JsonArray>(JsonArrayFacade.Instance)
+            .AddDataFacade<JsonObject>(JsonObjectFacade.Instance)
+            .AddIndexObjectAccessor<JsonArray>(TryGetIndexValue)
+            .AddMemberObjectAccessor<JsonObject>(TryGetMemberValue)
+            .AddIndexObjectAccessor<JsonNode>(TryGetIndexValue)
+            .AddMemberObjectAccessor<JsonNode>(TryGetMemberValue)
+            ;
     }
 
-    internal static bool TryGetMemberValue(this JsonObject? source, string member, [MaybeNullWhen(false)] out object? value)
+    internal static bool TryGetMemberValue(this object? obj, string member, out object? value)
     {
-        if (source is not null && source.TryGetPropertyValue(member, out JsonNode? node))
+        if (obj is JsonObject jObject && jObject.TryGetPropertyValue(member, out JsonNode? node))
         {
             value = node;
             return true;
@@ -25,11 +33,11 @@ public static class JsonAccessorExtensions
         value = null;
         return false;
     }
-    internal static bool TryGetIndexValue(this JsonArray? source, int index, [MaybeNullWhen(false)] out object? value)
+    internal static bool TryGetIndexValue(this object? obj, int index, out object? value)
     {
-        if (source is not null && index >= 0 && index < source.Count)
+        if (obj is JsonArray jArray && index < jArray.Count)
         {
-            value = source[index];
+            value = jArray[index];
             return true;
         }
         value = null;

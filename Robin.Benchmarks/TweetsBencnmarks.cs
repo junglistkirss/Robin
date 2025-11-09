@@ -1,86 +1,39 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
-using BenchmarkDotNet.Jobs;
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Extensions;
 using Robin.Contracts.Nodes;
+using Robin.Extensions;
 using System.Collections.Immutable;
 using System.Text.Json;
 
 namespace Robin.Benchmarks;
-
-/// <summary>
-/// Configuration automatique : choisit Fast ou Debug selon une variable d'environnement ou un argument CLI.
-/// </summary>
-public class AutoBenchmarkConfig : ManualConfig
-{
-    private const string DEBUG_MODE = "Debug";
-    private const string FAST_MODE = "Fast";
-    private const string ENV_MODE = "BENCH_MODE";
-
-    public AutoBenchmarkConfig()
-    {
-        // Vérifie d'abord une variable d'environnement (par ex. BENCH_MODE=Debug)
-        string? mode = Environment.GetEnvironmentVariable(ENV_MODE);
-
-        // Sinon, vérifie les arguments de ligne de commande
-        string[] args = Environment.GetCommandLineArgs();
-        if (mode is null && args.Length > 1)
-        {
-            foreach (string arg in args)
-            {
-                if (arg.Equals("--debug", StringComparison.OrdinalIgnoreCase))
-                    mode = DEBUG_MODE;
-                else if (arg.Equals("--fast", StringComparison.OrdinalIgnoreCase))
-                    mode = FAST_MODE;
-            }
-        }
-
-        // Choisit la configuration adaptée
-        if (string.Equals(mode, DEBUG_MODE, StringComparison.OrdinalIgnoreCase))
-        {
-            AddJob(Job.Dry
-                .WithWarmupCount(1)
-                .WithIterationCount(3)
-                .WithLaunchCount(1)
-                .WithId(DEBUG_MODE));
-        }
-        else
-        {
-            AddJob(Job.Default
-                .WithWarmupCount(2)
-                .WithIterationCount(8)
-                .WithLaunchCount(1)
-                .WithId(FAST_MODE));
-        }
-
-        // AddDiagnoser(MemoryDiagnoser.Default);
-        // AddExporter(MarkdownExporter.GitHub);
-    }
-}
 
 [Config(typeof(AutoBenchmarkConfig))]
 [MemoryDiagnoser]
 [MarkdownExporter]
 public class TweetsBencnmarks
 {
-    private readonly IServiceProvider serviceProvider;
-    private readonly Tweet[] tweets;
-    private readonly ImmutableArray<INode> template;
-    private readonly IStringRenderer renderer;
-    public TweetsBencnmarks()
+    private IServiceProvider serviceProvider = default!;
+    private Tweet[] tweets = [];
+    private ImmutableArray<INode> template = [];
+    private IStringRenderer renderer = default!;
+
+    [GlobalSetup]
+    public void Setup()
     {
+
         ServiceCollection services = [];
         services
             .AddServiceEvaluator()
             .AddStringRenderer()
-            .AddMemberAccessor<Tweet>(TweetAccessor.TryGetPropertyValue);
+            .AddMemberObjectAccessor<Tweet>(TweetAccessor.GetNamedProperty);
+
         serviceProvider = services.BuildServiceProvider(new ServiceProviderOptions
         {
-            ValidateOnBuild = true,
-            ValidateScopes = true,
+            ValidateOnBuild = false,
+            ValidateScopes = false,
         });
         string path = Path.Combine(AppContext.BaseDirectory, "datasets", "tweets.json");
         string json = File.ReadAllText(path);
@@ -89,8 +42,25 @@ public class TweetsBencnmarks
         renderer = serviceProvider.GetRequiredService<IStringRenderer>();
 
     }
+    // [Benchmark]
+    //     public INode[] ParseTweetsTemplate() => TweetsTemplates.List.AsSpan().Parse();
+
+    [Benchmark(Baseline = true)]
+    public string RenderSingleTweets() => renderer.Render(template, tweets[0]);
 
     [Benchmark]
-    public string RenderTweets() => renderer.Render(template, tweets);
+    public string RenderEmptyTweets() => renderer.Render(template, Array.Empty<Tweet>());
+
+    [Benchmark]
+    public string RenderTake5TweetsAsArray() => renderer.Render(template, tweets.Take(5).ToArray());
+
+    [Benchmark]
+    public string RenderTake50Tweets() => renderer.Render(template, tweets.Take(50).ToArray());
+
+    [Benchmark]
+    public string RenderAllTweets() => renderer.Render(template, tweets);
+
+    [Benchmark]
+    public string RenderNullTweets() => renderer.Render(template, Enumerable.Repeat<Tweet>(null!, 1000).ToArray());
 
 }

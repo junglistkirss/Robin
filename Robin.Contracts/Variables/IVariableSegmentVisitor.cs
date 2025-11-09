@@ -1,8 +1,8 @@
 namespace Robin.Contracts.Variables;
 
-public interface IVariableSegmentVisitor<TOut, TArgs>
+public interface IVariableSegmentVisitor<in TArgs, TOut>
 {
-    TOut VisitThis(ThisSegment accessor, TArgs args);
-    TOut VisitMember(MemberSegment accessor, TArgs args);
-    TOut VisitIndex(IndexSegment accessor, TArgs args);
+    bool VisitThis(ThisSegment accessor, TArgs args, out TOut result);
+    bool VisitMember(MemberSegment accessor, TArgs args, out TOut result);
+    bool VisitIndex(IndexSegment accessor, TArgs args, out TOut result);
 }

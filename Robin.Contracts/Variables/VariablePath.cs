@@ -3,20 +3,27 @@ using System.Text;
 
 namespace Robin.Contracts.Variables;
 
-public readonly struct VariablePath(ImmutableArray<IVariableSegment> segments)
+public readonly record struct VariablePath(ImmutableArray<IVariableSegment> Segments)
 {
     public static implicit operator string(VariablePath value) => value.ToString();
-    public ImmutableArray<IVariableSegment> Segments { get; } = segments;
+    public ImmutableArray<IVariableSegment> Segments { get; } = Segments;
+
+    public int Length => Segments.Length;
+    public IVariableSegment this[int index] => Segments[index];
     public override string ToString()
     {
-        return Segments.Aggregate(
-            new StringBuilder(),
-            (sb, segment) =>
+        StringBuilder sb = new();
+        foreach (var item in Segments)
+        {
+            sb.Append(item switch
             {
-                return segment.Accept(InlineSegmentPrinter.Instance, sb);
-            },
-            sb => sb.ToString()
-        );
+                IndexSegment segment => $"[{segment.Index}]",
+                ThisSegment => ".",
+                MemberSegment segment => $"{(sb.Length > 0 ? "." : "")}{segment.MemberName}",
+                _ => ""
+            });
+        }
+        return sb.ToString();
     }
 
 }

@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="JsonAccesorVisitor.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\Robin.Abstractions\Robin.Abstractions.csproj" />
