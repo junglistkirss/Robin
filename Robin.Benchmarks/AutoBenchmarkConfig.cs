@@ -7,7 +7,7 @@ public class AutoBenchmarkConfig : ManualConfig
 {
     public AutoBenchmarkConfig()
     {
-        WithOptions(ConfigOptions.DisableOptimizationsValidator);
+        //WithOptions(ConfigOptions.DisableOptimizationsValidator);
         // Choisit la configuration adaptée
 #if DEBUG
         // AddJob(Job.Dry);
