@@ -23,10 +23,10 @@ jobs:
         dotnet-version: 9.0.x
     
     - name: Restore dependencies
-      run: dotnet restore ./Robin.slnx
+      run: dotnet restore ./RobinMustache.slnx
     
     - name: Build
-      run: dotnet build ./Robin.slnx --configuration Release --no-restore
+      run: dotnet build ./RobinMustache.slnx --configuration Release --no-restore
       
     # - name: Download previous benchmark data
     #   uses: actions/cache@v4
@@ -35,7 +35,7 @@ jobs:
     #     key: ${{ runner.os }}-benchmark
 
     - name: Run Benchmarks
-      run: dotnet run --project ./Robin.Benchmarks/Robin.Benchmarks.csproj --configuration Release
+      run: dotnet run --project ./RobinMustache.Benchmarks/RobinMustache.Benchmarks.csproj --configuration Release
     
     # - name: Store benchmark result
     #   uses: benchmark-action/github-action-benchmark@v1
