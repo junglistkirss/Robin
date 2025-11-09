@@ -1,8 +1,8 @@
 using Robin.Abstractions.Accessors;
 using Robin.Abstractions.Context;
+using Robin.Abstractions.Expressions;
 using Robin.Abstractions.Helpers;
-using Robin.Contracts.Expressions;
-using Robin.Contracts.Variables;
+using Robin.Abstractions.Variables;
 using System.Collections.Concurrent;
 
 namespace Robin.Internals;

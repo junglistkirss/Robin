@@ -1,6 +1,5 @@
 using Robin.Abstractions.Iterators;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions.Facades;
 

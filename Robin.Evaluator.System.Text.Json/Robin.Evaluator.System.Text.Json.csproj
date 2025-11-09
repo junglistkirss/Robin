@@ -5,12 +5,26 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Robin.Evaluator.System.Text.Json</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Christian Bourbier</Authors>
+    <Company>Christian Bourbier</Company>
+    <PackageDescription>Robin</PackageDescription>
+    <RepositoryUrl>https://github.com/junglistkirss/Robin</RepositoryUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="JsonAccesorVisitor.cs" />
+    <None Include="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
-  
+    
   <ItemGroup>
     <ProjectReference Include="..\Robin.Abstractions\Robin.Abstractions.csproj" />
   </ItemGroup>

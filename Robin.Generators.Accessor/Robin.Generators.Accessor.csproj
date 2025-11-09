@@ -9,36 +9,28 @@
     <Nullable>disable</Nullable>
     <TreatErrorsAsWarnings>true</TreatErrorsAsWarnings>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <PackageId>Robin.Generator.Accessor</PackageId>
-    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Robin.Generators.Accessor</PackageId>
+    <Version>0.0.1</Version>
     <Authors>Christian Bourbier</Authors>
     <Company>Christian Bourbier</Company>
-    <PackageDescription>Accessor generator</PackageDescription>
+    <PackageDescription>Robin Generators - Accessor</PackageDescription>
     <RepositoryUrl>https://github.com/junglistkirss/Robin</RepositoryUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
+
   <ItemGroup>
     <None Include="readme.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
-  <!--<ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" PrivateAssets="all" />
-    <PackageReference Include="Stubble.Core" Version="1.10.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  </ItemGroup>-->
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" PrivateAssets="all" />
-    <!-- <ProjectReference Include="..\Condor.Generator.Utils\Condor.Generator.Utils.csproj" OutputItemType="Analyzer" />
-    <ProjectReference Include="..\Condor.Files.Generator.Abstractions\Condor.Files.Generator.Abstractions.csproj" OutputItemType="Analyzer" /> -->
   </ItemGroup>
 
   <ItemGroup>

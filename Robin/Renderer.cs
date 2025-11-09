@@ -1,7 +1,7 @@
 using Robin.Abstractions;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Helpers;
-using Robin.Contracts.Nodes;
+using Robin.Abstractions.Nodes;
 using Robin.Extensions;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;

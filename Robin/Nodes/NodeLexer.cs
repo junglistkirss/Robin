@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Robin.Nodes;
 
 public ref struct NodeLexer

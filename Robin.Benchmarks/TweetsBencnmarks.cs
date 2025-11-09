@@ -3,7 +3,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Exporters;
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Extensions;
-using Robin.Contracts.Nodes;
+using Robin.Abstractions.Nodes;
 using Robin.Extensions;
 using System.Collections.Immutable;
 using System.Text.Json;

@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Facades;
 using Robin.Abstractions.Iterators;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions.Extensions;
 

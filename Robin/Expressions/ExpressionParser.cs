@@ -1,5 +1,5 @@
-using Robin.Contracts.Expressions;
-using Robin.Contracts.Variables;
+using Robin.Abstractions.Expressions;
+using Robin.Abstractions.Variables;
 using System.Globalization;
 
 namespace Robin.Expressions;
@@ -28,7 +28,7 @@ public static class ExpressionParser
         IExpressionNode result = ParseExpression(ref lexer, currentToken.Value);
 
         // Vérifier qu'il n'y a plus de tokens
-        if (lexer.TryPeekNextToken(out ExpressionToken? extraToken, out _))
+        if (lexer.TryPeekNextToken(out ExpressionToken? _, out _))
             throw new Exception($"Tokens inattendus après la fin");
 
         return result;

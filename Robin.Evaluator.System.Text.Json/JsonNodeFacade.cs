@@ -1,7 +1,7 @@
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Facades;
 using Robin.Abstractions.Iterators;
-using Robin.Contracts.Nodes;
+using Robin.Abstractions.Nodes;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;

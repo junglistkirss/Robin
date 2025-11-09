@@ -1,8 +1,7 @@
 using Robin.Abstractions.Accessors;
-using Robin.Contracts.Variables;
+using Robin.Abstractions.Variables;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Internals;
 

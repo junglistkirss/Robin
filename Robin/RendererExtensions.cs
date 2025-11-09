@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions;
 using Robin.Abstractions.Context;
 using Robin.Abstractions.Helpers;
-using Robin.Contracts.Nodes;
+using Robin.Abstractions.Nodes;
 using Robin.Internals;
 using System.Text;
 

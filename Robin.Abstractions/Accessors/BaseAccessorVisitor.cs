@@ -1,4 +1,4 @@
-using Robin.Contracts.Variables;
+using Robin.Abstractions.Variables;
 
 namespace Robin.Abstractions.Accessors;
 

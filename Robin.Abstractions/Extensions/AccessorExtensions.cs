@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Accessors;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Robin.Abstractions.Extensions;
 public static class AccessorExtensions

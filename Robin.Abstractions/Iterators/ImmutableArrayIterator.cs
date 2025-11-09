@@ -1,5 +1,5 @@
 using Robin.Abstractions.Context;
-using Robin.Contracts.Nodes;
+using Robin.Abstractions.Nodes;
 using System.Collections.Immutable;
 
 namespace Robin.Abstractions.Iterators;

@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Robin.Abstractions.Context;
+using Robin.Abstractions.Expressions;
 using Robin.Abstractions.Facades;
-using Robin.Contracts.Expressions;
-using Robin.Contracts.Variables;
+using Robin.Abstractions.Variables;
 using Robin.Extensions;
 using System.Text.Json.Nodes;
 

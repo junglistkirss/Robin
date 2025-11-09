@@ -5,11 +5,29 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>Robin.Abstractions</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Christian Bourbier</Authors>
+    <Company>Christian Bourbier</Company>
+    <PackageDescription>Robin Abstractions</PackageDescription>
+    <RepositoryUrl>https://github.com/junglistkirss/Robin</RepositoryUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <ProjectReference Include="..\Robin.Contracts\Robin.Contracts.csproj" />
+    <None Include="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.10" />
+    <PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
   </ItemGroup>
 
 </Project>

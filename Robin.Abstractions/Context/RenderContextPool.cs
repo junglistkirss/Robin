@@ -1,4 +1,4 @@
-using Robin.Contracts.Nodes;
+using Robin.Abstractions.Nodes;
 using System.Collections.Concurrent;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
