@@ -16,7 +16,7 @@ public static class Renderer
         this T defaultBuilder,
         INodeVisitor<RenderContext<T>> visitor,
         IEvaluator evaluator,
-        ImmutableArray<INode> template,
+        ReadOnlySpan<INode> template,
         object? data,
         Action<Helper>? helperConfig = null)
         where T : class
@@ -41,7 +41,7 @@ public static class Renderer
     public static string RenderString(this IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
     {
         StringBuilder sb = new();
-        Render(sb, StringNodeRender.Instance, evaluator, template, data, helperConfig);
+        Render(sb, StringNodeRender.Instance, evaluator, template.AsSpan(), data, helperConfig);
         return sb.ToString();
     }
 }

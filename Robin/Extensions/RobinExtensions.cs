@@ -14,16 +14,17 @@ namespace Robin.Extensions;
 
 public static class RobinExtensions
 {
-    public static Dictionary<string, ImmutableArray<INode>> ExtractsPartials(this ImmutableArray<INode> nodes, ReadOnlyDictionary<string, ImmutableArray<INode>>? baseCollection = null)
+    public static Dictionary<string, ImmutableArray<INode>> ExtractsPartials(this ReadOnlySpan<INode> nodes, ReadOnlyDictionary<string, ImmutableArray<INode>>? baseCollection = null)
     {
         Dictionary<string, ImmutableArray<INode>> collection;
         if (baseCollection is not null)
             collection = new(baseCollection);
         else collection = [];
-        return nodes.Aggregate(collection, (current, node) => node.Accept(PartialExtractor.Instance, current));
+        foreach (INode node in nodes) {
+            node.Accept(PartialExtractor.Instance, collection);
+        }
+        return collection;
     }
-    private const string BaseEvaluatorKey = "base";
-
     public static IServiceCollection AddServiceEvaluator(this IServiceCollection services)
     {
         return services

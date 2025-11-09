@@ -11,7 +11,6 @@ public class AutoBenchmarkConfig : ManualConfig
         // Choisit la configuration adaptée
 #if DEBUG
         // AddJob(Job.Dry);
-#else
 #endif
         AddJob(Job.Default
             .WithWarmupCount(2)
@@ -19,7 +18,7 @@ public class AutoBenchmarkConfig : ManualConfig
             .WithLaunchCount(1)
             );
 #if WINDOWS
-        AddDiagnoser(new BenchmarkDotNet.Diagnostics.Windows.EtwProfiler());
+        //AddDiagnoser(new BenchmarkDotNet.Diagnostics.Windows.EtwProfiler());
 #endif
         // AddDiagnoser(MemoryDiagnoser.Default);
         // AddExporter(MarkdownExporter.GitHub);

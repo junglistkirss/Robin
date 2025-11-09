@@ -64,11 +64,12 @@ internal sealed class StringNodeRender : INodeVisitor<RenderContext<StringBuilde
 
         if (facade.IsTrue(value) && context.Partials is not null && context.Partials.TryGetValue(node.PartialName, out ImmutableArray<INode> partialTemplate))
         {
-            ReadOnlyDictionary<string, ImmutableArray<INode>> tempPartials = partialTemplate.ExtractsPartials(context.Partials).AsReadOnly();
+            ReadOnlySpan<INode> span = partialTemplate.AsSpan();
 
+            ReadOnlyDictionary<string, ImmutableArray<INode>> tempPartials = span.ExtractsPartials(context.Partials).AsReadOnly();
             using (new PartialsScope<StringBuilder>(context, tempPartials))
             {
-                RenderTree(context, value, facade, partialTemplate.AsSpan());
+                RenderTree(context, value, facade, span);
             }
         }
     }

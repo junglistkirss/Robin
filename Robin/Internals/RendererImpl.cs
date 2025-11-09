@@ -17,7 +17,7 @@ internal sealed class RendererImpl<T, TOut>(
 {
     public TOut Render(ImmutableArray<INode> template, object? data)
     {
-        builder.Render(visitor, evaluator, template, data, helperConfig);
+        builder.Render(visitor, evaluator, template.AsSpan(), data, helperConfig);
         return output(builder);
     }
 }

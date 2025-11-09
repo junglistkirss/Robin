@@ -17,7 +17,7 @@
     <ProjectReference Include="..\Robin.Generators.Accessor\Robin.Generators.Accessor.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     <ProjectReference Include="..\Robin\Robin.csproj" />
     <PackageReference Include="BenchmarkDotNet" Version="0.15.5" />
-     <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.15.5"  /> 
+     <!--<PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.15.5"  />--> 
     <!-- Condition="'$(DefineConstants)' == 'WINDOWS'" -->
   </ItemGroup>
 
