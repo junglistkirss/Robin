@@ -5,7 +5,7 @@ namespace RobinMustache.Abstractions.Facades;
 public abstract class BaseDataFacade<T> : IDataFacade<T>
 {
     bool IDataFacade.IsTrue(object? obj) => obj is T typed && IsTrue(typed);
-   public abstract bool IsTrue(T obj);
+    public abstract bool IsTrue(T obj);
     bool IDataFacade.IsCollection(object? obj, out IIterator? collection)
     {
         if (obj is T typed && IsCollection(typed, out IIterator? typedCollection))

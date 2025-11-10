@@ -7,8 +7,8 @@ public static class DelegateHelper
 {
     public static ChainableGetter AsChainable(this Delegate @delegate)
     {
-        if(@delegate is null)
-        throw new ArgumentNullException(nameof(@delegate));
+        if (@delegate is null)
+            throw new ArgumentNullException(nameof(@delegate));
 
         MethodInfo method = @delegate.Method;
         ConstantExpression? target = @delegate.Target == null ? null : Expression.Constant(@delegate.Target);

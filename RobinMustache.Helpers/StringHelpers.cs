@@ -38,14 +38,14 @@ namespace RobinMustache.Helpers
         public static void AsGlobalHelpers()
         {
             GlobalHelpers.TryAddFunction(nameof(Lowercase), Lowercase);
-            GlobalHelpers.TryAddFunction(nameof(Uppercase),Uppercase);
+            GlobalHelpers.TryAddFunction(nameof(Uppercase), Uppercase);
             GlobalHelpers.TryAddFunction(nameof(LowercaseInvariant), LowercaseInvariant);
             GlobalHelpers.TryAddFunction(nameof(UppercaseInvariant), UppercaseInvariant);
             GlobalHelpers.TryAddFunction(nameof(Trim), Trim);
             GlobalHelpers.TryAddFunction(nameof(ToCharArray), ToCharArray);
         }
 
-        public static Helper AddStringGloabHelpers( this Helper helper)
+        public static Helper AddStringGloabHelpers(this Helper helper)
         {
             helper.TryAddFunction(nameof(Lowercase), Lowercase);
             helper.TryAddFunction(nameof(Uppercase), Uppercase);

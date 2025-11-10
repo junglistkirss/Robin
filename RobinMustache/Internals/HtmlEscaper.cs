@@ -7,7 +7,7 @@ public static class HtmlEscaper
 
     public static string? Escape(this string? value)
     {
-        if (value is null || string.IsNullOrEmpty(value) )
+        if (value is null || string.IsNullOrEmpty(value))
             return null;
 
         var pool = ArrayPool<char>.Shared;

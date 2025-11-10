@@ -28,7 +28,7 @@ public sealed class Helper
 
     public bool TryAddFunction(string name, Function function)
     {
-        if(_functions.ContainsKey(name))
+        if (_functions.ContainsKey(name))
             return false;
         _functions.Add(name, function);
         return true;

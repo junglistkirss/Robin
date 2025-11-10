@@ -1,10 +1,38 @@
 using Microsoft.Extensions.DependencyInjection;
+using RobinMustache.Abstractions.Accessors;
 using RobinMustache.Abstractions.Extensions;
 using RobinMustache.Abstractions.Facades;
 using System.Text.Json.Nodes;
 
 namespace RobinMustache.Evaluator.System.Text.Json;
 
+public static class JsonAccessors
+{
+
+    internal static bool TryGetMemberValue(this JsonObject? jObject, string member, out object? value)
+    {
+        if (jObject is not null && jObject.TryGetPropertyValue(member, out JsonNode? node))
+        {
+            value = node;
+            return true;
+        }
+        value = null;
+        return false;
+    }
+    internal static bool TryGetIndexValue(this JsonArray? jArray, int index, out object? value)
+    {
+        if (jArray is not null && index < jArray.Count)
+        {
+            value = jArray[index];
+            return true;
+        }
+        value = null;
+        return false;
+    }
+
+    public static IMemberAccessor<JsonObject> CreateJsonObjectMemberAccessor() => AccessorBuilder.CreateMemberObjectAccessor<JsonObject>(TryGetMemberValue);
+    public static IIndexAccessor<JsonArray> CreateJsonarrayIndexAccessor() => AccessorBuilder.CreateIndexObjectAccessor<JsonArray>(TryGetIndexValue);
+}
 public static class JsonAccessorExtensions
 {
     public static IServiceCollection AddJsonAccessors(this IServiceCollection services)
@@ -16,32 +44,12 @@ public static class JsonAccessorExtensions
             .AddDataFacade<JsonValue>(JsonValueFacade.Instance)
             .AddDataFacade<JsonArray>(JsonArrayFacade.Instance)
             .AddDataFacade<JsonObject>(JsonObjectFacade.Instance)
-            .AddIndexObjectAccessor<JsonArray>(TryGetIndexValue)
-            .AddMemberObjectAccessor<JsonObject>(TryGetMemberValue)
-            .AddIndexObjectAccessor<JsonNode>(TryGetIndexValue)
-            .AddMemberObjectAccessor<JsonNode>(TryGetMemberValue)
+            .AddMemberObjectAccessor<JsonObject>(JsonAccessors.TryGetMemberValue)
+            .AddIndexObjectAccessor<JsonArray>(JsonAccessors.TryGetIndexValue)
+            //.AddIndexObjectAccessor<JsonNode>(JsonAccessor.TryGetIndexValue)
+            //.AddMemberObjectAccessor<JsonNode>(JsonAccessor.TryGetMemberValue)
             ;
     }
 
-    internal static bool TryGetMemberValue(this object? obj, string member, out object? value)
-    {
-        if (obj is JsonObject jObject && jObject.TryGetPropertyValue(member, out JsonNode? node))
-        {
-            value = node;
-            return true;
-        }
-        value = null;
-        return false;
-    }
-    internal static bool TryGetIndexValue(this object? obj, int index, out object? value)
-    {
-        if (obj is JsonArray jArray && index < jArray.Count)
-        {
-            value = jArray[index];
-            return true;
-        }
-        value = null;
-        return false;
-    }
 }
 

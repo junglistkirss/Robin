@@ -61,7 +61,7 @@ public static class VariableParser
                 if (bracketDepth != 0)
                     throw new FormatException("Unclosed accessor");
 
-                string content = path.Slice(start,i-start).Trim().ToString();
+                string content = path.Slice(start, i - start).Trim().ToString();
 
                 // Try to parse as numeric index first
                 if (int.TryParse(content.ToString(), out int index))
@@ -83,7 +83,7 @@ public static class VariableParser
                 while (i < path.Length && path[i] != '.' && path[i] != '[')
                     i++;
 
-                string memberName = path.Slice(start, i-start).ToString();
+                string memberName = path.Slice(start, i - start).ToString();
                 if (string.IsNullOrEmpty(memberName))
                     throw new FormatException("Empty member name");
 

@@ -6,11 +6,11 @@ using System.Text.Json.Nodes;
 
 namespace RobinMustache.Evaluator.System.Text.Json;
 
-internal sealed class JsonNodeFacade : BaseDataFacade<JsonNode>
+internal sealed class JsonValueFacade : BaseDataFacade<JsonValue>
 {
-    public readonly static JsonNodeFacade Instance = new();
-    private JsonNodeFacade() { }
-    public override bool IsCollection(JsonNode node, [NotNullWhen(true)] out IIterator? collection)
+    public readonly static JsonValueFacade Instance = new();
+    private JsonValueFacade() { }
+    public override bool IsCollection(JsonValue node, [NotNullWhen(true)] out IIterator? collection)
     {
         switch (node.GetValueKind())
         {
@@ -24,7 +24,7 @@ internal sealed class JsonNodeFacade : BaseDataFacade<JsonNode>
         return false;
     }
 
-    public override bool IsTrue([NotNullWhen(true)] JsonNode node)
+    public override bool IsTrue([NotNullWhen(true)] JsonValue node)
     {
         switch (node.GetValueKind())
         {

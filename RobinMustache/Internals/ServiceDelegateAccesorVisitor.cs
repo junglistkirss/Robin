@@ -16,7 +16,7 @@ internal sealed class ServiceDelegateAccesorVisitor(IServiceProvider serviceProv
         {
             Type genType = typeof(IMemberDelegateAccessor<>).MakeGenericType(key);
             IMemberDelegateAccessor? memberAccessor = (IMemberDelegateAccessor?)serviceProvider.GetService(genType);
-            if (key.GetInterfaces().Any( x => x == typeof(IDictionary)))
+            if (key.GetInterfaces().Any(x => x == typeof(IDictionary)))
                 memberAccessor = DictionaryMemberAccessor.Instance;
             return memberAccessor;
         });
