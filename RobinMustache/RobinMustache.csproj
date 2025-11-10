@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <PackageId>RobinMustache</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>Christian Bourbier</Authors>
     <Company>Christian Bourbier</Company>
     <PackageDescription>RobinMustache</PackageDescription>
