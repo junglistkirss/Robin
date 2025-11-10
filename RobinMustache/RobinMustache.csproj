@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>RobinMustache</PackageId>
+    <Version>0.0.2</Version>
+    <Authors>Christian Bourbier</Authors>
+    <Company>Christian Bourbier</Company>
+    <PackageDescription>RobinMustache</PackageDescription>
+    <RepositoryUrl>https://github.com/junglistkirss/RobinMustache</RepositoryUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RobinMustache.Abstractions\RobinMustache.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

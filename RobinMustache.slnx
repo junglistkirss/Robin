@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="RobinMustache.Benchmarks/RobinMustache.Benchmarks.csproj" Id="c255a6c0-c6ae-4e75-a11d-bca70b2be59c" />
+    <Project Path="RobinMustache.Evaluator.GeneratedAccessor.Tests/RobinMustache.Evaluator.GeneratedAccessor.Tests.csproj" />
+    <Project Path="RobinMustache.Evaluator.System.Text.Json.Tests/RobinMustache.Evaluator.System.Text.Json.Tests.csproj" />
+    <Project Path="RobinMustache.Generators.Accessor.Tests/RobinMustache.Generators.Accessor.Tests.csproj" />
+    <Project Path="RobinMustache.Specs.Tests/RobinMustache.Specs.Tests.csproj" />
+    <Project Path="RobinMustache.Tests/RobinMustache.Tests.csproj" />
+  </Folder>
+  <Project Path="RobinMustache.Abstractions/RobinMustache.Abstractions.csproj" Id="bd6d5b82-492e-4d6f-ac8d-07291ca3edd5" />
+  <Project Path="RobinMustache.Evaluator.System.Text.Json/RobinMustache.Evaluator.System.Text.Json.csproj" />
+  <Project Path="RobinMustache.Generators.Accessor/RobinMustache.Generators.Accessor.csproj" />
+  <Project Path="RobinMustache.Helpers/RobinMustache.Helpers.csproj" Id="b6f3fa45-f581-4037-93d7-1381a7a0564a" />
+  <Project Path="RobinMustache/RobinMustache.csproj" />
+</Solution>

@@ -1,0 +1,33 @@
+using RobinMustache.Abstractions.Accessors;
+using System.Collections;
+
+namespace RobinMustache.Internals;
+
+internal sealed class ListIndexAccessor : BaseIndexAccessor<IList>, IIndexDelegateAccessor
+{
+    public readonly static ListIndexAccessor Instance = new();
+    private ListIndexAccessor() { }
+    public bool TryGetIndex(int index, out Delegate value)
+    {
+        value = (object? source) =>
+        {
+            if (source is IList list && index >= 0 && index < list.Count)
+            {
+                return list[index];
+            }
+            return null;
+        };
+        return true;
+    }
+
+    public override bool TryGetIndex(IList obj, int index, out object? value)
+    {
+        if (obj is not null && index >= 0 && index < obj.Count)
+        {
+            value = obj[index];
+            return true;
+        }
+        value = null;
+        return false;
+    }
+}
