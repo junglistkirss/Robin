@@ -1,45 +1,55 @@
 using Robin.Abstractions;
 using Robin.Abstractions.Context;
+using Robin.Abstractions.Facades;
 using Robin.Abstractions.Helpers;
 using Robin.Abstractions.Nodes;
-using Robin.Extensions;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
+using Robin.Internals;
+using System.Text;
 
 namespace Robin;
 
 public static class Renderer
 {
-    public static void Render<T>(
-        this T defaultBuilder,
-        INodeVisitor<RenderContext<T>> visitor,
-        IEvaluator evaluator,
-        ReadOnlySpan<INode> template,
-        object? data,
-        Action<Helper>? helperConfig = null)
-        where T : class
-    {
-        ReadOnlyDictionary<string, ImmutableArray<INode>> partials = new(template.ExtractsPartials()); // calculer une seule fois
-        using (DataContext.Push(data))
-        {
-            helperConfig?.Invoke(DataContext.Current.Helper);
-            RenderContext<T> ctx = RenderContextPool<T>.Get(evaluator, defaultBuilder, partials);
-            try
-            {
-                foreach (INode item in template)
-                    item.Accept(visitor, ctx);
-            }
-            finally
-            {
-                RenderContextPool<T>.Return(ctx); // remet dans le pool
-            }
-        }
-    }
 
-    //public static string RenderString(this IEvaluator evaluator, ImmutableArray<INode> template, object? data, Action<Helper>? helperConfig = null)
-    //{
-    //    StringBuilder sb = new();
-    //    Render(sb, StringNodeRender.Instance, evaluator, template.AsSpan(), data, helperConfig);
-    //    return sb.ToString();
-    //}
+    public static IRenderer<TOut> CreateRenderer<TBuilder, TOut>(
+        Func<TBuilder> builderFactory,
+        Func<TBuilder, TOut> builderOutput,
+        Func<IPartialLoader[], INodeVisitor<RenderContext<TBuilder>>> nodeVisitorFactory,
+        Action<StaticDataFacadeResolverBuilder>? facades = null,
+        Action<StaticAccessorBuilder>? accessors = null,
+        Action<Helper>? helperConfig = null)
+        where TBuilder : class
+    {
+        INodeVisitor<RenderContext<TBuilder>> nodeVisitor = nodeVisitorFactory([new DefinedPartialLoader()]);
+        StaticDataFacadeResolverBuilder? facadesBuilder = new();
+        if (facades is not null)
+            facades(facadesBuilder);
+        StaticDataFacadeResolver facadeResolver = facadesBuilder.Build();
+        StaticAccessorBuilder accessorBuilder = new();
+        if (accessors is not null)
+            accessors(accessorBuilder);
+        StaticServiceAccesorVisitor serviceAccesorVisitor = accessorBuilder.Build();
+        ExpressionNodeVisitor nodeExpressionVisitor = new([serviceAccesorVisitor]);
+        IEvaluator evaluator = new ServiceEvaluator(nodeExpressionVisitor, [facadeResolver]);
+        return new RendererImpl<TBuilder, TOut>(
+            builderFactory,
+            builderOutput,
+            nodeVisitor,
+            evaluator,
+            helperConfig);
+    }
+    public static IStringRenderer CreateStringRenderer(
+        Action<StaticDataFacadeResolverBuilder>? facades = null,
+        Action<StaticAccessorBuilder>? accessors = null,
+        Action<Helper>? helperConfig = null)
+    {
+        IRenderer<string> impl = CreateRenderer(
+            () => new StringBuilder(),
+            x => x.ToString(),
+             l => new StringNodeRender(l),
+            facades,
+            accessors,
+            helperConfig);
+        return new StringRendererImpl(impl);
+    }
 }

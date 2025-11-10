@@ -15,7 +15,7 @@ namespace Robin.Extensions;
 
 public static class RobinExtensions
 {
-    public static Dictionary<string, ImmutableArray<INode>> ExtractsPartials(this ReadOnlySpan<INode> nodes, ReadOnlyDictionary<string, ImmutableArray<INode>>? baseCollection = null)
+    internal static Dictionary<string, ImmutableArray<INode>> ExtractsPartials(this ReadOnlySpan<INode> nodes, ReadOnlyDictionary<string, ImmutableArray<INode>>? baseCollection = null)
     {
         Dictionary<string, ImmutableArray<INode>> collection;
         if (baseCollection is not null)

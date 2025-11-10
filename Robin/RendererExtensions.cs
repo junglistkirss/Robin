@@ -10,8 +10,8 @@ namespace Robin;
 
 public static class RendererExtensions
 {
-    public static IRenderer<TOut> CreateRenderer<T, TOut>(
-        this T builder,
+    private static IRenderer<TOut> CreateRenderer<T, TOut>(
+        Func<T> builder,
         Func<T, TOut> output,
         INodeVisitor<RenderContext<T>> visitor,
         IEvaluator evaluator,
@@ -41,10 +41,10 @@ public static class RendererExtensions
     {
         services.Add(new ServiceDescriptor(typeof(IRenderer<TOut>), factory: sp =>
         {
-            T builder = builderFactory(sp);
+            T builder() => builderFactory(sp);
             IEvaluator evaluator = evaluatorProvider(sp);
             INodeVisitor<RenderContext<T>> visitor = visitorProvider(sp);
-            return builder.CreateRenderer(output, visitor, evaluator, helperConfig);
+            return CreateRenderer(builder, output, visitor, evaluator, helperConfig);
         }, serviceLifetime));
         return services;
     }

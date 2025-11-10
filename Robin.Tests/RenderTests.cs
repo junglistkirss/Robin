@@ -132,6 +132,7 @@ public class RenderTests
         string result = renderer.Render(template, data);
         Assert.Equal("10", result);
     }
+
     [Fact]
     public void ParentTest_Render_FunctionIgnoreCase()
     {
@@ -152,6 +153,7 @@ public class RenderTests
         string result = renderer.Render(template, "   TEST   ");
         Assert.Equal("test", result);
     }
+
     [Fact]
     public void ParentTest_Render_NextedFunctionArg()
     {
@@ -161,6 +163,7 @@ public class RenderTests
         string result = renderer.Render(template, "TESTccc");
         Assert.Equal("test", result);
     }
+
     private class TestCollection<T>(IEnumerable<T> items) : IEnumerable<T>
     {
         public IEnumerator<T> GetEnumerator()
