@@ -1,6 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
 using RobinMustache.Abstractions.Nodes;
-using RobinMustache.MustacheSpecs.Tests;
 using System.Collections.Immutable;
 using System.Text.Json;
 
@@ -24,9 +23,6 @@ public class SectionsTests : BaseMustacheTests
         IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
         ImmutableArray<INode> template = @case.Template.AsSpan().Parse();
         string result = renderer.Render(template, @case.Data);
-        if (!@case.Expected.EqualsIgnoringWhitespace(result))
-        {
-            Assert.Fail($"{@case.Name} : {@case.Description}{Environment.NewLine}Excpected: \"{@case.Expected}\"{Environment.NewLine}Actual: \"{result}\"");
-        }
+        Assert.Equal(result, @case.Expected);
     }
 }
