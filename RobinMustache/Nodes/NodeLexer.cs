@@ -31,9 +31,17 @@ public ref struct NodeLexer
     private readonly bool IsAtLineStart(int pos)
     {
         if (pos == 0) return true;
-
-
-        return _source[pos - 1] is '\n' or '\r'; // uniquement des espaces avant le début
+        int i = pos - 1;
+        while (i >= 0)
+        {
+            char c = _source[i];
+            if (c == '\n' || c == '\r')
+                return true;
+            if (c != ' ' && c != '\t')
+                return false;
+            i--;
+        }
+        return true;
     }
     private readonly bool IsAtLineEnd(int endPos)
     {
@@ -47,7 +55,7 @@ public ref struct NodeLexer
                 return false;
             i++;
         }
-        return true; // ligne se termine là
+        return true;
     }
     /// <summary>
     /// Avance contentStart jusqu'au premier caractère non-espace (hors \r et \n).

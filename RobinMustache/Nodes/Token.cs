@@ -12,7 +12,7 @@ public readonly struct Token(TokenType type, int start, int length, bool isAtlin
     public int Start => start;
     public int Length => length;
 
-    public bool IsAtlineStart { get; } = isAtlineStart;
+    public bool IsAtLineStart { get; } = isAtlineStart;
     public bool IsAtLineEnd { get; } = isAtLineEnd;
 
     public ReadOnlySpan<char> GetValue(ReadOnlySpan<char> source)

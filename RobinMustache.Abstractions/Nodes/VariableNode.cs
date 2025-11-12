@@ -7,7 +7,6 @@ public sealed class VariableNode(IExpressionNode expression, bool unescaped) : I
 {
     public IExpressionNode Expression { get; } = expression;
     public bool IsUnescaped { get; } = unescaped;
-    public bool IsStandalone => false;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)

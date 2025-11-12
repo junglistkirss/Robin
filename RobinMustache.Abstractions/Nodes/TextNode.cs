@@ -6,33 +6,15 @@ public sealed class TextNode(string text) : INode
 {
     public string Text { get; } = text;
 
-    public bool IsStandalone => false;
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
     {
         return visitor.VisitText(this, args);
     }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Accept<TArgs>(INodeVisitor<TArgs> visitor, TArgs args)
     {
         visitor.VisitText(this, args);
-    }
-}
-public sealed class WhitespaceNode(string text) : INode
-{
-    public string Text { get; } = text;
-
-    public bool IsStandalone => false;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
-    {
-        return visitor.VisitWhitespace(this, args);
-    }
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Accept<TArgs>(INodeVisitor<TArgs> visitor, TArgs args)
-    {
-        visitor.VisitWhitespace(this, args);
     }
 }

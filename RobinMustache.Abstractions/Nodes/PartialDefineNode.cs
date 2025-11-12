@@ -3,11 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace RobinMustache.Abstractions.Nodes;
 
-public readonly struct PartialDefineNode(string name, ImmutableArray<INode> children, bool isStandalone) : INode
+public readonly struct PartialDefineNode(string name, ImmutableArray<INode> children) : INode
 {
     public string PartialName { get; } = name;
     public ImmutableArray<INode> Children { get; } = children;
-    public bool IsStandalone { get; } = isStandalone;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)

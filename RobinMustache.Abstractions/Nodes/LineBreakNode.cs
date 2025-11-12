@@ -15,8 +15,6 @@ public sealed class LineBreakNode : INode
 
     public string Content { get; }
 
-    public bool IsStandalone => false;
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
     {

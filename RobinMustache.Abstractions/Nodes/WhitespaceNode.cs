@@ -2,20 +2,19 @@ using System.Runtime.CompilerServices;
 
 namespace RobinMustache.Abstractions.Nodes;
 
-public sealed class CommentNode(string message) : INode
+public sealed class WhitespaceNode(string text) : INode
 {
-    public string Message { get; } = message;
+    public string Text { get; } = text;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public TOut Accept<TOut, TArgs>(INodeVisitor<TOut, TArgs> visitor, TArgs args)
     {
-        return visitor.VisitComment(this, args);
+        return visitor.VisitWhitespace(this, args);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Accept<TArgs>(INodeVisitor<TArgs> visitor, TArgs args)
     {
-        visitor.VisitComment(this, args);
+        visitor.VisitWhitespace(this, args);
     }
 }
-
