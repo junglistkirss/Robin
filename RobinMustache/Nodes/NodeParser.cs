@@ -103,9 +103,7 @@ public static class NodeParser
                     RemoveTrailingLineBreak(nodes);
                 }
 
-                lexer.SkipNextLineBreak(out INode[] after);
-                nodes.AddRange(after);
-
+                lexer.SkipNextLineBreak(out _);
 
                 break;
             }
