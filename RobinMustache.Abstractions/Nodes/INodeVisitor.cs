@@ -6,6 +6,7 @@ public interface INodeVisitor<TOut, TArgs>
     TOut VisitPartialDefine(PartialDefineNode node, TArgs args);
     TOut VisitPartialCall(PartialCallNode node, TArgs args);
     TOut VisitText(TextNode node, TArgs args);
+    TOut VisitWhitespace(WhitespaceNode node, TArgs args);
     TOut VisitLineBreak(LineBreakNode node, TArgs args);
     TOut VisitVariable(VariableNode node, TArgs args);
     TOut VisitSection(SectionNode node, TArgs args);
@@ -16,6 +17,7 @@ public interface INodeVisitor<TArgs>
     void VisitPartialDefine(PartialDefineNode node, TArgs args);
     void VisitPartialCall(PartialCallNode node, TArgs args);
     void VisitText(TextNode node, TArgs args);
+    void VisitWhitespace(WhitespaceNode node, TArgs args);
     void VisitLineBreak(LineBreakNode node, TArgs args);
     void VisitVariable(VariableNode node, TArgs args);
     void VisitSection(SectionNode node, TArgs args);

@@ -10,9 +10,9 @@ public static class Tokenizer
         List<Token> tokens = [];
         NodeLexer lexer = new(source);
 
-        while (lexer.TryGetNextToken(out Token? token) && token is not null)
+        while (lexer.TryGetNextToken(out Token token))
         {
-            tokens.Add(token.Value);
+            tokens.Add(token);
         }
 
         return [.. tokens];

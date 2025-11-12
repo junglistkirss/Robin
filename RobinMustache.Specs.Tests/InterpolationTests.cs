@@ -22,7 +22,7 @@ public class InterpolationTests : BaseMustacheTests
         IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
         ImmutableArray<INode> template = @case.Template.AsSpan().Parse();
         string result = renderer.Render(template, @case.Data);
-        Assert.Equal(result, @case.Expected);
+        Assert.Equal(@case.Expected, result);
 
     }
 }

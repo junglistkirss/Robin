@@ -21,9 +21,10 @@ public class InvertedTests : BaseMustacheTests
     public void Should_Add_Correctly(MustacheTestCase @case)
     {
         IStringRenderer renderer = ServiceProvider.GetRequiredService<IStringRenderer>();
+        var tokens = Tokenizer.Tokenize(@case.Template.AsSpan());
         ImmutableArray<INode> template = @case.Template.AsSpan().Parse();
         string result = renderer.Render(template, @case.Data);
-        Assert.Equal(result, @case.Expected);
+        Assert.Equal(@case.Expected, result);
 
     }
 }

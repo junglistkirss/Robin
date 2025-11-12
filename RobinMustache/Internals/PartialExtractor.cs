@@ -29,6 +29,10 @@ internal sealed class PartialExtractor : INodeVisitor<Dictionary<string, Immutab
     {
     }
 
+    public void VisitWhitespace(WhitespaceNode node, Dictionary<string, ImmutableArray<INode>> args)
+    {
+    }
+
     public void VisitText(TextNode node, Dictionary<string, ImmutableArray<INode>> args)
     {
     }

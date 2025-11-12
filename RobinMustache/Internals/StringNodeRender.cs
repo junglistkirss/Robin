@@ -17,6 +17,10 @@ internal sealed class StringNodeRender(IEnumerable<IPartialLoader> loaders) : IN
     {
         context.Builder.Append(node.Text);
     }
+    public void VisitWhitespace(WhitespaceNode node, RenderContext<StringBuilder> context)
+    {
+        context.Builder.Append(node.Text);
+    }
     public void VisitComment(CommentNode node, RenderContext<StringBuilder> context)
     {
     }
@@ -97,8 +101,7 @@ internal sealed class StringNodeRender(IEnumerable<IPartialLoader> loaders) : IN
 
     public void VisitLineBreak(LineBreakNode node, RenderContext<StringBuilder> context)
     {
-        for (int i = 0; i < node.Count; i++)
-            context.Builder.AppendLine();
+        context.Builder.Append(node.Content);
     }
 }
 

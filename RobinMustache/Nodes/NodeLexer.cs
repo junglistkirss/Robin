@@ -16,26 +16,26 @@ public ref struct NodeLexer
     {
         _position = position;
     }
-    public readonly bool TryPeekNextToken(out Token? token, out int endPosition)
+    public readonly bool TryPeekNextToken(out Token token, out int endPosition)
     {
         int savedPosition = _position;
         bool result = TryGetNextTokenInternal(out token, ref savedPosition);
         endPosition = savedPosition;
         return result;
     }
-    public bool TryGetNextToken(out Token? token)
+    public bool TryGetNextToken(out Token token)
     {
         return TryGetNextTokenInternal(out token, ref _position);
 
     }
-    private readonly bool TryGetNextTokenInternal(out Token? token, ref int pos)
+    private readonly bool TryGetNextTokenInternal(out Token token, ref int pos)
     {
         if (pos >= _source.Length)
         {
-            token = null;
+            token = Token.EOF;
             return false;
         }
-
+        bool isAtLineStart = pos == 0 || _source[pos - 1] is '\n' or '\r';
         // Détection du retour à la ligne avant tout
         if (_source[pos] is '\r' or '\n')
         {
@@ -43,12 +43,17 @@ public ref struct NodeLexer
 
             // Gérer \r\n comme un seul token
             if (_source[pos] is '\r' && pos + 1 < _source.Length && _source[pos + 1] is '\n')
+            {
                 pos += 2;
+                token = new Token(TokenType.LineBreak, start, pos - start, isAtLineStart, false);
+                return true;
+            }
             else
+            {
                 pos++;
-
-            token = new Token(TokenType.LineBreak, start, pos - start);
-            return true;
+                token = new Token(TokenType.LineBreak, start, pos - start, isAtLineStart, false);
+                return true;
+            }
         }
 
         // Look for opening delimiter
@@ -60,7 +65,7 @@ public ref struct NodeLexer
             int start = pos;
             int length = _source.Length - pos;
             pos = _source.Length;
-            token = new Token(TokenType.Text, start, length);
+            token = new Token(TokenType.Text, start, length, isAtLineStart, true);
             return true;
         }
 
@@ -68,51 +73,41 @@ public ref struct NodeLexer
         if (delimiterPos > 0)
         {
             int start = pos;
-            //int lastIndex = pos + delimiterPos; // dernier caractère du texte avant le délimiteur
-            if (TrimLineBreaksBounds(ref pos, start, delimiterPos, out token))
-                return true;
+            ReadOnlySpan<char> slice = _source.Slice(start, delimiterPos);
+            int carriagePos = slice.IndexOf('\r');
+            int linePos = slice.IndexOf('\n');
+            if (carriagePos > 0 || linePos > 0)
+            {
+                if (carriagePos > 0 && carriagePos < linePos)
+                    delimiterPos = carriagePos;
+                else
+                    delimiterPos = linePos;
+            }
 
-            // Pas de line break : tout le bloc est du texte
-            token = new Token(TokenType.Text, start, delimiterPos);
             pos += delimiterPos;
+            bool isAtLineEnd = _source[pos + 1] is '\n' or '\r';
+            if (isAtLineStart && slice.IsWhiteSpace())
+            {
+                token = new Token(TokenType.Whitepsaces, start, delimiterPos, isAtLineStart, isAtLineEnd);
+                return true;
+            }
+            // Pas de line break : tout le bloc est du texte
+            token = new Token(TokenType.Text, start, delimiterPos, isAtLineStart, isAtLineEnd);
             return true;
         }
 
         // Parse the mustache tag
-        return TryParseMustacheTag(out token, ref pos);
+        return TryParseMustacheTag(out token, ref pos, isAtLineStart);
     }
 
-    private readonly bool TrimLineBreaksBounds(ref int pos, int start, int lastIndex, out Token? token)
-    {
-        // Position de fin effective
-        int end = start + lastIndex;
-
-        // Vérifie si le texte se termine par un saut de ligne
-        if (end > start && _source[end - 1] is '\n' or '\r')
-        {
-            int i = end;
-            // Remonte tant qu'on trouve des \r ou \n
-            while (i > start && _source[i - 1] is '\n' or '\r')
-                i--;
-
-            int length = i - start;
-            token = new Token(TokenType.Text, start, length);
-            pos += length;
-            return true;
-        }
-
-        token = null;
-        return false;
-    }
-
-    private readonly bool TryParseMustacheTag(out Token? token, ref int pos)
+    private readonly bool TryParseMustacheTag(out Token token, ref int pos, bool isAtLineStart)
     {
         int tagStart = pos;
         pos += OpenDelimiter.Length;
 
         if (pos >= _source.Length)
         {
-            token = null;
+            token = Token.EOF;
             return false;
         }
 
@@ -181,7 +176,9 @@ public ref struct NodeLexer
         {
             // Malformed tag - treat as text
             pos = tagStart;
-            token = new Token(TokenType.Text, tagStart, 2);
+            bool isAtLineEnd = pos + 1 >= _source.Length || _source[pos + 1] is '\n' or '\r';
+
+            token = new Token(TokenType.Text, tagStart, 2, isAtLineStart, isAtLineEnd);
             pos += 2;
             return true;
         }
@@ -205,8 +202,7 @@ public ref struct NodeLexer
 
         }
         pos += closePos + closingDelim.Length;
-
-        token = new Token(tokenType, contentStart, contentEnd - contentStart);
+        token = new Token(tokenType, contentStart, contentEnd - contentStart, isAtLineStart, pos + 1 >= _source.Length || _source[pos + 1] is '\n' or '\r');
         return true;
     }
 

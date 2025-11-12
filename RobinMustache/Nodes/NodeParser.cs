@@ -28,24 +28,22 @@ public static class NodeParser
     public static ImmutableArray<INode> Parse(this ref NodeLexer lexer)
     {
         List<INode> nodes = [];
-        while (lexer.TryGetNextToken(out Token? token) && token is not null)
+        while (lexer.TryGetNextToken(out Token token))
         {
-            nodes.Add(lexer.ParseNode(token.Value));
+            nodes.Add(lexer.ParseNode(token));
         }
         return [.. nodes];
     }
 
-    private static LineBreakNode AggregateLineBreaks(ref NodeLexer lexer)
+    private static LineBreakNode ParseLineBreak(string lineBreakType)
     {
-        int c = 1;
-        while (lexer.TryPeekNextToken(out Token? nextToken, out int position) && nextToken is not null && nextToken.Value.Type == TokenType.LineBreak)
+        return lineBreakType switch
         {
-            c++;
-            lexer.AdvanceTo(position);
-        }
-        return new LineBreakNode(c);
+            "\r" => LineBreakNode.InstanceReturn,
+            "\n" => LineBreakNode.InstanceLine,
+            _ => LineBreakNode.Instance,
+        };
     }
-
     private static VariableNode ParseVariable(string variableExpression, bool isEscaped)
     {
         ExpressionLexer exprLexer = new(variableExpression.AsSpan());
@@ -74,12 +72,12 @@ public static class NodeParser
     {
         string name = lexer.GetValue(startToken);
         List<INode> nodes = [];
-        while (lexer.TryGetNextToken(out Token? token) && token is not null)
+        while (lexer.TryGetNextToken(out Token token))
         {
-            if (token.Value.Type == TokenType.SectionClose && lexer.GetValue(token.Value).Equals(name))
+            if (token.Type == TokenType.SectionClose && lexer.GetValue(token).Equals(name))
                 break;
 
-            nodes.Add(lexer.ParseNode(token.Value));
+            nodes.Add(lexer.ParseNode(token));
         }
         PartialDefineNode partial = new(name, [.. nodes]);
 
@@ -93,12 +91,20 @@ public static class NodeParser
         ExpressionLexer exprLexer = new(name.AsSpan());
         IExpressionNode node = exprLexer.Parse() ?? throw new Exception("Variable expression is invalid");
         List<INode> nodes = [];
-        while (lexer.TryGetNextToken(out Token? token) && token is not null)
+        if (startToken.IsAtlineStart )
+            lexer.SkipNextLineBreak(startToken.Type);
+        while (lexer.TryGetNextToken(out Token token))
         {
-            if (token.Value.Type == TokenType.SectionClose && lexer.GetValue(token.Value).Equals(name))
+            if (token.Type == TokenType.SectionClose && lexer.GetValue(token).Equals(name))
+            {
+                if (token.IsAtlineStart)
+                    RemoveTrailingLineBreak(nodes);
+                //if (token.IsAtLineEnd)
+                //    lexer.SkipNextLineBreak(token.Type);
                 break;
+            }
 
-            nodes.Add(lexer.ParseNode(token.Value));
+            nodes.Add(lexer.ParseNode(token));
         }
         SectionNode section = new(node, [.. nodes], inverted);
 
@@ -107,6 +113,7 @@ public static class NodeParser
 
     private static INode ParseNode(this ref NodeLexer lexer, Token token)
     {
+        
         switch (token.Type)
         {
             case TokenType.Text:
@@ -126,9 +133,27 @@ public static class NodeParser
             case TokenType.PartialDefine:
                 return ParsePartialDefine(ref lexer, token);
             case TokenType.LineBreak:
-                return AggregateLineBreaks(ref lexer);
+                return ParseLineBreak(lexer.GetValue(token));
+            case TokenType.Whitepsaces:
+                //if(token.IsAtlineStart && lexer.TryPeekNextToken(out Token next, out _) && next.Type is not TokenType.SectionOpen or TokenType.SectionClose or TokenType.InvertedSection or TokenType.PartialDefine or TokenType.PartialCall)
+                //    return new WhitespaceNode(string.Empty);
+                //else
+                    return new WhitespaceNode(lexer.GetValue(token));
             default:
                 throw new InvalidTokenException($"Unsupported token {token} in section");
         }
+    }
+    private static void RemoveTrailingLineBreak(List<INode> nodes)
+    {
+        while (nodes.Count > 0 && nodes[nodes.Count - 1] is LineBreakNode or WhitespaceNode)
+            nodes.RemoveAt(nodes.Count - 1);
+    }
+    private static void SkipNextLineBreak(this ref NodeLexer lexer, TokenType currentType)
+    {
+        if (currentType is TokenType.SectionOpen or TokenType.SectionClose or TokenType.InvertedSection or TokenType.PartialDefine or TokenType.PartialCall)
+            while (lexer.TryPeekNextToken(out Token nextToken, out int next) && nextToken.Type is TokenType.LineBreak or TokenType.Whitepsaces)
+            {
+                lexer.AdvanceTo(next);
+            }
     }
 }
