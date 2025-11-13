@@ -7,6 +7,7 @@ public readonly record struct MustacheTestCase(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("desc")] string Description,
     [property: JsonPropertyName("data")] JsonNode Data,
+    [property: JsonPropertyName("partials")] JsonObject? Partials,
     [property: JsonPropertyName("template")] string Template,
     [property: JsonPropertyName("expected")] string Expected
 );
