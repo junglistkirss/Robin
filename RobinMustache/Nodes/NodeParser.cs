@@ -143,8 +143,8 @@ public static class NodeParser
                 if (closeStandalone)
                 {
                     RemoveTrailingLineBreak(nodes);
-                    lexer.SkipNextLineBreak(out INode[] after);
-                    nodes.AddRange(after);
+                    if (lexer.SkipNextLineBreak(out LineBreakNode? after) && after is not null)
+                        nodes.Add(after);
                 }
 
                 break;
@@ -212,15 +212,18 @@ public static class NodeParser
         }
     }
 
-    private static void SkipNextLineBreak(this ref NodeLexer lexer, out INode[] nodes)
+    private static bool SkipNextLineBreak(this ref NodeLexer lexer, out LineBreakNode? lineBreak)
     {
-        List<INode> peekeds = [];
         while (lexer.TryPeekNextToken(out Token nextToken, out int next) && nextToken.Type is TokenType.LineBreak or TokenType.Whitepsaces)
         {
-            if (nextToken.Type is TokenType.LineBreak)
-                peekeds.Add(lexer.ParseNode(nextToken, out _, out _));
             lexer.AdvanceTo(next);
+            if (nextToken.Type is TokenType.LineBreak)
+            {
+                lineBreak = lexer.ParseLineBreak(nextToken);
+                return true;
+            }
         }
-        nodes = [.. peekeds];
+        lineBreak = null;
+        return false;
     }
 }
