@@ -10,7 +10,7 @@ namespace RobinMustache.Specs.Tests;
 
 public class PartialsTests : BaseMustacheTests
 {
-    private readonly static string[] Skipped = ["Standalone Line Endings" , "Standalone Without Newline" , "Standalone Without Previous Line", "Standalone Indentation"];
+    private readonly static string[] Skipped = [ "Standalone Without Newline", "Standalone Without Previous Line", "Standalone Indentation"];
 
     public static TheoryData<MustacheTestCase> GetTestsSpec1_4_3()
     {

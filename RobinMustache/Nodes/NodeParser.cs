@@ -91,6 +91,8 @@ public static class NodeParser
         }
         openStandalone = token.IsAtLineStart;
         closeStandalone = token.IsAtLineEnd;
+        if(openStandalone && closeStandalone)
+        lexer.SkipNextLineBreak(out _, out _);
         return new PartialCallNode(name, expressionNode);
     }
 
