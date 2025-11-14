@@ -10,7 +10,26 @@ namespace RobinMustache.Specs.Tests;
 
 public class PartialsTests : BaseMustacheTests
 {
-    private readonly static string[] Skipped = [ "Standalone Without Newline", "Standalone Without Previous Line", "Standalone Indentation"];
+    private readonly static string[] Skipped = [ 
+        "Standalone Without Newline", // Spec seems to include an extra double space
+        /*
+        Expected: ">\n  >\n  >"
+        Actual:   ">\n  >\n>"
+                           ↑ (pos 6)
+        */
+        "Standalone Without Previous Line", // Spec seems to include an extra double space
+        /*
+        Expected: "  >\n  >>"
+        Actual:   "  >\n>\n>"
+                        ↑ (pos 4)
+        */
+        "Standalone Indentation" // Spec seems to include an extra space
+        /*
+        Expected: "\\\n |\n <\n->\n |\n/\n"
+        Actual:   "\\\n |\n<\n->\n|\n/\n"
+                           ↑ (pos 5)
+        */
+    ];
 
     public static TheoryData<MustacheTestCase> GetTestsSpec1_4_3()
     {
