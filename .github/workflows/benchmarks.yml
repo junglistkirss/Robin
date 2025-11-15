@@ -35,7 +35,7 @@ jobs:
     #     key: ${{ runner.os }}-benchmark
 
     - name: Run Benchmarks
-      run: dotnet run --project ./RobinMustache.Benchmarks/RobinMustache.Benchmarks.csproj --configuration Release
+      run: dotnet run --project ./RobinMustache.Benchmarks/RobinMustache.Benchmarks.csproj --configuration Release --filter *
     
     # - name: Store benchmark result
     #   uses: benchmark-action/github-action-benchmark@v1
